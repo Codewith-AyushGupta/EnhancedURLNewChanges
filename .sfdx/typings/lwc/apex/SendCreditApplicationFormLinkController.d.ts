@@ -1,3 +1,6 @@
+declare module "@salesforce/apex/SendCreditApplicationFormLinkController.creditApplicationLink" {
+  export default function creditApplicationLink(): Promise<any>;
+}
 declare module "@salesforce/apex/SendCreditApplicationFormLinkController.getContactNameAndEmail" {
   export default function getContactNameAndEmail(param: {contactID: any}): Promise<any>;
 }

@@ -1,3 +1,6 @@
+declare module "@salesforce/apex/sendPreferredVendorRPFController.preferredVendorRPFLink" {
+  export default function preferredVendorRPFLink(): Promise<any>;
+}
 declare module "@salesforce/apex/sendPreferredVendorRPFController.sendEmailWithPreferredVendorRPFLink" {
   export default function sendEmailWithPreferredVendorRPFLink(param: {contactID: any}): Promise<any>;
 }

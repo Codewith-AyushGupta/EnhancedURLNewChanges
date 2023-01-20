@@ -1,6 +1,8 @@
-<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride"  access="global" >
+<aura:component extends="c:HandleErrorModal" implements="flexipage:availableForRecordHome,force:hasRecordId,lightning:actionOverride"  access="global" controller='SendCreditApplicationFormLinkController'>
 	<!--p>To submit an Internal Sample Request, click on below link</p>
     <a href="https://dev-louisville-tile.cs59.force.com/a/s/new-internal-form">Sample Request Form</a-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute type='string' name='creditLink'/>
      <aura:attribute name="isModalOpen" type="boolean" default="True"/>
             <div class="slds-m-around_xx-large">
         <aura:if isTrue="{!v.isModalOpen}">
@@ -18,7 +20,7 @@
                     </header>
                     <!--Modal/Popup Box Body Starts here-->
                     <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-    <a href="https://louisville-tile--uat.sandbox.my.site.com/s/credit-application">Credit Application</a>
+    <a href="{!v.creditLink}" targer='none'>Credit Application</a>
                     </div>
                     <!--Modal/Popup Box Footer Starts here-->
                     <footer class="slds-modal__footer">

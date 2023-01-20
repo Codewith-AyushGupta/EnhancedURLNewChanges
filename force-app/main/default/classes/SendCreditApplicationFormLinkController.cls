@@ -1,5 +1,10 @@
 public class SendCreditApplicationFormLinkController {
     
+    @AuraEnabled
+    public static string creditApplicationLink()
+    {
+        return System.Label.Credit_Application_Form_URL;
+    }
     @auraEnabled
     public static ContactWrapper getContactNameAndEmail(Id contactID){
         List<Contact> contacts = ContactSelector.getContacts(new Set<Id>{contactID});
