@@ -1,0 +1,40 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    
+    <article class="slds-card" style="opacity: 1;">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate ">
+                <div class="slds-media__body slds-align_absolute-center">
+                    <h2 class="slds-card__header-title slds-align_absolute-center">
+                        <span><lightning:icon iconName="standard:account" alternativeText="Account Receivable" title="Kerridge links" /><b class="slds-m-left_small">Kerridge links</b></span>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-p-top_medium">
+            
+            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                <li>
+                    <strong >
+                        <a href= "https://navigator.louisville-tile.com/dancik/mynav/main/index.jsp" target="_blank"> Navigator</a>  
+                    </strong>  
+                </li>
+            </div>
+            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                <li>   
+                    <strong >
+                        <a href= "https://decor24.louisville-tile.com/danciko/d24/" target="_blank"> Décor 24</a>  
+                    </strong>  
+                </li>
+            </div>
+            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                <li>   
+                    <strong >
+                        <a href= "https://navigator.louisville-tile.com/danciko/sales/app-sales/index.jsp" target="_blank"> Sales Portal</a>  
+                    </strong>  
+                </li>
+            </div>
+            
+        </div>
+    </article>
+</aura:component>

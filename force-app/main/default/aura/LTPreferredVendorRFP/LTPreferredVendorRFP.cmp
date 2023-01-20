@@ -1,0 +1,1882 @@
+<aura:component controller="LT_PreferredVendorRFPController" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+     <!-- Show Term And Conditions Modal on page load -->
+    <aura:attribute name="termAndConditionmodalOpen" type="Boolean" default="true" />
+    
+    <aura:attribute name="sectionOpen" type="Boolean" default="false" />   
+    <aura:attribute name="recordId" type="string" default="" />
+    <aura:attribute name="filetype" type="List" default="['.mp4']"/>
+    <aura:attribute name ="agreementObject" type = "Object" default=""/>
+    <aura:attribute name="currentSection" type="string" default="" />
+    <aura:attribute name="encryptedToken" type="String"/>
+    <aura:attribute name="allSectionData" type="object"/>
+    <aura:attribute name="allFileData" type="object"/>
+    
+    <!--For Showing Or Hide Modal-->
+    <aura:attribute name="modalOpen" type="Boolean" default="false"/>
+    
+    <aura:attribute name="columns" type="List"/>
+    
+    <aura:attribute name="discontinuedSeries" type="List" default="[{'label': 'Notice given to the distributor', 'value': 'Notice given to the distributor'},
+                                                                   {'label': 'Opportunity to buy-up remaining inventories of high turn items', 'value': 'Opportunity to buy-up remaining inventories of high turn items'},
+                                                                   {'label': 'Buy back or trade out agreement for discontinued product', 'value': 'Buy back or trade out agreement for discontinued product'},
+                                                                   {'label': 'Other', 'value': 'Other'}]"/>
+    
+    <aura:attribute name="priceIncreases" type="List" default="[{'label': 'Notice given to the distributor', 'value': 'Notice given to the distributor'},
+                                                               {'label': 'Opportunity to purchase high turn items ', 'value': 'Opportunity to purchase high turn items '},
+                                                               {'label': 'Other', 'value': 'Other'}]"/>
+    
+    <!--Start Accordion attributes-->
+    <aura:attribute name="activeSections" type="List" default="['firmNameAddress','affiliates','firmHistory',
+                                                               'contactInformation','dedicatedServiceDepartment',
+                                                               'affiliateCompanies','manufacturingDetails',
+                                                               'partnersInsurance','favoriteAccounts','insurance','WareHouse']" />     
+    
+    <aura:attribute name="activeSectionsB" type="List" default="['productGuarantees','shippingInformation',
+                                                                'nationalAccount','privatelabel',
+                                                                'financialConsiderations','VendorRebateProgram']" />
+    <aura:attribute name="activeSectionsC" type="List" default="['strategicPlanning','marketingSupport',
+                                                                'agreement','promotionSales','preferredPartner',
+                                                                'productViability','companyPolicy']" /> 
+    <aura:attribute name="activeSectionsD" type="List" default="['realEstate','marketingBudget',
+                                                                'digitalLibrary','marketingEfforts',
+                                                                'experienceProcess','merchandisingSupport','References']" />
+    
+    <aura:attribute name="activeSectionsE" type="List" default="['uptimePerformance','visualizationCapabilities',
+                                                                'differentiateTechnology','onlineCapabilities']" />
+    
+    <aura:attribute name="activeSectionsF" type="List" default="['competitiveAdvantage']" />
+    
+    <aura:attribute name="referencesSection" type="List" default="['Reference1','Reference2','Reference3']" />
+    
+    <aura:attribute name="accordionName" type="Integer" default = "1"/> 
+    <aura:attribute name="accountAccordionName" type="Integer" default = "1"/> 
+    <aura:attribute name="contactAccordionName" type="Integer" default = "1"/>
+    <!--End Accordion attributes-->
+    
+    <!--Start Affaliates attributes-->
+    <aura:attribute name="isAffiliates" type="string"  />
+    <aura:attribute name="affiliateDefault" type="object" default="{}" />
+    <aura:attribute name="lstAffiliates" type="list"  default="[{}]"/>
+    <aura:attribute name="lstAccounts" type="list"  default="[{}]"/>
+    <aura:attribute name="deletedAffiliates" type="list"  default="[]"/>
+    <aura:attribute name="affiliatesDefault" type="object"  default="{}"/>
+    <!--End Affaliates attributes-->
+    
+    <!--Start Contact Information attributes-->
+    <aura:attribute name="contactId" type="string" default="" />   
+    <aura:attribute name="isContact" type="string"/>
+    <aura:attribute name ="contacts" type = "Object" default=""/>
+    <aura:attribute name="isWarehouse" type="string"/>
+    <aura:attribute name="deletedKeyContact" type="list"  default="[]"/>
+    <aura:attribute name="lstContacts" type="list"  default="[]"/>
+    <aura:attribute name="contactDefault" type="object"  default="{}"/>    
+    <!--End  Contact Information attributes-->
+    
+    <aura:attribute name="isBalanceSheet" type="string"/>
+    <aura:attribute name="deletedcurrentTopAccount" type="list"  default="[]"/>
+    <aura:attribute name="isOutSource" type="string"/>
+    <aura:attribute name="accountDefault" type="object"  default="{}"/>
+    
+    <!--List of contentVersionIds -->
+    <aura:attribute name="lstcontentVersionId" type="list"  default="[]"/>
+    
+    <!--List of States -->
+    <aura:attribute name="lstState" type="list"  default="[]"/>
+    
+    <!--List of Department Servicing LT -->
+    <aura:attribute name="lstDepartmentService" type="list"  default="[]"/>
+    
+    <!--List of Department Servicing LT -->
+    <aura:attribute name="lstAffiliatesRec" type="list"  default="[]"/>
+    
+    <!--List of Account types -->
+    <aura:attribute name="lstAccountType" type="list"  default="[]"/>
+    
+    <!--  Required for All fields -->
+    <aura:attribute name = "requiredForAll" type = "boolean" default = "true"/>
+    <aura:attribute name="isValid" type="Boolean" default="true" />
+    
+    <aura:attribute name="deleteIndex" type="List" />
+    
+    <aura:attribute name="sectionAWarehouse" type="List"/>
+    <aura:attribute name="sectionAManufacturingDetails" type="List"/>
+    <aura:attribute name="sectionBDistributor" type="List"/>
+    <aura:attribute name="sectionBManufacturer" type="List" />
+    <aura:attribute name="sectionBBalanceSheet" type="List" />
+    <aura:attribute name="sectionBAgreement" type="List" />
+    <aura:attribute name="sectionCStrategicPlanning" type="List" />
+    
+    <!--Start Next/Previous Button attributes-->
+    <aura:attribute name="previousPageName" type="string"/>
+    <aura:attribute name="nextPageName" type="string" default="sectionA"/>
+    
+    <!--End Next/Previous Button attributes-->
+    <aura:attribute name="picklistOptions" type="list"  default="['Yes','No']"/>
+    
+    <!-- Spinner -->
+    <aura:attribute name ="Spinner" type= "boolean" default = "false"/>
+    
+    <aura:attribute name="deleteFileRecordId" type="string" />
+    
+    <!-- Start Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <!-- End Handlers -->
+    
+    <!-- delete sample item EVENT handler-->
+    <aura:handler name="deleteRecordEvent" event="c:deleteRecords" action="{!c.deleteRecordByIndex}"/>
+    
+    <aura:attribute name="masterSectionAWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionAWrapper"/>
+    <aura:attribute name="masterSectionBWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionBWrapper"/>
+    <aura:attribute name="masterSectionCWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionCWrapper"/>
+    <aura:attribute name="masterSectionDWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionDWrapper"/>
+    <aura:attribute name="masterSectionEWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionEWrapper"/>
+    <aura:attribute name="masterSectionFWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionFWrapper"/>
+    
+    <aura:html tag="style">
+        html {
+        background: #f2f7f8;
+        padding-left:2%;
+        padding-right:2%;
+        }
+    </aura:html>
+    <aura:if isTrue="{!!v.masterSectionAWrapper.isSubmit}">
+        <aura:if isTrue="{!v.Spinner == true}">
+            <lightning:spinner alternativeText="Loading" size="medium" />
+        </aura:if>
+        <!-- Heading of Form -->
+        <div aura:id="container" class="{!v.nextPageName=='Complete'?'slds-card container completeBg':'slds-card container'}" style = "overflow-x:hidden; width:100% ; max-width:100%;" >
+            <!--loading spinner start... style=Brand Medium (blue dots)   -->
+            
+            <!--  Loading spinner end--> 
+            <!-- Louisville Tile Logo -->
+            <c:LouisvilleTileLogoForVendor headerName ="Ancillary Vendor RFP Form" />
+            
+            <!--Modal Box For Terms And Conditions Of Sales Start-->
+            <aura:if isTrue="{!v.termAndConditionmodalOpen}">
+                <article class="slds-card">
+                    <div class="slds-card__header slds-grid">
+                        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                            <div class="slds-media__body slds-align_absolute-center">
+                                
+                                <div class="slds-grid slds-grid_vertical">
+                                    <h2 class="slds-card__header-title">
+                                        <div class="slds-col slds-align_absolute-center slds-text-heading_medium">
+                                            <span><u> Proposal Guidelines and Instructions</u></span>
+                                        </div>
+                                    </h2>
+                                    <div class="slds-col slds-align_absolute-center slds-text-heading_medium">
+                                        <span>Louisville Tile Distributors</span>
+                                    </div>
+                                    <div class="slds-col slds-align_absolute-center slds-text-heading_medium">
+                                        <span>Request for Proposal Ancillary Partner Vendor</span>
+                                    </div>
+                                    <div class="slds-col slds-align_absolute-center slds-text-heading_medium	">
+                                        <span> March 1, 2022</span>
+                                    </div>                                
+                                </div>
+                            </div>
+                        </header>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner slds-text-heading_small">
+                        
+                        <br/>
+                        <p>Louisville Tile Distributors, Inc. (“LT”) is a fourth generation, family-owned company that has successfully operated for over 60 years as a respected leader in the tile industry.  In addition to its own branch and showrooms that sell directly to residential and commercial accounts it has a strong dealer network and markets directly to key accounts through a “National” Accounts program. The Company continues to grow both organically and through acquisitions with sales expected to eclipse $100 million in 2022. </p>
+                        <br/>
+                        <p>Louisville Tile currently has 12 showroom branches in 5 states (KY, OH, IN, MI, and TN) and expects to significantly grow that footprint over the next 5 years.  We have a central warehouse (“CW”) in Louisville, Kentucky and allow our vendors to ship supplies to either the CW or directly to our branch depending on the instructions from our logistics team. </p>
+                        <br/>
+                        <p>During the past 12 months LT has made significant investments in people, technology, facilities and other resources that will serve as the foundation of a significant strategic growth plan that has been put in place. It is expected that the company will experience a 15% CAGR over the next 5 years. LT expects to enter into distribution agreements with all Ancillary Vendors awarded this status. These agreements will outline the details of our relationship including but not limited to LT minimum inventory carry and target annual purchase levels as well as Ancillary Partner marketing, merchandising, territorial protection and service level criteria.  </p>
+                        <br/>
+                        <p>Our mission is to;</p>
+                        <br/>
+                        <p><i>“Provide a world class and innovative solution-oriented customer experience by retaining the most knowledgeable employee team with the highest integrity who create value for our customers and profitability for the company” </i></p>
+                        <br/>
+                        <p>LT is differentiating itself to its clientele and marketplace by providing a manager of managers value proposition and embracing its core competencies in product selection, design expertise, and quality assurance. To fulfill this mission and value proposition we are seeking a select group of 7-9 core ancillary partners that meet our standards and will encompass our stock item tile sales. We also will identify through this process key suppliers for ancillary products and tools that must meet the same quality and performance criteria.</p>
+                        <br/>
+                        
+                        <p><b><u>Minimum Criteria for Ancillary Partner Status:</u></b></p>
+                        <br/>
+                        <p><ul class="slds-list_dotted">
+                            <li>Partner must have been in business for at least 5 years and have a strong balance sheet with sufficient unencumbered credit facilities to insure consistent supply</li>
+                            <li>Partner must be able to provide 100% coverage to all LT Branches in all SKU’s selected by LT for distribution</li>
+                            <li>Partner must have field support team including technical training</li>
+                            <!--li>Partner must have vibrant sample program</li-->
+                            <li>Partner must participate in EDI and offer fully integrated purchasing solution </li>
+                            <li>Partner must provide uniform pricing for all SKU’s selected by LT</li>
+                            <li>Partner must be able to provide minimum 45 day terms or 2/10 net 30</li>
+                            <li>Partner must enter into distribution agreement upon award </li>
+                            <li>Partner must enter into mutual NDA and Confidentiality Agreement attached to this RFP</li>
+                            <li>Partner must answer the attached RFP and make an in person presentation of capabilities and strategic plan to achieve mutual targets </li>
+                            </ul>
+                        </p>
+                        <br/>
+                        <p>Further, LT is seeking Partners that can provide a broad range of product and design choices. It reserves the right to choose multiple Partners or none.</p>
+                        <br/>
+                        <p>Compliance with LT distribution agreement, which will be provided at the in person presentation will be critical for any successful candidate(s). </p>
+                        <br/>
+                        <p><b>Deadline for submission is 5 business days prior to presentation unless otherwise excepted by LT</b></p>
+                        <br/>
+                        <p><ol class="slds-list_ordered">
+                            <li>
+                                Only organizations that meet the Minimum Criteria should apply.  Respondents that do not meet the criteria will not be considered as a Ancillary Partner but may be considered as a supplier.
+                            </li>
+                            <li>
+                                Respondents must respond to each item in Sections A through F.  Proposals should be prepared simply and economically, avoiding the use of elaborate promotional materials beyond those necessary to provide a complete, accurate and reliable presentation.  All responses should be brief and concise. The format of response must follow the format/order of the RFP precisely. The response should correlate 100% to the numbering and outline of the RFP.   
+                            </li>
+                            <li>
+                                LT reserves the right, in its sole discretion, to reject any and all responses and to waive any irregularity or informality in any response. LT shall not be liable for any expenses and/or losses incurred by respondents.
+                            </li>
+                            <li>
+                                No proposals or promotional materials will be returned. 
+                            </li>
+                            <li>
+                                All questions should be emailed to Amanda Helen at the email below.
+                            </li>
+                            </ol></p>
+                        <br/>
+                        <p>
+                            To be considered please submit an electronic copy 5 business days prior to your presentation (unless excepted by LT) to: 
+                        </p>
+                        <p>Amanda Helen, Purchasing Manager</p>
+                        <P><u>ahelen@louisville-tile.com</u></P>
+                        
+                        <br/>
+                        <lightning:input class="slds-m-horizontal_small"
+                                         aura:id="validField"
+                                         type="checkbox"
+                                         required="true"
+                                         label="I have read and understood all terms and conditions."
+                                         onchange="{!c.openModalForTermAndConditions}"/>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="brand" name='Next' label='Next' onclick='{!c.hideModal}'/>
+                    </footer>
+                </article>
+                
+            </aura:if>
+            <aura:if isTrue="{!v.sectionOpen}">
+                <!--Start Section A: Profile of Manager and Firm-->
+                <aura:if isTrue="{!v.nextPageName=='sectionA'}">
+                    
+                    <div class="slds-m-horizontal_large slds-m-vertical_small slds-text-heading_medium">
+                        Section A: Profile of Manager and Firm
+                    </div>
+                    <!-- Start Accordion-->
+                    <lightning:accordion allowMultipleSectionsOpen="true"                                
+                                         activeSectionName="{! v.activeSections }">
+                        <lightning:accordionSection name="firmNameAddress" label="Firm Name &#38; Address">
+                            <!-- Firm Name -->
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input aura:id="pvDetails" 
+                                                     class="checkValid"
+                                                     type="text"
+                                                     id="firmName"
+                                                     label="Firm Name"
+                                                     value="{!v.masterSectionAWrapper.firm.firmName}"
+                                                     required="{!v.requiredForAll == true}"/>   	
+                                </div>
+                            </div>
+                            
+                            <!-- Firm Address -->
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12">
+                                    <div class="slds-text-heading_small slds-text-heading_small">
+                                        <label Style = "color:red;"> *</label>Address 
+                                    </div>
+                                    <div class="slds-grid slds-gutters slds-wrap">
+                                        <!-- Address and street -->
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                            <lightning:input aura:id = "pvDetails"
+                                                             type ="text" 
+                                                             label="Street Address with apt/suite #"
+                                                             value="{!v.masterSectionAWrapper.firm.streetAddress}"
+                                                             required="{!v.requiredForAll == true}"/>	
+                                        </div>
+                                        
+                                        <!-- Attention to: -->
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                            <lightning:input type ="text" 
+                                                             label="Attention to:"
+                                                             value = "{!v.masterSectionAWrapper.firm.attentionTo}"/>	
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="slds-grid slds-gutters slds-m-bottom_xx-small">
+                                        <!-- City Name -->
+                                        <div id="city" class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+                                            <lightning:input aura:id = "pvDetails"
+                                                             type ="text" 
+                                                             label="City" 
+                                                             class="city"
+                                                             required="{!v.requiredForAll == true}"
+                                                             value = "{!v.masterSectionAWrapper.firm.city}"/>	
+                                        </div>
+                                        <!-- state Name -->
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+                                            <lightning:select aura:id = "pvDetails" name="select1" value="{!v.masterSectionAWrapper.firm.state}" label="State" 
+                                                              required="{!v.requiredForAll == true}">
+                                                <option value="">Choose State...</option>
+                                                <aura:iteration items="{!v.lstState}" var="option">                                                
+                                                    <option value="{!option}" 
+                                                            selected="{!v.masterSectionAWrapper.firm.state == option}">{!option}</option>
+                                                </aura:iteration>
+                                            </lightning:select> 
+                                        </div>
+                                        
+                                        <!-- Postal/ZIP Code -->
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+                                            <lightning:input aura:id = "pvDetails"
+                                                             type ="decimal"
+                                                             maxlength = "5"
+                                                             minlength = "5" 
+                                                             label="Postal/ZIP Code"
+                                                             required="{!v.requiredForAll == true}"
+                                                             value = "{!v.masterSectionAWrapper.firm.postalCode}"/>	
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!-- Affiliates-->
+                        <lightning:accordionSection name="affiliates" label="Affiliates (if any)">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <!-- Affiliates Name -->
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id = "pvDetails" name="Affiliate" value="{!v.masterSectionAWrapper.anyAffilate}"
+                                                      label="Do you have any Affiliates?" required="{!v.requiredForAll == true}" >
+                                        <option value="">choose one...</option>
+                                        <aura:iteration items="{!v.picklistOptions}" var="option">
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionAWrapper.anyAffilate == option}">{!option}</option>
+                                        </aura:iteration>                                    
+                                    </lightning:select>
+                                </div>
+                                <aura:if isTrue="{!v.masterSectionAWrapper.anyAffilate == 'Yes'}">
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                        <div class="slds-float_right">
+                                            <!-- Add More Sample Button -->
+                                            <lightning:button label="Add More" 
+                                                              iconName="utility:add" 
+                                                              iconPosition="right" 
+                                                              class="slds-m-vertical_small slds-m-horizontal_small" 
+                                                              variant="brand" 
+                                                              onclick ="{!c.addMoreAffiliates}"/>
+                                        </div>
+                                    </div>
+                                </aura:if>
+                            </div>
+                            
+                            <!-- Affiliates Address -->
+                            <aura:if isTrue="{!v.masterSectionAWrapper.anyAffilate == 'Yes'}">
+                                <lightning:accordion aura:id="accordion" activeSectionName="{!v.accordionName}">
+                                    <aura:iteration  items="{!v.masterSectionAWrapper.affiliates}" var="Affiliates" indexVar="index">
+                                        <aura:if isTrue="{!Affiliates.isDelete != true}">
+                                            <span id ="{!'errorSection'+Affiliates.isError}">                                    
+                                                <lightning:accordionSection name="{!(index+1)}" label="{!'Affiliate ' + (index+1)}">
+                                                    <aura:set attribute="body">
+                                                        <c:AffiliatesRecord2 aura:id="affiliate" Affiliates="{!Affiliates}"                                                                         
+                                                                            deleteIndex ="{!index}"
+                                                                            lstState="{!v.lstState}"
+                                                                            isDeleteBtnDisabled="{!equals(v.masterSectionAWrapper.affiliates.length, 1)}"/>
+                                                    </aura:set>
+                                                </lightning:accordionSection>
+                                            </span>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </lightning:accordion>
+                            </aura:if>
+                        </lightning:accordionSection>
+                        
+                        <!---Firm History-->
+                        <lightning:accordionSection name="firmHistory" label="Firm History">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id = "pvDetails" 
+                                                      name="select1" 
+                                                      value="{!v.masterSectionAWrapper.history.stateOfIncorporation}" 
+                                                      label="State of incorporation (or country)" 
+                                                      required="{!v.requiredForAll == true}">
+                                        <option value="">Choose State...</option>
+                                        <aura:iteration items="{!v.lstState}" var="option">                                                
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionAWrapper.history.stateOfIncorporation == option}">{!option}</option>
+                                        </aura:iteration>                                    
+                                    </lightning:select>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input aura:id = "pvDetails" 
+                                                     type="text"
+                                                     label="Tax Id"
+                                                     minlength="9"
+                                                     maxlength="9"
+                                                     value = "{!v.masterSectionAWrapper.history.taxId}"
+                                                     required="{!v.requiredForAll == true}"/>
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id = "pvDetails"
+                                                      name="select1" 
+                                                      label="Any customer or distributor legal suits currently pending or settled in past 5 years." 
+                                                      value="{!v.masterSectionAWrapper.history.legalSuitePending}"
+                                                      required="{!v.requiredForAll == true}">
+                                        <option value="">choose one...</option>
+                                        <aura:iteration items="{!v.picklistOptions}" var="option" >
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionAWrapper.history.legalSuitePending == option}">{!option}</option>
+                                        </aura:iteration>
+                                    </lightning:select>  	
+                                </div>  
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id = "pvDetails"
+                                                      name="select1" 
+                                                      label="Any government legal action currently pending or settled in past 5 years."
+                                                      value="{!v.masterSectionAWrapper.history.governmentLegalAction}"
+                                                      required="{!v.requiredForAll == true}">
+                                        <option value="">choose one...</option>
+                                        <aura:iteration items="{!v.picklistOptions}" var="option">
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionAWrapper.history.governmentLegalAction == option}">{!option}</option>
+                                        </aura:iteration>   
+                                    </lightning:select>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Contact Information-->
+                        <lightning:accordionSection name="contactInformation" label="Key Contact Professional(s)">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12">
+                                    <div class="slds-card   slds-p-vertical_xx-small">  
+                                        <lightning:accordion aura:id="accordion" activeSectionName="{!v.contactAccordionName}">
+                                            <aura:iteration items="{!v.masterSectionAWrapper.keyContacts}" var="contact" indexVar="index">
+                                                <aura:if isTrue="{!contact.isDelete != true}">
+                                                    <span id ="{!'errorSection'+contact.isError}">
+                                                        <lightning:accordionSection name="{!(index+1)}" label="{!'Key Contacts '  + (index+1)}">
+                                                            <aura:set attribute="body">
+                                                                <c:KeyContactInformation aura:id="keyContactChild"
+                                                                                         contact="{!contact}" 
+                                                                                         deleteIndex ="{!index}"                                                                                    
+                                                                                         lstDepartmentService="{!v.lstDepartmentService}"
+                                                                                         isDeleteBtnDisabled="{!equals(v.masterSectionAWrapper.keyContacts.length, 1)}"/>
+                                                                
+                                                            </aura:set>
+                                                        </lightning:accordionSection>
+                                                    </span>
+                                                </aura:if>
+                                            </aura:iteration>
+                                        </lightning:accordion>   
+                                        <div class="slds-float_right">
+                                            <lightning:button label="Add More" 
+                                                              iconName="utility:add" 
+                                                              iconPosition="right" 
+                                                              class="slds-m-vertical_small slds-m-horizontal_small" 
+                                                              variant="brand" 
+                                                              onclick ="{!c.addMoreContact}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Ware House-->
+                        <lightning:accordionSection name="WareHouse" label="Warehouse">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12" >                               
+                                    <div class="slds-grid slds-gutters slds-wrap ">
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12" >
+                                            <lightning:select aura:id = "pvDetails" 
+                                                              name="select1" 
+                                                              value="{!v.masterSectionAWrapper.warehouse.isLogisticAndWarehousePlan}"
+                                                              label="Do you have a detailed logistics and warehouse plan for LT and if no are you prepared to craft one if awarded Ancillary Partner status?"
+                                                              required="{!v.requiredForAll == true}">
+                                                <option value="">choose one...</option>
+                                                <aura:iteration items="{!v.picklistOptions}" var="option">
+                                                    <option value="{!option}" 
+                                                            selected="{!v.masterSectionAWrapper.warehouse.isLogisticAndWarehousePlan == option}">{!option}</option>
+                                                </aura:iteration>                                         
+                                            </lightning:select> 
+                                        </div>
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small" style="{!v.masterSectionAWrapper.warehouse.isLogisticAndWarehousePlan=='Yes' ?'display: flex;':''}">
+                                            <aura:if isTrue="{!v.masterSectionAWrapper.warehouse.isLogisticAndWarehousePlan == 'Yes'}">
+                                                <lightning:fileUpload style="width: 400px;"
+                                                                      label="Upload File"
+                                                                      name="Section:A-Warehouse"
+                                                                      multiple="true"
+                                                                      onuploadfinished="{!c.handleUploadFinished}"/>
+                                                <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionAWarehouse}"/>
+                                            </aura:if>
+                                            <aura:if isTrue="{!v.masterSectionAWrapper.warehouse.isLogisticAndWarehousePlan == 'No'}">
+                                                <lightning:textarea aura:id = "pvDetails" name="input3" class="setBottomLabelMargin"
+                                                                    label="Please specify the reason." 
+                                                                    value="{!v.masterSectionAWrapper.warehouse.inputRemark}"
+                                                                    required="{!v.requiredForAll == true}"
+                                                                    placeholder="type here..."/>
+                                            </aura:if>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Dedicated Service Department-->
+                        <lightning:accordionSection name="dedicatedServiceDepartment" label="Dedicated Service Department">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id = "pvDetails" 
+                                                      name="select1" 
+                                                      value = "{!v.masterSectionAWrapper.serviceDepartment.centralTicketingSystem}"
+                                                      label="Is there a central ticket system or process for inquiry of issues?"
+                                                      required="{!v.requiredForAll == true}">
+                                        <option value="">choose one...</option>
+                                        <aura:iteration items="{!v.picklistOptions}" var="option">
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionAWrapper.serviceDepartment.centralTicketingSystem == option}">{!option}</option>
+                                        </aura:iteration>                                       
+                                    </lightning:select>  
+                                </div> 
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input aura:id = "pvDetails" 
+                                                     type="Text"
+                                                     label="How are delivery delays communicated to LT?" 
+                                                     value = "{!v.masterSectionAWrapper.serviceDepartment.deliveryCommunication}"
+                                                     required="{!v.requiredForAll == true}"/> 
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id = "pvDetails" name="input3"
+                                                        label="What is your corporate philosophy around service of accounts?" 
+                                                        value = "{!v.masterSectionAWrapper.serviceDepartment.corporatePhilosophy}"
+                                                        placeholder="type here..."
+                                                        required="{!v.requiredForAll == true}"/>   	
+                                    
+                                </div> 
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Affiliate companies dealing with dealers-->
+                        <lightning:accordionSection name="affiliateCompanies" label="Affiliate companies dealing with dealers">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-p-horizontal_small slds-p-top_xx-small">
+                                <lightning:select aura:id = "pvDetails" 
+                                                  name="select1" 
+                                                  value = "{!v.masterSectionAWrapper.affiliateCompanies.directlySellDealer}"
+                                                  label="Do you or any of your affiliated companies sell directly to dealers or retail?"
+                                                  required="{!v.requiredForAll == true}">
+                                    <option value="">choose one...</option>
+                                    <aura:iteration items="{!v.picklistOptions}" var="option">
+                                        <option value="{!option}" 
+                                                selected="{!v.masterSectionAWrapper.affiliateCompanies.directlySellDealer == option}">{!option}</option>
+                                    </aura:iteration>   
+                                </lightning:select>  	
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!-- Manufacturing Details -->
+                        <lightning:accordionSection name="manufacturingDetails" label="Manufacturing Details">                    
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input aura:id = "pvDetails"
+                                                     type="number"
+                                                     label="What is your manufacturing capacity per day for any single SKU?" 
+                                                     value = "{!v.masterSectionAWrapper.manufacturingDetail.manufacturerCapacity}"
+                                                     required="{!v.requiredForAll == true}"/>   	
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id = "pvDetails" name="select1"
+                                                      value = "{!v.masterSectionAWrapper.manufacturingDetail.thirdPartyRevenue}"
+                                                      label="Do you outsource any of your product to third party manufacturers?"
+                                                      required="{!v.requiredForAll == true}">
+                                        <option value="">choose one...</option>
+                                        <aura:iteration items="{!v.picklistOptions}" var="option">
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionAWrapper.manufacturingDetail.thirdPartyRevenue == option}">{!option}</option>
+                                        </aura:iteration>   
+                                    </lightning:select>
+                                    <aura:if isTrue="{!v.masterSectionAWrapper.manufacturingDetail.thirdPartyRevenue == 'Yes'}">
+                                        <lightning:input aura:id = "pvDetails"
+                                                         type ="decimal" 
+                                                         label="What percentage of total revenue do they represent?"
+                                                         onchange="{!c.enterNumberOnly}"
+                                                         value="{!v.masterSectionAWrapper.manufacturingDetail.percentTotalRevenue}"
+                                                         required="{!v.requiredForAll == true}"
+                                                         formatter="percent"/>
+                                    </aura:if>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small ">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input type="checkbox"                                                
+                                                     checked="{!v.masterSectionAWrapper.manufacturingDetail.manufacturingVideo}"
+                                                     label="Please provide a short video of your manufacturing facility."/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small" style="display: flex;">
+                                    <lightning:fileUpload style="width: 400px;"
+                                                          label="Upload Video"
+                                                          name="Section:A-Manufacturing Detail"
+                                                          multiple="true"
+                                                          fileFieldName="Guest_Record_fileupload__c"
+                                                          fileFieldValue="{!v.encryptedToken}"
+                                                          onuploadfinished="{!c.handleUploadFinished}"/>
+                                    <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionAManufacturingDetails}"/>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!-- Experience with Partners & Insurance -->
+                        <lightning:accordionSection name="partnersInsurance" label="Experience with Partners &#38; Insurance">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetails" name="input3"
+                                                        value="{!v.masterSectionAWrapper.experiencePartner.distribution}"
+                                                        label="Does your company have experience with other multi-state and multi-branch distribution partners? " 
+                                                        placeholder="type here..."
+                                                        required="{!v.requiredForAll == true}"/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!-- Favorite Accounts -->
+                        <lightning:accordionSection name="favoriteAccounts" label="Describe your current top seven (7) accounts, including type, states distributed in, length of relationship, purchase volume for each account, note if there are any most favored nation clauses or exclusivity issues.">
+                            <div class="slds-card slds-m-horizontal_small slds-p-vertical_xx-small">
+                                <lightning:accordion aura:id="accordion" activeSectionName="{!v.accountAccordionName}">                                
+                                    <aura:iteration  items="{!v.masterSectionAWrapper.currentTopAccount}" var="account" indexVar="index">
+                                        <aura:if isTrue="{!account.isDelete != true}">
+                                            <span id ="{!'errorSection'+account.isError}">
+                                                <lightning:accordionSection name="{!(index+1)}" label="{!'Current Account '  + (index+1)}">
+                                                    <aura:set attribute="body">
+                                                        <c:FavoriteAccounts aura:id='currentAccounts' account="{!account}"                                                                       
+                                                                            deleteIndex ="{!index}" 
+                                                                            lstState="{!v.lstState}"
+                                                                            lstAccountType="{!v.lstAccountType}"
+                                                                            isDeleteBtnDisabled="{!equals(v.masterSectionAWrapper.currentTopAccount.length, 1)}"/>
+                                                    </aura:set>
+                                                </lightning:accordionSection>
+                                            </span>
+                                        </aura:if>
+                                    </aura:iteration>
+                                </lightning:accordion>
+                                <div class="slds-float_right">
+                                    <!-- Add More Sample Button -->
+                                    <lightning:button label="Add More" 
+                                                      iconName="utility:add" 
+                                                      iconPosition="right" 
+                                                      class="slds-m-vertical_small slds-m-horizontal_small" 
+                                                      variant="brand" 
+                                                      disabled="{!v.masterSectionAWrapper.currentTopAccount.length==7 }"
+                                                      onclick ="{!c.addAccount}"/>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!--Insurance -->
+                        <div style="clear: both;"></div>
+                        <lightning:accordionSection name="insurance" label="Insurance">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetails" name="input4"
+                                                        value="{!v.masterSectionAWrapper.insurance.insuranceCarried}"
+                                                        label="What level of E and O or professional liability insurance do you carry?" 
+                                                        placeholder="type here..."
+                                                        required="{!v.requiredForAll == true}"/>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                    </lightning:accordion>
+                    <div class="slds-col slds-size_12-of-12 alignright slds-p-around_small">
+                        <span>
+                            <!--<span class="{!v.isValid?'slds-hide':'slds-text-color_destructive'}">* Please enter all required fields.</span>-->
+                            <lightning:button label="Save as Draft" 
+                                              iconName="utility:record_update" 
+                                              iconPosition="right" 
+                                              name="sectionA"
+                                              onclick = "{!c.saveAsDraft}"/>    
+                            &nbsp;
+                            
+                            <lightning:button label="Next" 
+                                              name="sectionA"                                          
+                                              iconPosition="right" 
+                                              variant="brand" 
+                                              onclick = "{!c.nextSection}"/>                    
+                        </span>
+                    </div>                
+                    <!-- End Accordion-->
+                </aura:if>
+                <!--End Section A: Profile of Manager and Firm-->
+                
+                
+                <!-- Start Section B: Financial and Purchasing Requirements-->
+                <aura:if isTrue="{!v.nextPageName=='sectionB'}">
+                    
+                    <div class="slds-m-horizontal_large slds-m-vertical_small slds-text-heading_medium">
+                        Section B: Financial and Purchasing Requirements
+                    </div>
+                    <!-- Start Accordion-->
+                    <!--Product Guaranteed by Company -->
+                    <lightning:accordion allowMultipleSectionsOpen="true"                                
+                                         activeSectionName="{! v.activeSectionsB }">
+                        <lightning:accordionSection name="productGuarantees" label="Product Guarantees">
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">                            
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input aura:id = "pvDetailsB"
+                                                     type ="Number" 
+                                                     label="Time to report defects for eligibility of guarantee (In Days)."
+                                                     value="{!v.masterSectionBWrapper.productGuaranteedCompany.timeReportDefect}"
+                                                     required="{!v.requiredForAll == true}"/>   	
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.productGuaranteedCompany.isQualityShading}"                                                 
+                                                     label="Quality including product performance and other defects."/>   	
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.productGuaranteedCompany.isDelivery}"                                                 
+                                                     label="Delivery"/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-clearfix slds-m-horizontal_small slds-m-vertical_xx-small slds-text-heading_small">
+                                <label Style = "color:red;"> *</label> Detail SOP for remediation by 
+                            </div>
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input aura:id="pvDetailsB"
+                                                     type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.productGuaranteedCompany.isSOPDistributor}"                                                 
+                                                     label="Distributor"/>   	
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small" style="display: flex;">
+                                    <lightning:fileUpload style="width: 400px;"
+                                                          name="Section:B-Distributor"
+                                                          multiple="true"                                                      
+                                                          onuploadfinished="{!c.handleUploadFinished}"/>
+                                    <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionBDistributor}"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.productGuaranteedCompany.isSOPManufacturer}"                                                
+                                                     label="Manufacturer"/>   	
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small" style="display: flex;">
+                                    <lightning:fileUpload style="width: 400px;"
+                                                          name="Section:B-Manufacturer"
+                                                          multiple="true" 
+                                                          onuploadfinished="{!c.handleUploadFinished}"/>
+                                    <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionBManufacturer}"/>
+                                </div>
+                            </div>                        
+                        </lightning:accordionSection>
+                        
+                        <!-- Shipping information-->
+                        <lightning:accordionSection name="shippingInformation" label="Shipping information">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB" class="setBottomLabelMargin"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.shippingInformation.shipmentType}"
+                                                        label="Are shipments by job or mixed pallets?"
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB" 
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.shippingInformation.freightCalculation}"
+                                                        label="Freight calculation– Please provide overview, formulas for freight, carriers, options to pay 
+                                                               freight directly, other critical factors." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.shippingInformation.freightSavingProgram}"
+                                                        label="Describe your freight saving program available to LT." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.shippingInformation.packagingHandlingFee}"
+                                                        label="Describe your packaging and handling fees and parameters."
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">                            
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.shippingInformation.fuelSurcharge}"
+                                                        label="Describe your fuel surcharge program and how charges are calculated." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.shippingInformation.additionalFees}"
+                                                        label="Describe any potential additional fees to LT not addressed above."
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">                            
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">                                
+                                    <lightning:input aura:id = "pvDetailsB"
+                                                     type ="decimal" 
+                                                     placeholder="Breakdown % by SKU's, # of units, etc"
+                                                     label="Ship on time standard (what % of orders ship as promised)."
+                                                     onchange="{!c.enterNumberOnly}"                                                 
+                                                     value="{!v.masterSectionBWrapper.shippingInformation.shipTimeStandard}"
+                                                     required="{!v.requiredForAll == true}"
+                                                     formatter="percent"/>                                
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <!-- <label lightning-input_input="" class="slds-form-element__label slds-no-flex" for="input-73">
+                                        <abbr lightning-input_input="" class="slds-required" title="required">*</abbr>
+                                        Ship on time actual (2020, 2021, YTD in %).
+                                    </label>
+                                    <input aura:id = "pvDetailsB"
+                                           type="text"
+                                           class="slds-input"
+                                           label="Ship on time actual (2020, 2021, YTD in %)."
+                                           onkeyup="{!c.enterNumberOnlyYear}"
+                                           value="{!v.masterSectionBWrapper.shippingInformation.ShipTimeActual}" 
+                                           required="{!v.requiredForAll == true}"/>
+                                    -->
+                                    <lightning:input aura:id = "pvDetailsB"
+                                                     type ="decimal" 
+                                                     label="Ship on time actual (2020, 2021, YTD in %)."
+                                                     onchange="{!c.enterNumberOnlyYear}"
+                                                     value="{!v.masterSectionBWrapper.shippingInformation.ShipTimeActual}" 
+                                                     required="{!v.requiredForAll == true}"/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id = "pvDetailsB"
+                                                        name="Shipping Information"
+                                                        value="{!v.masterSectionBWrapper.shippingInformation.backorderStandard}" 
+                                                        label="Backorder standard" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input aura:id = "pvDetailsB"
+                                                     type ="number" 
+                                                     label="Backorder actual (2020, 2021, YTD)."                                                     
+                                                     value="{!v.masterSectionBWrapper.shippingInformation.backorderActual}"
+                                                     required="{!v.requiredForAll == true}"/>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---National Account-->
+                        <lightning:accordionSection name="nationalAccount" label="National Account">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input class="setBottomLabelMargin"
+                                                     aura:id="pvDetailsB"
+                                                     type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.nationalAccount.isNationalAccountPricing}"                                                
+                                                     label="Willing to provide National Account Pricing based on aggregate proposed volume and discounts?"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.nationalAccount.processPolicy}"
+                                                        label="Describe process and policy."
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id="pvDetailsB"
+                                                      name="select1" 
+                                                      value="{!v.masterSectionBWrapper.nationalAccount.willingToHoldInventory}"
+                                                      label="Is potential Partner willing to hold inventory under a blanket PO and ship on demand? " 
+                                                      required="{!v.requiredForAll == true}">
+                                        <option value="">choose one...</option>
+                                        <aura:iteration items="{!v.picklistOptions}" var="option">
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionBWrapper.nationalAccount.willingToHoldInventoryt == option}">{!option}</option>
+                                        </aura:iteration>                                  
+                                    </lightning:select>	
+                                </div>    
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.nationalAccount.describeBuildSchedule}"
+                                                        label="Describe firm policy to meet build schedules of proposed national accounts and meet lead times." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                            
+                            <div class="slds-m-horizontal_small slds-m-vertical_xx-small slds-text-heading_small setTopLabelMargin">
+                                <label Style = "color:red;"> *</label> Willingness to produce custom product/s for specific national accounts(colors, packaging, minimum performance, etc).  
+                                
+                            </div>
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">                                  
+                                    <lightning:input aura:id = "pvDetailsB"
+                                                     type="number"
+                                                     label="What is the minimum production run per SKU?" 
+                                                     value="{!v.masterSectionBWrapper.nationalAccount.minimumProduction}"
+                                                     required="{!v.requiredForAll == true}"/>
+                                </div>    
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="Special Production"
+                                                        value="{!v.masterSectionBWrapper.nationalAccount.specialProduction}"
+                                                        label="Accountability to any second choice material from special production run?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Private Label -->
+                        <!--lightning:accordionSection name="privatelabel" label="Private Label ">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input class="setBottomLabelMargin"
+                                                     aura:id="pvDetailsB"
+                                                     type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.privateLabel.isSupportLTPrivateLabel}"
+                                                     label="Willingness to support LT private label program?"/>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.privateLabel.privateLabelRestrictions}"
+                                                        label="Describe any restrictions or items for attention in private label." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection-->
+                        
+                        <!---Financial Considerations -->
+                        <lightning:accordionSection name="financialConsiderations" label="Financial Considerations ">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsB"
+                                                        name="input3"
+                                                        value="{!v.masterSectionBWrapper.financialConsideration.termsProposed}"
+                                                        label="List terms proposed and confirmation of meeting minimum requirements listed above." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  
+                                </div>                             
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id="pvDetailsB" 
+                                                      name="isLastFYBalanceSheet"
+                                                      value="{!v.masterSectionBWrapper.financialConsideration.balanceSheet}" 
+                                                      label="Can you please share your last year balance sheet?"
+                                                      required="{!v.requiredForAll == true}">
+                                        <option value="">choose one...</option>
+                                        <aura:iteration items="{!v.picklistOptions}" var="option">
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionBWrapper.financialConsideration.balanceSheet == option}">{!option}</option>
+                                        </aura:iteration>                                   
+                                    </lightning:select>
+                                </div>
+                                <aura:if isTrue="{!v.masterSectionBWrapper.financialConsideration.balanceSheet == 'Yes'}">
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small" style="display: flex;">
+                                        <lightning:fileUpload style="width: 400px;"
+                                                              label="Balance sheet"
+                                                              name="Section:B-Balance Sheet"
+                                                              multiple="true"                                                           
+                                                              onuploadfinished="{!c.handleUploadFinished}"/>
+                                        
+                                        <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionBBalanceSheet}"/>
+                                    </div>
+                                </aura:if>
+                                <aura:if isTrue="{!v.masterSectionBWrapper.financialConsideration.balanceSheet == 'No'}">
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                        <lightning:textarea aura:id="pvDetailsB"
+                                                            name="input3"
+                                                            label="Please provide reason."
+                                                            value="{!v.masterSectionBWrapper.financialConsideration.balanceSheetReason}"
+                                                            required="{!v.requiredForAll == true}"
+                                                            placeholder="type here..."/>  
+                                    </div> 
+                                </aura:if>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.financialConsideration.isStandardPurchaseAgreement}"                                                 
+                                                     label="Please provide copy of standard purchasing agreement and current price list."/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small" style="display: flex;">
+                                    <lightning:fileUpload style="width: 400px;"
+                                                          label="Agreement and Price book"
+                                                          name="Section:B-Agreement"
+                                                          multiple="true"                                                      
+                                                          onuploadfinished="{!c.handleUploadFinished}"/>
+                                    <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionBAgreement}"/>
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.financialConsideration.isUniformPricing}"                                                 
+                                                     label="Confirmation of providing uniform pricing to LT on all SKU selected."/>
+                                    
+                                </div>
+                            </div>
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:input type="checkbox"
+                                                     checked="{!v.masterSectionBWrapper.financialConsideration.isFullDistributionRights}"                                                
+                                                     label="Confirmation of full distribution rights in all states LT currently operating in."/>
+                                </div>
+                            </div>
+                            
+                            
+                        </lightning:accordionSection>
+                        
+                        <!---Vendor Rebate Program -->
+                        <lightning:accordionSection name="VendorRebateProgram" label="Vendor Rebate Program ">
+                            <div class="slds-m-horizontal_small slds-m-top_xx-small slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                <lightning:textarea aura:id="pvDetailsB"
+                                                    name="input3"
+                                                    value="{!v.masterSectionBWrapper.rebateProgram.rebateProgramsPolicy}"
+                                                    label="List all eligible rebate programs/policy to LT and current schedule of rebates including any buyback on excess inventory."
+                                                    required="{!v.requiredForAll == true}"
+                                                    placeholder="type here..."/>  	
+                            </div>
+                        </lightning:accordionSection>
+                    </lightning:accordion>
+                    <!-- End Accordion-->
+                    
+                    <!-- Next button-->
+                    <lightning:button label="Next"
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small" 
+                                      name="sectionB" 
+                                      onclick="{!c.nextSection}" 
+                                      variant="brand"/>
+                    <!-- Previous button-->
+                    <lightning:button label="Previous"
+                                      class="slds-float_right slds-m-right_xx-small slds-m-bottom_small" 
+                                      name="sectionB" 
+                                      onclick="{!c.previousSection}" 
+                                      variant="brand"/>
+                    <!-- Save as Draft button-->
+                    <lightning:button label="Save as Draft" 
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small"
+                                      iconName="utility:record_update" 
+                                      iconPosition="right"      
+                                      name="sectionB"                                  
+                                      onclick = "{!c.saveAsDraft}"/> 
+                </aura:if>
+                <!-- End Section B: Financial and Purchasing Requirements-->
+                
+                <!-- Start Section C: Partnership-->
+                <aura:if isTrue="{!v.nextPageName=='sectionC'}">
+                    <div class="slds-m-horizontal_large slds-m-vertical_small slds-text-heading_medium">
+                        Section C: Partnership
+                    </div>
+                    <!-- Start Accordion-->
+                    <!---Strategic Planning-->
+                    <lightning:accordion allowMultipleSectionsOpen="true"                                
+                                         activeSectionName="{! v.activeSectionsC }">
+                        <lightning:accordionSection name="strategicPlanning" label="Strategic Planning">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Product Detail"
+                                                        value="{!v.masterSectionCWrapper.strategicPlanning.complementProductDetail}"
+                                                        label="Discuss how you will help to identify products that complement and enhance our current lineup and market presence." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>   	
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Product Launch"
+                                                        value="{!v.masterSectionCWrapper.strategicPlanning.productLaunchDetails}"
+                                                        label="Describe the typical product launch and how you 
+                                                               envision working with LT to ensure a successful launch of new products." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>                           
+                            </div>                        
+                            
+                            <div class="slds-m-horizontal_small slds-m-vertical_xx-small slds-text-heading_small setTopLabelMargin">
+                                <label Style = "color:red;"> *</label> What training do you provide to?  
+                            </div>
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="input3"
+                                                        value="{!v.masterSectionCWrapper.strategicPlanning.trainingsProvidesDesigner}"
+                                                        label="Showroom designers"
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="input3"
+                                                        value="{!v.masterSectionCWrapper.strategicPlanning.trainingProvidedSales}"
+                                                        label="External sales team" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="input4"
+                                                        value="{!v.masterSectionCWrapper.strategicPlanning.trainingsProvidesServiceTeam}"
+                                                        label="Customer service team"
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="input5"
+                                                        value="{!v.masterSectionCWrapper.strategicPlanning.trainingProvidedKeyCustomer}"
+                                                        label="Key customer" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div>
+                            
+                            <!--div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small" >
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small" >
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Strategic Plan"
+                                                        value="{!v.masterSectionCWrapper.strategicPlanning.strategicBusiness}"
+                                                        label="Do you have a strategic plan in place to grow the LT business and revenues?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small" style="display: flex;" >
+                                    <lightning:fileUpload style="width: 400px;"
+                                                          label="Strategic Plan"
+                                                          name="Section:C-Strategic Plan"
+                                                          multiple="true"
+                                                          onuploadfinished="{!c.handleUploadFinished}"/>
+                                    <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionCStrategicPlanning}"/>
+                                </div>
+                            </div-->
+                        </lightning:accordionSection>
+                        
+                        <!---Marketing Support-->
+                        <lightning:accordionSection name="marketingSupport" label="Marketing Support">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Marketing Support"
+                                                        value="{!v.masterSectionCWrapper.support.marketingSupportProvided}"
+                                                        label="What marketing support (print, digital, media, ground, and collateral material) do you provide during a product launch?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div>
+                            
+                            <!--div class="slds-m-horizontal_small slds-m-vertical_xx-small slds-text-heading_small setTopLabelMargin">
+                                <label Style = "color:red;"> *</label>Describe your sample program and how it works.
+                            </div>
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Cost Parameters"
+                                                        value="{!v.masterSectionCWrapper.support.costParameters}"
+                                                        label="What are the cost parameters and specifically outlay the process and cost factors?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="input3" 
+                                                        value="{!v.masterSectionCWrapper.support.obtainSamples}"
+                                                        label="Can samples be obtained by the piece or are entire boxes required?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div-->
+                            
+                            <!--div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Custom Boards"
+                                                        value="{!v.masterSectionCWrapper.support.customBoards}"
+                                                        label="Can you provide custom boards to our specifications or are they standard issue?"
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>    
+                                
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Product launch"
+                                                        value="{!v.masterSectionCWrapper.support.specificSKULaunch}"
+                                                        label="Can we select specific SKU’s for the product launch or is it a set package?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div-->
+                        </lightning:accordionSection>
+                        
+                        <!---Company Policy -->
+                        <lightning:accordionSection name="companyPolicy" label="Company Policy">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:radioGroup aura:id="pvDetailsC"
+                                                          name="Discontinued Series"
+                                                          label="What is your Company policy concerning discontinued items?"
+                                                          options="{!v.discontinuedSeries }"
+                                                          value="{!v.masterSectionCWrapper.discontinuedSeries}"
+                                                          type="radio"
+                                                          required="{!v.requiredForAll == true}"/>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:radioGroup aura:id="pvDetailsC"
+                                                          name="Price Increases"
+                                                          label="What is your Company policy concerning price increases?"
+                                                          options="{!v.priceIncreases}"
+                                                          value="{!v.masterSectionCWrapper.priceIncreases}"
+                                                          type="radio"
+                                                          required="{!v.requiredForAll == true}"/>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        
+                        <!---Agreement -->
+                        <lightning:accordionSection name="agreement" label="Agreement">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:select aura:id="pvDetailsC"
+                                                      name="Distribution Agreement" 
+                                                      value="{!v.masterSectionCWrapper.agreement.distributionAgreement}" 
+                                                      label="We have a Distribution Agreement which discusses territory, 
+                                                             protections, pricing, market support, sales targets and quotas, private label, 
+                                                             and exclusivity. Are you willing to enter into and negotiate such an agreement 
+                                                             to meet the minimum requirements to obtain Ancillary Partnership status?  "
+                                                      required="{!v.requiredForAll == true}">
+                                        <option value="">choose one...</option>
+                                        <aura:iteration items="{!v.picklistOptions}" var="option">
+                                            <option value="{!option}" 
+                                                    selected="{!v.masterSectionCWrapper.agreement.distributionAgreement== option}">{!option}</option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Promotion and Sales -->
+                        <lightning:accordionSection name="promotionSales" label="Promotion and Sales">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Tools"
+                                                        value="{!v.masterSectionCWrapper.tools.merchandiseProgram}" 
+                                                        label="Discuss your merchandising program, visualization tools, 
+                                                               and digital tools such as QR codes or other tools to help in promotion and sales." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>                     
+                        
+                        <!---Ancillary partner -->
+                        <lightning:accordionSection name="preferredPartner" label="Ancillary Partner">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="Ancillary Partner"
+                                                        value="{!v.masterSectionCWrapper.preferredPartner.preferredPartnerAbility}" 
+                                                        label="Please describe Ancillary Partner ability to participate in this process and schedule." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Product Viability and History -->
+                        <lightning:accordionSection name="productViability" label="Product Viability and History">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="input3"
+                                                        value="{!v.masterSectionCWrapper.productViabilityHistory.productRoadmap}" 
+                                                        label="Discuss how you can provide and help develop a product roadmap and lifecycle to keep LT current and at the front of the development curve in new product offering." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="input3"
+                                                        value="{!v.masterSectionCWrapper.productViabilityHistory.uniqueInnovativeSolution}" 
+                                                        label="We seek unique and innovative and solution-based product offerings please discuss how you differentiate yourself to help LT achieve this goal." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                            
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"
+                                                        name="input3"
+                                                        value="{!v.masterSectionCWrapper.productViabilityHistory.discussDesign}" 
+                                                        label="Discuss your development and design team that makes your product development industry leaders." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                                <!--div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsC"  class="setDiscussMrgnBtm"
+                                                        name="input3"
+                                                        value="{!v.masterSectionCWrapper.productViabilityHistory.discussSupportPrices}" 
+                                                        label="Discuss your support pieces in trim and accessories Merchant." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div-->
+                            </div>
+                        </lightning:accordionSection>
+                    </lightning:accordion>
+                    <!-- End Accordion-->
+                    
+                    <!-- Next button-->
+                    <lightning:button label="Next"
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small" 
+                                      name="sectionC" 
+                                      onclick="{!c.nextSection}" 
+                                      variant="brand"/>
+                    <!-- Previous button-->
+                    <lightning:button label="Previous"
+                                      class="slds-float_right slds-m-right_xx-small slds-m-bottom_small" 
+                                      name="sectionC" 
+                                      onclick="{!c.previousSection}" 
+                                      variant="brand"/>
+                    <!-- Save as Draft button-->
+                    <lightning:button label="Save as Draft" 
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small"
+                                      iconName="utility:record_update" 
+                                      iconPosition="right"      
+                                      name="sectionC"                                  
+                                      onclick = "{!c.saveAsDraft}"/> 
+                </aura:if>
+                <!--End Section C: Partnership-->
+                
+                <!-- Start Section D: Marketing-->
+                <aura:if isTrue="{!v.nextPageName=='sectionD'}">
+                    <div class="slds-m-horizontal_large slds-m-vertical_small slds-text-heading_medium">
+                        Section D: Marketing
+                    </div>
+                    <!-- Start Accordion-->
+                    <!---Marketing Plan and Budget-->
+                    <lightning:accordion allowMultipleSectionsOpen="true"                                
+                                         activeSectionName="{!v.activeSectionsD}">
+                        <lightning:accordionSection name="marketingBudget" label="Marketing Plan and Budget">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsD"
+                                                        name="Marketing Plan"
+                                                        value="{!v.masterSectionDWrapper.ltMarketingPlan}" 
+                                                        label="Discuss the LT marketing plan you propose and include a well-defined budget to drive brand awareness." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Real-Estate Requirement-->
+                        <lightning:accordionSection name="realEstate" label="Real-Estate Requirement">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsD"
+                                                        name="Real Estate"
+                                                        value="{!v.masterSectionDWrapper.realEstateRequirement.realestate}" 
+                                                        label="Discuss the real estate requirements within our showrooms / warehouses and your expectations." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsD"
+                                                        name="Costs"
+                                                        value="{!v.masterSectionDWrapper.realEstateRequirement.listCostsLT}"
+                                                        label="List the costs to LT involved in this program." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Digital Library-->
+                        <lightning:accordionSection name="digitalLibrary" label="Digital Library">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsD"
+                                                        name="Digital Library"
+                                                        value="{!v.masterSectionDWrapper.digitalLibrary}" 
+                                                        label="Discuss your digital library and its availability to LT to utilize in its marketing efforts." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>                            
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Marketing efforts-->
+                        <lightning:accordionSection name="marketingEfforts" label="Marketing efforts">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsD"
+                                                        name="Marketing Efforts"
+                                                        value="{!v.masterSectionDWrapper.personMarketingEfforts}" 
+                                                        label="Discuss your in person marketing efforts for events, tradeshow, vendor showcase and other marketing opportunities." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>                            
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---Experience and process of your wholesaler/marketing manager-->
+                        <lightning:accordionSection name="experienceProcess" label="Experience and process of your wholesaler/marketing manager">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsD"
+                                                        name="Manager" 
+                                                        value="{!v.masterSectionDWrapper.wholesalerMarket.marketingManager}"
+                                                        label="Discuss the experience and process of your wholesaler/marketing manager and how they will develop the branches.
+                                                               What is the frequency of visits,methodology, provision of lead opportunities and responsiveness of this person?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div> 
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!---References of non-LT companies-->
+                        <lightning:accordionSection name="References" label="References of non-LT companies">                            
+                            <label Style = "color:red;"> *</label>Please provide 3 references of non-LT companies and individuals for each individual on the team.
+                            <lightning:accordion allowMultipleSectionsOpen="true"                                
+                                                 activeSectionName="{!v.referencesSection}">
+                                <lightning:accordionSection name="Reference1" label="Reference 1">
+                                    <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                            <div class="slds-grid slds-gutters slds-m-bottom_xx-small">
+                                                <!-- Company Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="Company Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[0].kc_company}"
+                                                                     required="{!v.requiredForAll == true}"/>	
+                                                </div>
+                                                <!--First Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="First Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[0].kc_firstName}"
+                                                                     required="{!v.requiredForAll == true}"/>
+                                                </div>
+                                                <!-- Last Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="Last Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[0].kc_lastName}"
+                                                                     required="{!v.requiredForAll == true}"/>
+                                                </div>
+                                                <!-- Phone -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     class="slds-m-horizontal_xx-small" 
+                                                                     type="tel"
+                                                                     value = "{!v.masterSectionDWrapper.nonLTReferences[0].kc_phone}" 
+                                                                     label="Phone" 
+                                                                     required="{!v.requiredForAll == true}"
+                                                                     maxlength = "10"
+                                                                     minlength="10"
+                                                                     onkeyup = "{!c.validatePhoneNumber}"/>
+                                                </div>                            
+                                                <!-- Email -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="email"
+                                                                     label="Email"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[0].kc_email}"
+                                                                     required="{!v.requiredForAll == true}"/> 
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </lightning:accordionSection>
+                                <lightning:accordionSection name="Reference2" label="Reference 2">
+                                    <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                            <div class="slds-grid slds-gutters slds-m-bottom_xx-small">
+                                                <!-- Company Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="Company Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[1].kc_company}"
+                                                                     required="{!v.requiredForAll == true}"/>	
+                                                </div>
+                                                <!--First Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="First Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[1].kc_firstName}"
+                                                                     required="{!v.requiredForAll == true}"/>
+                                                </div>
+                                                <!-- Last Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="Last Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[1].kc_lastName}"
+                                                                     required="{!v.requiredForAll == true}"/>
+                                                </div>
+                                                <!-- Phone -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     class="slds-m-horizontal_xx-small" 
+                                                                     type="text"
+                                                                     value = "{!v.masterSectionDWrapper.nonLTReferences[1].kc_phone}" 
+                                                                     label="Phone" 
+                                                                     required="{!v.requiredForAll == true}"
+                                                                     maxlength = "10"
+                                                                     minlength="10"
+                                                                     onkeyup = "{!c.validatePhoneNumber}"/>
+                                                </div>                            
+                                                <!-- Email -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="email"
+                                                                     label="Email"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[1].kc_email}"
+                                                                     required="{!v.requiredForAll == true}"/> 
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </lightning:accordionSection>
+                                <lightning:accordionSection name="Reference3" label="Reference 3">
+                                    <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                            <div class="slds-grid slds-gutters slds-m-bottom_xx-small">
+                                                <!-- Company Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="Company Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[2].kc_company}"
+                                                                     required="{!v.requiredForAll == true}"/>	
+                                                </div>
+                                                <!--First Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="First Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[2].kc_firstName}"
+                                                                     required="{!v.requiredForAll == true}"/>
+                                                </div>
+                                                <!-- Last Name -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="text"
+                                                                     label="Last Name"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[2].kc_lastName}"
+                                                                     required="{!v.requiredForAll == true}"/>
+                                                </div>
+                                                <!-- Phone -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_xx-small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     class="slds-m-horizontal_xx-small" 
+                                                                     type="tel"
+                                                                     value = "{!v.masterSectionDWrapper.nonLTReferences[2].kc_phone}" 
+                                                                     label="Phone" 
+                                                                     required="{!v.requiredForAll == true}"
+                                                                     maxlength = "10"
+                                                                     minlength="10"
+                                                                     onkeyup = "{!c.validatePhoneNumber}"/>
+                                                </div>                            
+                                                <!-- Email -->
+                                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_small">
+                                                    <lightning:input aura:id = "pvDetailsD" 
+                                                                     type="email"
+                                                                     label="Email"
+                                                                     value="{!v.masterSectionDWrapper.nonLTReferences[2].kc_email}"
+                                                                     required="{!v.requiredForAll == true}"/> 
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                </lightning:accordionSection>
+                            </lightning:accordion>
+                        </lightning:accordionSection>
+                        
+                        <!---Merchandising Support-->
+                        <lightning:accordionSection name="merchandisingSupport" label="Merchandising Support">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsD"
+                                                        name="Merchandising Support"
+                                                        value="{!v.masterSectionDWrapper.merchandisingSupport}" 
+                                                        label="Merchandising support is critical – discuss your approach to grout  collatera (if applicable), counter / pro Shop  displays, fields trails, project samples, 
+                                                               binders and catalogs as well as any other merchandising support you would provide to 
+                                                               LT as a Ancillary Partner." 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>                            
+                            </div>
+                        </lightning:accordionSection>
+                    </lightning:accordion>
+                    <!-- End Accordion-->
+                    <!-- Next button-->
+                    <lightning:button label="Next"
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small" 
+                                      name="sectionD" 
+                                      onclick="{!c.nextSection}" 
+                                      variant="brand"/>
+                    <!-- Previous button-->
+                    <lightning:button label="Previous"
+                                      class="slds-float_right slds-m-right_xx-small slds-m-bottom_small" 
+                                      name="sectionD" 
+                                      onclick="{!c.previousSection}" 
+                                      variant="brand"/>
+                    <!-- Save as Draft button-->
+                    <lightning:button label="Save as Draft" 
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small"
+                                      iconName="utility:record_update" 
+                                      iconPosition="right"      
+                                      name="sectionD"                                  
+                                      onclick = "{!c.saveAsDraft}"/> 
+                </aura:if>
+                <!--End Section D: Markting-->
+                
+                <!-- Start Section E: Technology-->
+                <aura:if isTrue="{!v.nextPageName=='sectionE'}">                
+                    <div class="slds-m-horizontal_large slds-m-vertical_small slds-text-heading_medium">
+                        Section E: Technology
+                    </div>
+                    <!-- Start Accordion-->
+                    <lightning:accordion allowMultipleSectionsOpen="true"                                
+                                         activeSectionName="{!v.activeSectionsE}">
+                        <!-- Online Capabilities-->
+                        <lightning:accordionSection name="onlineCapabilities" label="Online Capabilities">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsE"
+                                                        name="Online Capabilities"
+                                                        label="Describe your online capabilities to LT for reporting, payments, inventory, 
+                                                               customer order tracking and status, freight, sales performance to track rebate status, and other critical elements." 
+                                                        value="{!v.masterSectionEWrapper.onlineCapabilities}"
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!-- Uptime Performance-->
+                        <lightning:accordionSection name="uptimePerformance" label="Uptime Performance">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsE"
+                                                        name="Uptime Performance"
+                                                        label="What is your uptime performance of this system 2020, 2021, most recent 6 mo.’s, YTD?" 
+                                                        value="{!v.masterSectionEWrapper.uptimePerformance}"
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!-- visualization tools and capabilities -->
+                        <lightning:accordionSection name="visualizationCapabilities" label=" Visualization Tools and Capabilities ">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsE"
+                                                        name="Visualization Tools"
+                                                        label="Discuss your visualization tools and capabilities." 
+                                                        value="{!v.masterSectionEWrapper.visualizationTech}"
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                        
+                        <!-- Differentiate Technology -->
+                        <lightning:accordionSection name="differentiateTechnology" label=" Differentiate Technology">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsE"
+                                                        name="Differentiate Technology"
+                                                        label="Any other technology that differentiates you or is under development."
+                                                        value="{!v.masterSectionEWrapper.differentiateTechnology}"
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                    </lightning:accordion>
+                    <!-- End Accordion-->
+                    <!-- Next button-->
+                    <lightning:button label="Next"
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small" 
+                                      name="sectionE" 
+                                      onclick="{!c.nextSection}" 
+                                      variant="brand"/>
+                    <!-- Previous button-->
+                    <lightning:button label="Previous"
+                                      class="slds-float_right slds-m-right_xx-small slds-m-bottom_small" 
+                                      name="sectionE" 
+                                      onclick="{!c.previousSection}" 
+                                      variant="brand"/>
+                    <!-- Save as Draft button-->
+                    <lightning:button label="Save as Draft" 
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small"
+                                      iconName="utility:record_update" 
+                                      iconPosition="right"      
+                                      name="sectionE"                                  
+                                      onclick = "{!c.saveAsDraft}"/>
+                </aura:if>
+                <!--End Section E: Technology-->
+                
+                <!-- Start Section F: Misc-->
+                <aura:if isTrue="{!v.nextPageName=='sectionF'}">
+                    <div class="slds-m-horizontal_large slds-m-vertical_small slds-text-heading_medium">
+                        Section F: Misc
+                    </div>
+                    <!-- Start Accordion-->
+                    <lightning:accordion allowMultipleSectionsOpen="true"                                
+                                         activeSectionName="competitiveAdvantage"><!--{!v.activeSectionsF}-->
+                        <!--Competitive Advantage-->
+                        <lightning:accordionSection name="competitiveAdvantage" label="Competitive Advantage">
+                            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsF"
+                                                        name="Competitive Advantage" class="setBottomLabelMargin"
+                                                        value="{!v.masterSectionFWrapper.competitiveAdvantage}"
+                                                        label="What sets you apart from the competition? What is your competitive advantage that you bring to LT?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_xx-small">
+                                    <lightning:textarea aura:id="pvDetailsF"
+                                                        name="Asset"
+                                                        value="{!v.masterSectionFWrapper.assetProvided}"
+                                                        label="What assets or resources will you provide to help LT achieve its mission, target goals, and expand its market share?" 
+                                                        required="{!v.requiredForAll == true}"
+                                                        placeholder="type here..."/>  	
+                                </div>
+                            </div>
+                        </lightning:accordionSection>
+                    </lightning:accordion>  
+                    <!--End Accordion-->
+                    <!-- Next button-->
+                    <lightning:button label="Next"
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small" 
+                                      name="sectionF" 
+                                      onclick="{!c.nextSection}" 
+                                      variant="brand"/>
+                    <!--Previous button-->
+                    <lightning:button label="Previous" 
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small" 
+                                      name="sectionF" 
+                                      onclick="{!c.previousSection}" 
+                                      variant="brand"/>
+                    
+                    
+                </aura:if>
+                <!--End Section F: Misc-->
+                
+                <!-- Start Complete-->
+                <aura:if isTrue="{!v.nextPageName=='Complete'}">
+                    <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                        <c:LT_PreferredVendorRFPFormReview allSectionData ="{!v.allSectionData}"
+                                                           allFileData ="{!v.allFileData}"/>
+                    </div>
+                    <!--Submit button-->
+                    <div class=" slds-float_right">
+                        <lightning:button label="Submit" 
+                                          class="slds-float_right slds-m-right_small slds-m-bottom_small"
+                                          iconName="utility:save" 
+                                          iconPosition="right" 
+                                          variant="brand"
+                                          name="Complete"
+                                          onclick = "{!c.showOpenModel}"/>
+                    </div>
+                    <!--Previous button-->
+                    <lightning:button label="Previous" 
+                                      class="slds-float_right slds-m-right_small slds-m-bottom_small" 
+                                      name="Complete" 
+                                      onclick="{!c.previousSection}" 
+                                      variant="brand"/>
+                </aura:if>
+            </aura:if>
+        </div>
+        
+        <!--Modal-->
+        <aura:if isTrue="{!v.modalOpen}">
+            <div role="dialog" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header  modal-header">
+                        <h1 class="slds-text-heading--medium slds-text-color_inverse">Confirmation</h1>
+                    </header>
+                    <div class="slds-modal__content slds-p-around--medium  slds-text-heading_small">
+                        <b><p align="center">Please note, once you submit the form, you will not be able to make any change.<br/>Do you want to submit ?</p></b>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="brand" name='No' label='No' onclick='{!c.handleConfirmDialogNo}'/>
+                        <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogYes}'/>
+                    </footer>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>
+        <aura:set attribute="else">
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small slds-p-top_xx-small">
+                <c:LT_PreferredVendorRFPFormReview allSectionData ="{!v.allSectionData}"
+                                                   allFileData ="{!v.allFileData}"/>
+            </div>
+        </aura:set>
+    </aura:if>
+</aura:component>

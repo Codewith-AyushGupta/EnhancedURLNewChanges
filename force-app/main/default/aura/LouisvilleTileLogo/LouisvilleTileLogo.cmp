@@ -1,0 +1,13 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" >
+    <div class="slds-grid">
+        <div class="slds-col">
+            <img src="{!$Resource.LouisvilleTileLogo}"/>
+        </div>
+        <div class="slds-col" >
+            <h1 class="slds-align_absolute-center slds-text-heading_large slds-m-bottom_xx-small">
+                Credit Application Form
+            </h1>
+        </div>
+        <div class="slds-col" ></div>
+    </div>
+</aura:component>

@@ -1,0 +1,11 @@
+.THIS .label-hide >label{
+    display:none;
+}
+.THIS .color{
+    background:#f2f7f8;
+    font-weight: bold;
+}
+.THIS textarea{
+    height:30px !important;
+
+}

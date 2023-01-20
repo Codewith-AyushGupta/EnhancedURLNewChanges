@@ -1,0 +1,193 @@
+<aura:component controller="DisplayLibraryModelController"
+                extends="c:HandleErrorModal"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" >
+    
+    <!-- attributes -->
+    <aura:attribute name="displayLibraryData" type="Object[]" description="Holds all data of display library for cuurent instance" />
+    <aura:attribute name="displayLibraryDataLength" type = "Integer" description="Holds the length of displayLibraryData fetched from the Soql on doInit"/>
+    <aura:attribute name='relatedAccount' type='object'/>
+    <aura:attribute name="tableHeader" type="List" description="Headers of table"/>
+    <aura:attribute name="isCategoryNotSelected" type="Boolean" description="checks if category of Item is selected or not before searching for Item"/>
+    <aura:attribute name ="isSaveButtonDisabled" type="Boolean" default="true" description="Used to enable or disable save button" />
+    <aura:attribute name="notValidated" type="Boolean" description="To show or hide the assistive text if required fields are no validated properly."/>
+    <aura:attribute name="isShowSpinner" type="Boolean" description="To show or hide the spinner"/>
+    <aura:attribute name="categoryPicklistDetails" type="List" description="Holds details of Category picklist."/>
+    <!-- handlers-->
+    <aura:handler name="init" value="{!this }" action="{! c.doInit }"/>
+    
+    
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_12-of-12">
+            <lightning:card class='overflow'>
+                <aura:if isTrue ="{!v.isShowSpinner}">
+                    <lightning:spinner alternativeText="Loading" size="medium" variant="brand"/>
+                </aura:if>
+                <aura:if isTrue = "{!v.displayLibraryData.length > 0}">
+                    <div class="table_height">
+                        <table class="slds-m-top_x-small slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered " >
+                            
+                            <!-- header Iteration  -->
+                            <thead>
+                                <tr class="slds-line-height_reset"> 
+                                    
+                                    <aura:iteration items = "{!v.tableHeader}" var="header" indexVar="index">
+                                        <aura:if isTrue="{!header.Label == 'Quantity'}">
+                                            <th class="style_headers" scope="col" data-recordId="{!index}" >  
+                                                <div class="slds-truncate slds-clearfix"><span class="slds-float_left">{!header.Label}</span></div>
+                                            </th>
+                                            <aura:set attribute="else">
+                                                <th class="style_headers" scope="col" data-recordId="{!index}" onclick="{!c.sortHelper}"> 
+                                                    <div class="slds-truncate slds-clearfix"><span class="slds-float_left">{!header.Label}</span>
+                                                        <span class="slds-float_right">
+                                                            <lightning:icon iconName="utility:sort" alternativeText="" title="Sort Ascending/Descending" size="xx-small" class="{!header.Label =='Delete'?'slds-hide':''}"/>&nbsp;
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                            </aura:set>
+                                        </aura:if>  
+                                    </aura:iteration>
+                                </tr>
+                            </thead>
+                            
+                            
+                            <tbody>
+                                <aura:iteration items="{!v.displayLibraryData}" var="item" indexVar="indexNumber" > 
+                                    <tr class="slds-hint-parent" style="{!item.Item_Number__r.IsActive?'':'background-color:#ffff8a'}">
+                                        <td data-label="Category">
+                                            <aura:if isTrue="{!item.AddMore}">
+                                                <lightning:select aura:id="validateFields" name="Category__c" variant="label-hidden" value="{!item.Category__c}" required="true" class="min_width">
+                                                    <option value="">Choose category...</option>
+                                                    <aura:iteration items="{!v.categoryPicklistDetails}" var="item">
+                                                        <option value="{!item.value}">{!item.label}</option>
+                                                    </aura:iteration>
+                                                    <!--
+                                                <option value="Art Card/Dealer Board/Binder/Contractor Board">Art Card/Dealer Board/Binder/Contractor Board</option>
+                                                <option value="Binder/Specifier Kit">Binder/Specifier Kit</option>
+                                                <option value="Display">Display</option>     
+                                                <option value="Individual Sample">Individual Sample</option>
+             -->
+                                                </lightning:select>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate category_style" >
+                                                        <lightning:icon iconName="utility:warning" alternativeText="Warning" title="This Item has been deactivated." size="xx-small" variant="error" class="{!item.Item_Number__r.IsActive?'slds-hide':'slds-show'}"/>&nbsp;
+                                                        {!item.Category__c}</div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td data-label="Quantity">
+                                            <aura:if isTrue="{!item.AddMore}">
+                                                <lightning:input aura:id="validateFields" type="text" placeholder='Quantity' variant="label-hidden" required="true" name="Quantity__c" value="{!item.Quantity__c}"/>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate" >{!item.Quantity__c}</div>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td data-label="Item Number">
+                                            <aura:if isTrue="{!item.AddMore}">
+                                                <!-- <lightning:input placeholder='Item Number' name="Dancik_Item__c" value="{!item.Item_Number__r.Dancik_Item__c}"/> -->
+                                                <div data-recordid="{!indexNumber}" onmousedown="{!c.handleSelectedItems}" class="min_width">
+                                                    <c:CustomLookupDisplayLibrary aura:id = "customLookupForDisplayLibrary"
+                                                                                  objectName="Manufacturer_s_Items__c"
+                                                                                  fieldName="Dancik_Item__c"
+                                                                                  fieldsToBeDisplayed = "['Dancik_Item__c','Product_Description__c']"
+                                                                                  fieldsLabelToBeDisplayed = "['Name','Description']" 
+                                                                                  queryfilterField = "Product_Name__c"
+                                                                                  iconName = "standard:products"
+                                                                                  selectedRecord = "{!item.selectedItem}"
+                                                                                  placeholder="Item Number"
+                                                                                  isRequired = "true"
+                                                                                  selectedCatagory = "{!item.Category__c}"
+                                                                                  />
+                                                </div>
+                                                <aura:set attribute="else">
+                                                    <div class="slds-truncate" >{!item.Item_Number__r.Name}</div>
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                            
+                                        </td>
+                                        <td data-label="Description">
+                                            
+                                            <div class="slds-truncate" >{!item.Description__c}</div>
+                                            
+                                        </td>
+                                        <td data-label="Date Ordered">
+                                            <aura:if isTrue="{!item.AddMore}">
+                                                <lightning:input type="date" placeholder='Date Ordered' variant="label-hidden" name="Date_Shipped__c" value="{!item.Date_Shipped__c}" class="min_width_for_date_input"/>
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!!item.Date_Shipped__c}">
+                                                        <lightning:input type="date" placeholder='Date Ordered' variant="label-hidden" name="Date_Shipped__c" value="{!item.Date_Shipped__c}" class="min_width_for_date_input" onclick="{!c.handleDateChanged}"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:formattedDateTime value="{!item.Date_Shipped__c}"/>
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td data-label="Date Placed">
+                                            <aura:if isTrue="{!item.AddMore}">
+                                                <lightning:input aura:id="validateFields" type="date" placeholder='Date Placed' variant="label-hidden" name="Date_Placed__c" value="{!item.Date_Placed__c}" class="min_width_for_date_input" />
+                                                <aura:set attribute="else">
+                                                    <aura:if isTrue="{!!item.Date_Placed__c}">
+                                                        <lightning:input aura:id="validateFields" type="date" placeholder='Date Placed' variant="label-hidden" name="Date_Placed__c" value="{!item.Date_Placed__c}" class="min_width_for_date_input" onclick="{!c.handleDateChanged}"/>
+                                                        <aura:set attribute="else">
+                                                            <lightning:formattedDateTime value="{!item.Date_Placed__c}" />
+                                                        </aura:set>
+                                                    </aura:if>   
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <td data-label="Manual Entry Checked">
+                                            <aura:if isTrue="{!item.Manual_Entry__c}">
+                                                <lightning:input  type="checkbox" checked="{!item.Manual_Entry__c}" name="{!indexNumber}" disabled="true"/>
+                                            </aura:if>
+                                            
+                                        </td>
+                                        <td data-label="Removed"   data-recordid="{!item.Id}">
+                                            <lightning:input  type="checkbox" checked="{!item.isChecked}" name="{!indexNumber}" disabled="{!item.isDisabled}" onchange='{!c.closeDateHandler}'/>
+                                        </td>
+                                        <td data-label="Date Removed">
+                                            
+                                            <lightning:formattedDateTime value="{!item.Date_Removed__c}" />
+                                        </td>
+                                        <td data-label="delete">
+                                            <lightning:buttonIcon name='{!indexNumber}' iconName="utility:delete" variant="bare" onclick='{!c.handleDeleteAction}'  alternativeText="delete" title="delete" disabled="{!item.Id ?true:false}" class="{!item.Id ?'':'slds-button_icon-error'}"/>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    <aura:set attribute="else">
+                        <div class="slds-m-horizontal_small slds-m-vertical_small">
+                            <span class="slds-text-heading_medium"> There is no Item here.</span>
+                            <span class ="slds-float_right none_float">                       
+                                <lightning:button iconName="utility:add" iconPosition="right" class="slds-m-top_small slds-m-right_medium slds-float_right" variant="brand" label="Add" title="Add" onclick="{!c.AddMoreRow }" />                  
+                            </span>
+                            
+                            
+                        </div>
+                        
+                    </aura:set>
+                </aura:if>
+                <aura:if isTrue="{!v.isCategoryNotSelected}">
+                    
+                    <p class="slds-text-color_destructive slds-m-left_medium"> *Please select category before searching for Item </p>
+                    
+                    
+                    
+                </aura:if>
+                <p class="{!v.notValidated? 'slds-show slds-text-color_destructive slds-m-left_medium':'slds-hide'}"> *Please fill all highlighted fields. </p>
+                <div class="set_margin">
+                    <aura:if isTrue = "{!v.displayLibraryData.length > 0}">
+                        <span class="action_button">
+                            <lightning:button class="slds-m-top_small " variant="brand" label="Add More" title="Add More" onclick="{!c.AddMoreRow }" />&nbsp;&nbsp;                        
+                            <lightning:button class="slds-m-top_small " variant="brand" label="Save" title="Save" onclick="{! c.save}" disabled="{!v.isSaveButtonDisabled}"/>
+                        </span>
+                    </aura:if>
+                </div>
+            </lightning:card>
+        </div>
+    </div>
+</aura:component>

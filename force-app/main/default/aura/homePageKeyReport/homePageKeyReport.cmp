@@ -1,0 +1,92 @@
+<aura:component controller="KeyReportHomePageController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute type="Key_Report__c[]" name="reportList"/>
+    <aura:attribute name="type" type="String"/>
+    <aura:attribute name="selectedRows" type="Object"/>
+    <aura:attribute name="selectedIds" type="List"/>
+    <aura:attribute name="maxRowSelection" type="Integer" default="5"/>
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="kerridgeLinkdata" type="List"/>
+	<aura:attribute name="kerridgeLinkdataFixed" type="List"/>
+    <aura:attribute name="selectedReports" type="object[]"/>
+    <aura:attribute name="isShowModel" type="Boolean" default='false'/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <article class="slds-card" style="opacity:1;">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate ">
+                <div class="slds-media__body slds-align_absolute-center">
+                    <h2 class="slds-card__header-title slds-align_absolute-center">
+                        <span><lightning:icon iconName="standard:report" alternativeText="Kerridge links" /><b class="slds-m-left_small">Key Reports</b></span>
+                    </h2>
+                    <lightning:buttonIcon iconName="utility:settings"  alternativeText="Settings" title="Settings" onclick='{!c.showModel}'/>
+                    
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-p-top_medium slds-scrollable_y" style="height:13rem;">
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                
+                <tbody >
+                    <aura:iteration items="{!v.kerridgeLinkdataFixed}" var="item">
+                        <tr class="slds-hint-parent">
+                            <th data-label="Opportunity Name" scope="row">
+                                <div class="slds-truncate" title="Cloudhub">
+                                    
+                                    <a href="{!item.Report_Url__c}" target="_blank" tabindex="-1">{!item.Name}</a>
+                                </div>
+                            </th>
+                        </tr> 
+                    </aura:iteration>
+                    <aura:iteration items="{!v.kerridgeLinkdata}" var="item">
+                        
+                        <tr class="slds-hint-parent">
+                            <th data-label="Opportunity Name" scope="row">
+                                <div class="slds-truncate" title="Cloudhub">
+                                    <a href="{!item.Report_Url__c}" tabindex="-1">{!item.Name}</a>
+                                </div>
+                            </th>
+                        </tr> 
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+    </article>
+    <aura:if isTrue="{!v.isShowModel}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                    <span class="slds-assistive-text">Cancel and close</span>
+                </button>
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Reports</h1>
+                    <br/>
+                    <center>
+                        <lightning:button onclick="{!c.addKerridgeLink}" label="Add" variant="brand"/>
+                        <lightning:button onclick="{!c.hideModel}" label="Cancel" title="Neutral action" />
+                        
+                    </center>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-box slds-theme_default">
+                        <div class="slds-p-around_medium slds-form slds-form_compound" >
+                            <div style="height: 300px:width: 600px;">
+                                <lightning:datatable data="{! v.reportList }" 
+                                                     columns="{! v.mycolumns }" 
+                                                     keyField="Id"
+                                                     onrowselection="{!c.handleSelect}"
+                                                     selectedRows="{! v.selectedRows }"
+                                                     />
+                            </div>
+                            <br/>
+                            <center>
+                                <lightning:button onclick="{!c.addKerridgeLink}" label="Add" variant="brand"/>
+                                <lightning:button onclick="{!c.hideModel}" label="Cancel" title="Neutral action" />
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+</aura:component>

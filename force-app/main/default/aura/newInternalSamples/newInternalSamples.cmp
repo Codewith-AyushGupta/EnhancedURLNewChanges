@@ -1,0 +1,681 @@
+<aura:component controller="SampleRequestFormForInternalEmployees"
+                extends="c:HandleErrorModal"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global">
+    
+    <!-- Object to set form values -->
+    <aura:attribute name="sampleFormDetailsObj" type="Object" /> 
+    <aura:attribute name="accountAddress" type="Object"/>
+    <!-- Spinner -->
+    <aura:attribute name ="Spinner" type= "boolean" default = "false"/>
+    <aura:attribute name="componentName" type="string" />
+    
+    <!-- record Id -->    
+    <aura:attribute name="formId" type="String" default = ""/> 
+    
+    <!-- accordionName-->    
+    <aura:attribute name="accordionName" type="Integer" default = "0"/> 
+    
+    <!-- saving flag to hide show the form -->
+    <aura:attribute name="hideFormFields" type="boolean" default = "false"/> 
+    
+    <!-- Check The Ship to Louis tile branch? No -->
+    <aura:attribute name = "shipToBranchNo" type="boolean" default = "false"/>
+    
+    <!-- if Louis tile branch == No then its fields willl be required -->
+    <aura:attribute name = "shipToBranchOptionNo" type="boolean" default = "false"/>
+    
+    <!-- if ship to louis time branch is yes -->
+    <aura:attribute name = "shipToBranchYes" type="boolean" default = "false"/>
+    
+    <!-- if Louis tile branch == Yes then its fields willl be required -->
+    <aura:attribute name = "shipToBranchOptionYes" type="boolean" default = "false"/>
+    
+    <!--handle Add SampleItem List-->
+    <aura:attribute name = "sampleItems" type = "Object[]" default = "[]" />
+    
+    <!--pick list for branch-->
+    <aura:attribute name = "selectBranch" type = "list"  />
+    
+    <!--pick list for how material ship to branch-->
+    <aura:attribute name = "howMatToShip" type = "list"  />
+    
+    <!--pick list for Ship to louis tile branch-->
+    <aura:attribute name = "shipLouisTileBranch" type = "list" />
+    
+    <!-- picklist for projectTypes -->
+    <aura:attribute name = "projectTypes" type = "list"/>
+    
+    <!--pick list for State-->
+    <aura:attribute name = "stateLst" type = "Object[]"  />
+    
+    <!-- Remove from Required -->
+    <aura:attribute name = "RemoveFromRequired" type = "boolean" default = "true"/>
+  
+    
+    
+    <!-- Remove Job from Required -->
+    <aura:attribute name = "RemoveJobFromRequired" type = "boolean" default = "false"/>
+    
+    <!-- Remove Opportuntiy from Required -->
+    <aura:attribute name = "RemoveOpportunityFromRequired" type = "boolean" default = "true"/>
+    
+    <!--pick list for How material ship to customer-->
+    <aura:attribute name = "howMatToCust" type = "list"  />
+    
+    <!-- used to hold the selected opportunity selected -->
+    <aura:attribute name ="selectedOpportunity" type = "Object" default=""/>
+    
+    <!-- used to show 'How should the Sample be shipped' field help text -->
+    <aura:attribute name="showHelpTextOnPicklist" type="boolean" />
+    
+    <aura:handler name="change" value="{!v.selectedOpportunity}" action="{!c.itemsChange}"/>
+    
+    <!-- used to hold the selected Account selected -->
+    <aura:attribute name ="selectedAccount" type = "Object" default=""/>
+    
+    <aura:handler name="change" value="{!v.selectedAccount}" action="{!c.accountItemsChange}"/>
+    
+    <!-- to count the number of added items which we are showing on ui -->
+    <aura:attribute name="totalNumberOfSampleItems" type="Integer" default="0" />
+    
+    <!-- to handle the file object -->
+    <aura:attribute name ="fileObj" type = "Object" />
+    
+    
+    <!-- DO Init -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    
+    <!-- delete sample item EVENT handler-->
+    <aura:handler name="deleteSampleEvent" event="c:deleteSampleItem" action="{!c.deleteSampleByIndex}"/>
+    <aura:handler name="accountAddress" event="c:accountAddressEvent" action="{!c.getaccountAddress}"/>
+    
+    <!-- SearchItemModal Attributes-->
+    
+    <aura:attribute name ="isModalOpen" type = "Boolean" default="false" Description="Flag to open or close SearchItemModal component"/>
+    <aura:attribute name ="selectedProductsIds" type = "List" default = "[]"  Description="Ids of selected products on SearchItemModal component"/> 
+    <aura:attribute name="isSelectItemEnable" type="Boolean" default="true" Description="Flag to check if Select Item button should get enabled or not" />
+    <aura:attribute name="noItemSelected" type="Boolean" default="false" description="It is being used to create a custom validation error on UI"/>
+    <aura:attribute name="totalResults" type="string" Description="Holds total number of results returned from Query as a formatted string"/>
+ 	<aura:attribute name = "CustomizationHandler" type = "boolean" default = "true" Description="to toggle between input box and table cell in customization cell"/>
+    <aura:attribute name="selectedProductsData" type="List" default="[]" Description="Data of all selected Products"/>
+    <aura:attribute name="isSelectedProduct" type="Boolean" default="false" Description="Flag to check if there's any selected product or not and render table accordingly"/>
+   
+    <aura:handler name="change" value="{!v.selectedProductsIds}" action="{!c.getSelectedProducts}"/>
+
+    
+    <aura:html tag="style">
+        html {
+        background: #f2f7f8;
+        }
+    </aura:html>
+    
+    <!-- Container Element of All Elements-->
+    <!-- TO DO: Move in to Style -->
+    <div class="container" style = "overflow-x:hidden; width:100% ; max-width:100%;">
+        
+        <!-- Louisville Tile Logo -->
+        <c:LouisvilleTileLogoForSampleItemForms />
+        
+        <!-- Heading of Form -->
+        <div class="slds-align_absolute-center slds-m-vertical_small" >
+            <h1 class = "heading slds-m-horizontal_large slds-m-bottom_large">
+                New Internal Samples
+            </h1>
+        </div>
+        
+        <aura:if isTrue="{!v.sampleFormDetailsObj.Name != null}">
+            <div class="slds-align_absolute-center slds-m-vertical_small" >
+                <h4 class = "slds-m-horizontal_large slds-m-bottom_large">
+                    <b>Form Name :</b>{!v.sampleFormDetailsObj.Name}
+                </h4>
+            </div>
+        </aura:if>
+        
+        <!-- ############# Form ############ -->
+        
+        <aura:if isTrue="{!!v.hideFormFields}">
+            <!-- Form row 1 -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                
+                <!-- Employee Name -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "internalFormDetails"
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="text" 
+                                     value="{!v.sampleFormDetailsObj.Employee_name__c}"
+                                     label="Employee Name" 
+                                     required="true"/>
+                    
+                </div>
+                
+                <!-- Employee Email -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "internalFormDetails" 
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="email"
+                                     value="{!v.sampleFormDetailsObj.Email_address_for_confirmation__c}" 
+                                     label="Email Address for Confirmation" 
+                                     required="true"
+                                     onkeyup ="{!c.validateEmailInputField}"/>   	
+                </div>
+            </div> 
+            
+            <!-- Form row 2 -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small ">
+                    <div class="slds-m-horizontal_xx-small">
+                        <c:CustomLookup aura:id = "customLookupForOpportunity"
+                                        objectName="Opportunity" 
+                                        fieldName="Name"
+                                        fieldsToBeDisplayed = "Name"
+                                        iconName = "standard:opportunity"
+                                        label="Opportunity/Project Name" 
+                                        selectedRecord = "{!v.selectedOpportunity}"
+                                        placeholder="Enter Opportunity/Project Name"
+                                        isRequired="{!v.RemoveOpportunityFromRequired == true}"/>
+                    </div>
+                </div>        
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-m-bottom_small">
+                    
+                    <lightning:input aura:id = "internalFormDetails" 
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="text" 
+                                     value="{!v.sampleFormDetailsObj.Job_name__c}"
+                                     label="Job Name" 
+                                     onkeyup = "{!c.removeOpportunityFromRequired}"
+                                     required = "{!v.RemoveJobFromRequired == false}"
+                                     />                          
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "internalFormDetails" 
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="text" 
+                                     value="{!v.sampleFormDetailsObj.Job_Number__c}"
+                                     label="Job Number"
+                                     readonly="true"
+                                     /> 
+                </div>
+            </div> 
+            <!-- Form row 3 -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                
+                
+                <!-- Ship to Louisville-tile branch?  -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:select aura:id = "internalFormDetails"
+                                      class="slds-m-horizontal_xx-small"  
+                                      name="select1"  
+                                      label="Ship to Louisville-tile branch? " 
+                                      required="{!v.RemoveFromRequired == true}" 
+                                      onchange = "{!c.shipToBranch}"          
+                                      value="{!v.sampleFormDetailsObj.Ship_to_Louis_tile_branch__c}">
+                        
+                        <option text="Choose one.." value=""/>
+                        <aura:iteration items="{!v.shipLouisTileBranch}" var="slt">
+                            <option text="{!slt}" value="{!slt}" selected="{!slt == v.sampleFormDetailsObj.Ship_to_Louis_tile_branch__c}"/>
+                        </aura:iteration> 
+                    </lightning:select>  	
+                </div>
+                <!-- Project Type -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:select aura:id = "internalFormDetails"
+                                      class="slds-m-horizontal_xx-small"  
+                                      name="select1"  
+                                      label="Project Type" 
+                                      onchange = "{!c.removeFromRequired}"
+                                      required="{!v.RemoveFromRequired == true}"         
+                                      value="{!v.sampleFormDetailsObj.Project_Type__c}">
+                        
+                        <option text="Choose one.." value=""/>
+                        <aura:iteration items="{!v.projectTypes}" var="slt">
+                            <option text="{!slt}" value="{!slt}" selected="{!v.sampleFormDetailsObj.Project_Type__c == slt}"/>
+                        </aura:iteration> 
+                    </lightning:select>  	
+                </div>
+                
+                <!-- Customer Name -->
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <c:CustomLookup aura:id = "customLookupForAccount"
+                                    objectName="Account" 
+                                    fieldName="Name"
+                                    componentName="{!v.componentName}"
+                                    fieldsToBeDisplayed = "Name"
+                                    label="Account/Customer/Client Name" 
+                                    selectedRecord = "{!v.selectedAccount}"
+                                    placeholder="Enter Account/Customer/Client Name"
+                                    isRequired="false"/> 
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "internalFormDetails" 
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="text" 
+                                     value="{!v.sampleFormDetailsObj.Company_name__c}"
+                                     label="Account name (if not found)"
+                                     fieldLevelHelp="In case if account record doesn't exist in Salesforce, input account name here."
+                                     /> 
+                </div> 
+                
+            </div>            
+            <!-- Shipping address -->
+            <aura:if isTrue ="{!v.sampleFormDetailsObj.Ship_to_Louis_tile_branch__c == 'No'}">
+                <div class="slds-card slds-m-horizontal_medium slds-m-vertical_medium slds-p-horizontal_xx-small slds-p-vertical-small">
+                    
+                    <!-- Shipping heading -->
+                    <div class="slds-m-horizontal_small slds-m-vertical_small slds-text-heading_small">
+                        Shipping Address <label Style = "color:red;"> *</label>
+                    </div>
+                    
+                    <!-- shipping Address INFO-->
+                    <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_small slds-m-top_small" style = "background-color: #fff;">
+                        
+                        <!--Attention to: -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                            <lightning:input aura:id = "internalFormDetails"
+                                             type ="text" 
+                                             label="Attention to:"
+                                             value = "{!v.sampleFormDetailsObj.Care_of_Name__c}"
+                                             />	
+                        </div>
+                        
+                        <!-- Address and street -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                            <lightning:input aura:id = "internalFormDetails"
+                                             type ="text" 
+                                             label=" Street Address with apt/suite #"
+                                             value="{!v.sampleFormDetailsObj.Street_Address__c}"
+                                             required="{!v.shipToBranchOptionNo == true}"/>	
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                            <lightning:input aura:id = "internalFormDetails" 
+                                             class="slds-m-horizontal_xx-small" 
+                                             type="text"
+                                             value = "{!v.sampleFormDetailsObj.Phone_number__c}" 
+                                             label="Phone Number" 
+                                             required="{!v.shipToBranchOptionNo == true}"
+                                             maxlength = "10"
+                                             minlength="10"
+                                             onkeyup = "{!c.validatePhoneNumber}"/>
+                        </div>
+                        
+                    </div>
+                    
+                    <!-- Shipping address City , state ,ZIP -->
+                    <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_small slds-m-bottom_small" style = "background-color: #fff;">
+                        
+                        <!-- City Name -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                            <lightning:input aura:id = "internalFormDetails"
+                                             type ="text" 
+                                             label=" City" 
+                                             required="{!v.shipToBranchOptionNo == true}"
+                                             value = "{!v.sampleFormDetailsObj.City__c}"/>	
+                        </div>
+                        
+                        <!-- state Name -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                            <lightning:input aura:id = "internalFormDetails"
+                                             label="State"
+                                             required="{!v.shipToBranchOptionNo == true}"
+                                             value = "{!v.sampleFormDetailsObj.State__c}"/>
+                            
+                            
+                            <!-- <option value="">Choose State...</option>
+                                <aura:iteration items="{!v.stateLst}" var="option">
+                                    
+                                    <option value="{!option.value}" 
+                                            selected="{!v.sampleFormDetailsObj.State__c == option.value}">{!option.label}</option>
+                                </aura:iteration>
+                            </lightning:select>-->
+                        </div>
+                        
+                        
+                        
+                        <!-- Postal/ZIP Code -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                            <lightning:input aura:id = "internalFormDetails"
+                                             type ="text"
+                                             maxlength = "5"
+                                             minlength = "5" 
+                                             label="Postal/ZIP Code"
+                                             required="{!v.shipToBranchOptionNo == true}"
+                                             value = "{!v.sampleFormDetailsObj.Zip_Code__c}" 
+                                             onkeyup = "{!c.validateZipCode}"/>	
+                        </div>
+                        <!--Phone number-->
+                        
+                    </div>
+                </div>
+            </aura:if>
+            
+            <!-- Form row 4 -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                
+                <aura:if isTrue ="{!v.sampleFormDetailsObj.Ship_to_Louis_tile_branch__c == 'Yes'}">
+                    
+                    <!-- Select Branch Material should be shipped to ?  -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                        <lightning:select aura:id = "internalFormDetails"
+                                          class="slds-m-horizontal_xx-small"
+                                          label="Select branch material should be shipped to ? " 
+                                          required="{!v.shipToBranchOptionYes == true}"
+                                          value="{!v.sampleFormDetailsObj.Branch_Material_Should_Be_Shipped_To__c}">
+                            
+                            <option text="Choose one.." value=""/>
+                            <aura:iteration items="{!v.selectBranch}" var="sb">
+                                <option text="{!sb}" value="{!sb}" selected="{!sb == v.sampleFormDetailsObj.Branch_Material_Should_Be_Shipped_To__c}"/>
+                            </aura:iteration> 
+                            
+                        </lightning:select>    
+                    </div>
+                    
+                    <!-- How should be material shipped to the branch ?  -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                        <lightning:select aura:id = "internalFormDetails" 
+                                          class="slds-m-horizontal_xx-small"                                      
+                                          label="How should be material shipped to the branch ?"
+                                          required="{!v.shipToBranchOptionYes == true}"
+                                          value="{!v.sampleFormDetailsObj.How_material_be_ship_to_the_branch__c}"
+                                          onchange="{!c.showHelpText}">
+                            
+                            <option text="Choose one.." value=""/>
+                            
+                            <aura:iteration items="{!v.howMatToShip}" var="sp">
+                                <option text="{!sp}" value="{!sp}" selected="{!v.sampleFormDetailsObj.How_material_be_ship_to_the_branch__c  == sp.value}"/>
+                            </aura:iteration>
+                            
+                        </lightning:select>
+                        <aura:if isTrue="{!v.showHelpTextOnPicklist}">
+                            <label class="slds-form-element__label slds-p-left_xx-small">
+                                It would need to be picked up at the branch.
+                            </label>
+                        </aura:if>
+                    </div>
+                </aura:if>
+            </div>
+            
+            <!-- form row 5 -->
+            
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                
+                <aura:if isTrue ="{!v.sampleFormDetailsObj.Ship_to_Louis_tile_branch__c == 'No'}"> 
+                    
+                    <!-- Phone Number  -->
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                        <lightning:select aura:id = "internalFormDetails" 
+                                          class="slds-m-horizontal_xx-small" 
+                                          label="How should the Sample be shipped?" 
+                                          required="{!v.shipToBranchOptionNo == true}"
+                                          value="{!v.sampleFormDetailsObj.How_Material_Be_Shipped_To_Customer__c}">
+                            
+                            <option value = "">Choose one..</option>
+                            <aura:iteration items="{!v.howMatToCust}" var="sc">
+                                <option text="{!sc}" value="{!sc}" selected="{!sc == v.sampleFormDetailsObj.How_Material_Be_Shipped_To_Customer__c}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                </aura:if>
+            </div>
+            
+            <!--  Form row 6 -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                
+                <!--Additional Notes -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "internalFormDetails"
+                                     class="slds-m-horizontal_xx-small" 
+                                     type ="text" 
+                                     value = "{!v.sampleFormDetailsObj.Additional_notes__c}" 
+                                     label=" Additional Notes"/>	
+                </div>
+                
+                <!-- Selection sheet number to tie to sample -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "internalFormDetails" 
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="text" 
+                                     value = "{!v.sampleFormDetailsObj.Select_Sheet_No_To_Tie_Sample__c}"  
+                                     label="Selection sheet number to tie to sample"/>
+                </div>
+                
+            </div>
+            
+            <!-- form row 7 -->
+            <div class="slds-card slds-m-horizontal_medium slds-m-vertical_x-large slds-p-horizontal_xx-small slds-p-vertical-small" aura:id="validatorClass">
+                <div class="slds-m-horizontal_small slds-m-vertical_small">
+                    <span class="slds-text-heading_medium"> Sample Information</span>
+                    <span class ="slds-float_right none_float">                       
+                        <lightning:button label="Add Sample" 
+                                          iconName="utility:add" 
+                                          iconPosition="right" 
+                                          variant="brand" 
+                                          onclick = "{!c.OpenModal}"/>                    
+                    </span>
+                    
+                    
+                </div>
+                <aura:if isTrue = "{!v.isModalOpen}">
+                    <section
+                             role="dialog"
+                             tabindex="-1"
+                             aria-labelleCustomLookupControllerV2dby="modal-heading-01"
+                             aria-modal="true"
+                             class="slds-modal slds-modal_large slds-fade-in-open"
+                             >
+                        <div class="slds-modal__container">
+                            <div class="slds-modal__header modelwidth">
+                                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate"
+                                    >Search Product</h1
+                                    >
+                            </div>
+                            <div
+                                 class="slds-modal__content slds-p-around_medium modelstyle modal_height"
+                                 id="modal-content-id-1"
+                                 >
+                                
+                                <c:SearchItemModal aura:id="searchModal"
+                                                   isModalOpen = "{! v.isModalOpen}"
+                                                   objectName="Manufacturer_s_Items__c" 
+                                                   fieldsToBeSearch = "['Color__c','Manufacturer_Name__c','Manufacturer__c', 'Pattern__c' , 'Product_Description_2__c' , 'Product_Description__c' , 'Product_Name__c' , 'Product__c']" 
+                                                   fieldsToApplyFilterOn ="['Concatenated_Data__c']"
+                                                   placeholder="Search via name, description, pattern, color, description 2 or manufacturer"
+                                                   isSelectItemEnable = "{!v.isSelectItemEnable}"
+                                                   totalResults = "{!v.totalResults}"
+                                                   selectedProductsIds = "{!v.selectedProductsIds}"
+                                                   />
+                            </div>
+                            <div class="slds-modal__footer modelwidth modalfootercustom">
+                                <div class="totalSize slds-float_left">
+                                    <aura:unescapedHtml value="{!v.totalResults}" />
+                                </div>
+                                <div>
+                                    <lightning:button
+                                                      variant="brand"
+                                                      class="slds-button slds-button_neutral"
+                                                      disabled="{!v.isSelectItemEnable}"
+                                                      onclick="{!c.callSendSelectedProducts}"
+                                                      >Select item</lightning:button
+                                        >
+                                    <lightning:button
+                                                      class="slds-button slds-button_neutral"
+                                                      onclick="{!c.closeSearchItemModal}"
+                                                      >Cancel</lightning:button
+                                        >
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+                </aura:if>
+                <aura:if isTrue="{!v.isSelectedProduct}">
+                    
+                    <hr style="margin:0;margin:bottom:2px"/>
+                    <!-- Selected Products Items -->
+                    <div class="slds-col slds-size_1-of-1 slds-scrollable slds-m-bottom_small max_table_height">
+                        <table
+                               class="slds-table slds-table_cell-buffer slds-table_bordered table"
+                               aria-labelledby="element-with-table-label other-element-with-table-label"
+                               >
+                            <thead>
+                                <tr class="slds-line-height_reset HeadTr">                                
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Manufacturer">Manufacturer</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Item">Item</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Description">Description</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Color">Color</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Pattern">Pattern</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Description2">Description 2</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Quantity">Quantity</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Customizations">Any Customizations</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Delete">Delete</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration
+                                                items="{!v.selectedProductsData}"
+                                                var="itr"
+                                                indexVar="indexNum"
+                                                >
+                                    <aura:if isTrue="{! itr.showInTable}">
+                                    <tr>                                    
+                                        <td data-label="Manufacturer Name">
+                                            <div class="slds-truncate" title="Manufacturer">{!itr.Manufacturer_Name__c}</div>
+                                        </td>
+                                        
+                                        <td data-label="Manufacturer Name">
+                                            <div class="slds-truncate" title="Item">{!itr.Product_Name__c}</div>
+                                        </td>                                    
+                                        <td data-label="Product Description">
+                                            <div class="slds-truncate" title="Product Description">{!itr.Product_Description__c}</div>
+                                        </td>
+                                        <td data-label="Color">
+                                            <div class="slds-truncate" title="Color">{!itr.Color__c}</div>
+                                        </td>
+                                        <td data-label="Pattern">
+                                            <div class="slds-truncate" title="Pattern">{!itr.Pattern__c}</div>
+                                        </td>
+                                        <td data-label="Description 2">
+                                            <div class="slds-truncate" title="Description 2">{!itr.Product_Description_2__c}</div>
+                                        </td>
+                                        <td  class='editicon' data-label="Quantity">
+                                            
+                                            <lightning:input type='text' class='inputbox' aura:id='internalFormDetails' required='true' name="input1" value="{!itr.Quantity_for_Sample__c}" />
+                                            
+                                        </td>
+                                        <td data-label="Customization" onclick='{!c.CustomizationHandlerMethod}'>
+                                            <aura:if isTrue="{!v.CustomizationHandler}">
+                                                <div class ='CustomizationEdit'>
+                                                    <div class="slds-truncate" title="Customization">{!itr.Customization__c}</div>
+                                                    <lightning:buttonIcon iconName="utility:edit" variant="bare"   alternativeText="edit" title="edit" />
+                                                </div>
+                                                <aura:set attribute="else">
+                                                    <lightning:input class='inputbox' name="input1" value="{!itr.Customization__c}" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>  
+                                        <td data-label="delete">
+                                            <lightning:buttonIcon name='{!indexNum}' iconName="utility:delete" variant="bare" onclick='{!c.handleDeleteAction}'  alternativeText="delete" title="delete" class="slds-button_icon-error"/>
+                                        </td>
+                                        
+                                    </tr>
+                                        </aura:if>
+                                </aura:iteration>
+                            </tbody>
+                        </table>      
+                    </div>
+                </aura:if>
+                <aura:if isTrue="{!v.noItemSelected}">
+                    <p class="slds-text-color_error slds-m-left_small">*Please select atleast one Sample.</p>
+                </aura:if>
+            </div>
+            
+            <!-- form row 8 -->
+            
+            <!--SELECTED PRODUCTS TABLE-->
+            
+            <div class="slds-card slds-m-horizontal_medium slds-m-vertical_x-large slds-p-horizontal_xx-small slds-p-vertical-small">
+                <!--upload file -->
+                <div class="slds-m-horizontal_small slds-m-vertical_small slds-text-heading_medium">
+                    Upload Document
+                </div>
+                
+                <div class="slds-p-horizontal_medium">
+                    <lightning:input class="slds-m-horizontal_small"
+                                     aura:id="validField"
+                                     type="file"
+                                     label="{!v.fileObj.name}"
+                                     accept=""
+                                     multiple="false"
+                                     name="test"
+                                     onchange="{!c.handleFilesChange}"/>
+                </div>
+            </div>
+            <!-- Button Section -->
+            <div class="slds-grid slds-wrap">            
+                <div class="slds-col slds-size_12-of-12 alignright">
+                    <span>
+                        <lightning:button label="Save as Draft" 
+                                          iconName="utility:record_update" 
+                                          iconPosition="right"                                        
+                                          onclick = "{!c.saveDetails}"/>                    
+                        
+                        &nbsp;
+                        
+                        <lightning:button label="Submit" 
+                                          iconName="utility:save" 
+                                          iconPosition="right" 
+                                          variant="brand" 
+                                          onclick = "{!c.submitDetails}"/>                    
+                    </span>
+                </div>
+            </div>
+            
+            
+            
+            <aura:set attribute="else">
+                <div style="padding: 3%;background-color: white;border-radius: 7px;">
+                    <center>
+                        <h1>
+                            Thank you the Request.Please Check your email for Form updates.                        
+                        </h1>
+                    </center>
+                </div>
+            </aura:set>
+            
+        </aura:if>
+    </div>
+    
+    
+    
+    
+    <!-- ########### -->
+    <!--loading spinner start... style=Brand Medium (blue dots)   -->
+    <aura:if isTrue="{!v.Spinner == true}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+    <!--  Loading spinner end--> 
+    
+    
+</aura:component>

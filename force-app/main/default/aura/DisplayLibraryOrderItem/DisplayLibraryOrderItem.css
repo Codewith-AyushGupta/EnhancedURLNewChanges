@@ -1,0 +1,119 @@
+.THIS .slds-m-top_large {
+    margin-top: 4.4%;
+    margin-left: 1%;
+}
+.THIS .heading {
+    color: #032d60;
+    font-weight: bold;
+    font-size: 1.6rem;
+}
+
+.THIS .slds-form-element__label{
+    font-size: 0.85rem !important;
+    font-weight: bold;
+}
+
+.THIS .slds-form-element__input{
+    font-size: 0.7rem !important;
+}
+.THIS .editicon
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.THIS .CustomizationEdit
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* border: 1px solid; */
+    max-width: 79%;
+}
+.THIS .inputbox {
+	flex-direction : row!important;
+    min-width: 80px !important;
+}
+.THIS .slds-input{
+    min-width: 80px !important;
+}
+.THIS .slds-box{
+    /* padding: 1%; */
+    background: white;
+    padding-top: 0;
+    padding: 0;
+    padding-bottom: 1%;
+}
+.THIS.slds-modal__content{
+    background: whitesmoke;
+}
+.THIS .tablestyle{
+    background: rgb(195 195 195 / 40%);
+}
+
+.THIS .slds-text-heading_medium
+{
+    background: rgb(231 231 231);
+    margin: 0;
+    padding: 1%;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: bolder;
+    
+}
+.THIS.cDisplayLibraryModel {
+    display: flex !important;
+    flex-direction: column; 
+}
+.THIS .border{
+    border: 1px solid;
+}
+.THIS .slds-form-element {
+    display: flex!important;
+    flex-direction: column;
+}
+.THIS .Address{
+    width: 87vw;
+    background: rgb(239 239 239);
+    margin-top: 3%;
+    padding: 2%;
+    padding-top: 0;
+    border: 1px solid #d1b9b9;
+    box-shadow: 4px 3px 0 0 rgb(0 0 0 / 15%);
+}
+.THIS .slds-card{
+    background: #f2f7f8;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+.THIS .slds-media_center{
+    margin-left: 2%;
+    margin-top: 1%;
+}
+.THIS .adjust_width{
+    width: 98%;
+    margin-left: 3px;
+}
+.THIS .alignright{
+    text-align:right;
+}
+.THIS .error{
+    border : 2px Solid red;
+}
+.THIS .form_number_saved{
+    font-size: large;
+    font-weight: 600;
+}
+.THIS h4{
+    font-weight: 600;
+}
+.THIS h1{
+    font-weight: 600;
+}
+.THIS .max_table_height{
+     max-height : 50vh;
+}
+.THIS.cDisplayLibraryOrderItem .slds-text-heading_medium{
+    background:#f2f7f8;
+}

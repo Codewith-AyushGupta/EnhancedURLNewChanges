@@ -1,0 +1,10 @@
+.THIS .text-center{
+    text-align: center ;
+}
+
+.THIS .slds-form-element__label{
+    font-weight : 800;
+}
+.THIS .formmargin {
+    margin-top : 10px;
+}

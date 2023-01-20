@@ -1,0 +1,102 @@
+<aura:component Controller="DealerProfileController"
+                extends="c:HandleErrorModal"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="dealerLVT" type="Object[]" default="[]"/>
+    <aura:attribute name="dealerProfileObj" type="Object"
+                    description="this's object used for parent object "/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="dealerType" type="String"/>
+    <aura:attribute name="createdDate" type="String" description="for Year Picklist" />
+    <aura:attribute name="deleteRow" type="Integer"  />
+    <aura:attribute name="totalAnnualRevenue33" type="Decimal" />
+    <aura:attribute name="saleAndMarketId" type="String"/>
+    <aura:attribute name="totalAnnualRevenue40" type="Decimal" />
+    <aura:method name="sampleMethod" action="{!c.doInit}" />
+            <aura:handler name="removeItem" event="c:DisplayItemRemove" action="{!c.removeItems}"/>
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+
+    
+    <aura:html tag="style">
+        html {
+        background: #f2f7f8;
+        }
+    </aura:html>
+    
+    
+   <div class="container" style = "width:95% ;margin: 0 auto;">
+        <div class="slds-grid slds-wrap slds-gutters">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-p-top_small">
+                <span><div class="slds-text-heading_small "><b>LVT</b></div></span>
+            </div>
+        </div>
+        
+    </div>
+    <article class="slds-card slds-m-left_x-large slds-m-right_x-large  slds-m-top_small slds-p-left_large slds-p-right_large slds-p-bottom_large slds-p-top_xx-small">
+        <div class="slds-p-top_none">  
+            <div class="slds-scrollable_y" style="height:20rem;">
+                <table class="slds-table">
+                    <thead>
+                        <tr>
+                            <div class="slds-grid  color">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                    <label class="slds-form-element__label" for="unique-id-of-input">Manufacturer</label>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                    <label class="slds-form-element__label" for="unique-id-of-input">Style Type</label>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                    <label class="slds-form-element__label" for="unique-id-of-input">Price</label>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                    <label class="slds-form-element__label" for="unique-id-of-input">Volume</label>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 ">
+                                    <label class="slds-form-element__label" for="unique-id-of-input">Why is the client using products?</label>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 ">
+                                    <label class="slds-form-element__label" for="unique-id-of-input">Action</label>
+                                </div>
+                                
+                            </div>
+                        </tr>
+                    </thead>
+                    
+                </table>
+                <aura:iteration items="{!v.dealerLVT}" var="ceramic" indexVar="index">
+                     <aura:if isTrue="{!ceramic.isDeleted != true}">
+                 <c:DisplayItemLabels ceramic="{!ceramic}" index="{!index}" textAreaValue="{!ceramic.whyDealerUsingProduct}"/>
+                     </aura:if>
+                </aura:iteration>
+            </div>
+        </div>
+    </article>
+    <div class="slds-clearfix">
+        <div class="slds-float_right">
+            <!-- Add More Sample Button -->
+            <lightning:button label="Add LVT Profile" 
+                              iconName="utility:add" 
+                              iconPosition="right" 
+                              class="slds-m-vertical_small slds-m-horizontal_small" 
+                              variant="brand" 
+                              onclick ="{!c.AddLVTProfile}" 
+                              />
+        </div>
+    </div>
+    <div class="slds-clearfix">
+        <div class="slds-float_right">
+            <lightning:button label="Save" 
+                              iconName="utility:save" 
+                              iconPosition="right" 
+                              class="slds-m-vertical_small slds-m-horizontal_small" 
+                              variant="brand" 
+                              onclick ="{!c.submitDetails}" 
+                              />
+        </div>
+    </div>
+    <aura:if isTrue="{!v.Spinner}">
+            <lightning:spinner class="c-spinner" alternativeText="Please wait........." variant="brand" size="large"/>
+
+  </aura:if>
+    
+</aura:component>

@@ -1,0 +1,35 @@
+<aura:component controller="LT_PreferredVendorRFPCtrl">
+    
+    <aura:attribute name="listFileUploaded" type="List"/>
+    <aura:attribute name="isSubmit" type="Boolean" default="false" />
+    
+    <aura:if isTrue="{!v.listFileUploaded.length gt 0}">
+        <table class=" slds-form-element__label slds-table_cell-buffer slds-m-top_xx-small" >
+            <tr>
+                <aura:if isTrue="{!!v.isSubmit}">
+                    <td class="headerName  slds-truncate " style="font-family: Arial, Helvetica, sans-serif  !important;">File Name</td>
+                    <td class="headerName slds-truncate" style="font-family: Arial, Helvetica, sans-serif  !important;">Action</td>
+                </aura:if>
+            </tr>
+            <aura:iteration items="{!v.listFileUploaded}" var="file" indexVar="index">
+                <tbody>
+                    <tr class="slds-hint-parent">
+                        <td class="slds-col " scope="row">
+                            {!file.fileName}
+                        </td>
+                        <aura:if isTrue="{!!v.isSubmit}">
+                            <td class="slds-col">
+                                <lightning:buttonIcon class="{!'icn'+(or(v.isSubmit)?true:false)}" 
+                                                      name="{!index}"
+                                                      iconName="utility:delete" 
+                                                      size="large"   
+                                                      variant="bare"
+                                                      onclick ="{!c.deleteFileRecord}"/> 
+                            </td>
+                        </aura:if>
+                    </tr>
+                </tbody>
+            </aura:iteration>
+        </table>
+    </aura:if>
+</aura:component>

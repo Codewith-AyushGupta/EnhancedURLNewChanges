@@ -1,0 +1,148 @@
+.THIS .modelstyle {
+    
+    height:60vh;
+    overflow:hidden;
+}
+
+.THIS .modalfootercustom{
+    
+    display:flex;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+}
+.THIS .searchbuttonGrid{
+    display: flex;
+    justify-content: center;
+}
+.THIS .searchInput{
+    width: 100%;
+    margin-right: 2%;
+    z-index:20;
+    
+}
+.THIS .searchButton{
+    height: 10%;
+    position: relative;
+    top: 25px;
+    
+}
+.THIS .checkBox{
+    cursor: pointer;
+}
+.THIS.customfade 
+{
+    background:rgb(0 0 0 / 51%);
+}
+.THIS .modalDataView
+{
+    min-height: 30vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    border-bottom: 2px solid black;
+}
+.THIS .detail{
+    font-family: 'Lato';
+    font-size: 1.2rem;
+}
+.THIS .slds-spinner_container{
+    margin: 13% 0%;
+    margin-top: 16%;
+}
+.THIS .slds-table_header-fixedfo{
+    font-size: 0.7rem;
+}
+.THIS .dataTableOverFlow{
+    max-height: 43vh;
+   
+    overflow-y: auto;
+    overflow-x: scroll !important ;
+}
+.THIS .tablecontainer{
+    display: flex;
+    flex-direction: row;
+}
+.THIS .manufacturerData{
+    overflow-y: auto;
+    height: 43vh;
+    background: #f2f7f8;
+    border-top-left-radius: 5px;
+    border-right: 1px solid rgba(0,0,0,0.2);
+} 
+.THIS .slds-nav-vertical__title{
+    position: relative;
+    right: 11%;
+}
+
+.THIS .slds-badge{
+    
+    
+    display: block;
+    left: 16%;
+    right: 16px;
+    position: relative;
+    font-weight:900;
+    background : white;
+    
+}
+
+.THIS .slds-nav-vertical__action{
+    padding-left: 6%;
+    padding-right:17%;
+    font-size: 10.8px;
+    display: flex;
+    font-weight:900;
+    margin-bottom:1px
+}
+.THIS hr{
+    margin : 0;
+    width : 95%;
+    margin-left : auto;
+    margin-right : auto;
+}
+.THIS ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+.THIS ::-webkit-scrollbar-track {
+   display: none !important;
+}
+.THIS ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+}
+/*
+.THIS .slds-table{
+    padding-bottom : 15px; 
+}*/
+.THIS .HeadTr{
+    position : sticky;
+    top: 0;
+    z-index : 10;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
+    
+}
+.THIS .slds-spinner_container{
+    background: rgb(255 255 255 / 34%);
+}
+.THIS.cSearchItemModal .slds-nav-vertical__title{
+    left:0;
+    position:sticky;
+    top:0;
+    z-index: 10;
+    background : #f1f7f8;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
+    padding-top: 13px;
+    padding-bottom: 12px;
+    /*border-right : 1px solid rgba(0,0,0,0.2);*/
+}
+
+@media(max-width:768px){
+    .THIS .makeResponsive{
+
+        margin-bottom: 8px;
+        margin-top: 30px;
+        
+    }
+}

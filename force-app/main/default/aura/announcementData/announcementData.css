@@ -1,0 +1,27 @@
+.THIS{
+}
+
+.THIS .slds-main-message{
+    padding: 1%;
+    border: 1px solid rgb(80 185 94 / 25%);
+    background-color: rgb(80 185 94 / 25%);
+    border-radius: 8px;
+    margin-top: 3px;    
+}
+
+.THIS .slds-replied-message{
+    padding: 1%;
+    border: 1px solid rgb(98 183 237 / 15%);
+    background-color: rgb(98 183 237 / 15%);
+    border-radius: 8px;
+    margin-top: 3px;    
+    text-align: right;
+}
+
+.THIS .messagewidth{
+    width: 95%;
+}
+
+.THIS .slds-clear-both{
+    clear:both;
+}

@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Ancilliary_preferred_vendor</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Ancilliary preferred vendor</shortDescription>
+        <value>https://louisville-tile--uat.sandbox.my.site.com/AncillaryVendorRFP/s/ancillary-vendor-rfps</value>
+    </labels>
+    <labels>
+        <fullName>AssignBtn</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AssignBtn</shortDescription>
+        <value>Assign</value>
+    </labels>
+    <labels>
+        <fullName>AssignSuccessSummary</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AssignSuccessSummary</shortDescription>
+        <value>The opportunities you selected and their attached open activities have successfully been reassigned.</value>
+    </labels>
+    <labels>
+        <fullName>AssignSuccessTitle</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AssignSuccessTitle</shortDescription>
+        <value>Reassignment successfully completed!</value>
+    </labels>
+    <labels>
+        <fullName>AssignToBtn</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AssignToBtn</shortDescription>
+        <value>Assign to:</value>
+    </labels>
+    <labels>
+        <fullName>AssigningBtn</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AssigningBtn</shortDescription>
+        <value>In progress ...</value>
+    </labels>
+    <labels>
+        <fullName>Attach_copy_of_exemption_certificate</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Attach copy of exemption certificate</shortDescription>
+        <value>Attach_copy_of_exemption_certificate</value>
+    </labels>
+    <labels>
+        <fullName>Balance_Sheet</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Balance Sheet</shortDescription>
+        <value>Balance_Sheet</value>
+    </labels>
+    <labels>
+        <fullName>CloseDateCriteriaLabel</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloseDateCriteriaLabel</shortDescription>
+        <value>Closed Date</value>
+    </labels>
+    <labels>
+        <fullName>CreditApplicationFormForFlow</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CreditApplicationFormForFlow</shortDescription>
+        <value>https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Credit_Application_Form__c/</value>
+    </labels>
+    <labels>
+        <fullName>Credit_Application_Form_URL</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Credit Application Form URL</shortDescription>
+        <value>https://louisville-tile--uat.sandbox.my.site.com/s/credit-application</value>
+    </labels>
+    <labels>
+        <fullName>CriteriaSearchSection</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CriteriaSearchSection</shortDescription>
+        <value>Search with a search criteria</value>
+    </labels>
+    <labels>
+        <fullName>Decor_URL</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Decor Sample Request  URL</shortDescription>
+        <value>https://louisville-tile--uat.sandbox.my.site.com/form/s/decor24-form</value>
+    </labels>
+    <labels>
+        <fullName>DisplayViewLabel</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DisplayViewLabel</shortDescription>
+        <value>Display:</value>
+    </labels>
+    <labels>
+        <fullName>HeaderText</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>HeaderText</shortDescription>
+        <value>Mass reassign opportunities</value>
+    </labels>
+    <labels>
+        <fullName>Income_Statement</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Income Statement</shortDescription>
+        <value>Income_Statement</value>
+    </labels>
+    <labels>
+        <fullName>KeyReportHomeLink</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>KeyReportHomeLink</shortDescription>
+        <value>https://louisville-tile--uat.lightning.force.com/</value>
+    </labels>
+    <labels>
+        <fullName>Most_Recent_Years_Tax_Returns</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Most Recent Years Tax Returns</shortDescription>
+        <value>Most_Recent_Years_Tax_Returns</value>
+    </labels>
+    <labels>
+        <fullName>NewViewLinkLabel</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>NewViewLinkLabel</shortDescription>
+        <value>Create new view</value>
+    </labels>
+    <labels>
+        <fullName>NoResultSummary</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>NoResultSummary</shortDescription>
+        <value>Please modify your search criteria</value>
+    </labels>
+    <labels>
+        <fullName>NoResultTitle</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>NoResultTitle</shortDescription>
+        <value>No results</value>
+    </labels>
+    <labels>
+        <fullName>NoViewSelection</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>NoViewSelection</shortDescription>
+        <value>- None -</value>
+    </labels>
+    <labels>
+        <fullName>Opportunity_Split_Type_Revenue_Id</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Opportunity Split Type Revenue Id</shortDescription>
+        <value>14901000000001iAAA</value>
+    </labels>
+    <labels>
+        <fullName>Other_Document</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Other Document</shortDescription>
+        <value>Other_Document</value>
+    </labels>
+    <labels>
+        <fullName>Preferred_Vendor_RPF_link</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Preferred Vendor RPF link</shortDescription>
+        <value>https://louisville-tile--uat.sandbox.my.site.com/PreferredVendor/s/preferred-vendor-rfp</value>
+    </labels>
+    <labels>
+        <fullName>Register_Job_Cc_email</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Register Job Cc email</shortDescription>
+        <value>rajneesh.jadon@nubystech.com</value>
+    </labels>
+    <labels>
+        <fullName>Register_Job_Email</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Register Job Email</shortDescription>
+        <value>Soniya.pal@nubystech.com</value>
+    </labels>
+    <labels>
+        <fullName>Report_for_Home</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Report for Home Page</shortDescription>
+        <value>Showroom Dashboard Report</value>
+    </labels>
+    <labels>
+        <fullName>ResultBlockTitle</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ResultBlockTitle</shortDescription>
+        <value>Results</value>
+    </labels>
+    <labels>
+        <fullName>Sample_Request_Form_URL</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Sample Request Form URL</shortDescription>
+        <value>https://louisville-tile--uat.sandbox.my.site.com/form/s/internal-form</value>
+    </labels>
+    <labels>
+        <fullName>SearchBlockTitle</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SearchBlockTitle</shortDescription>
+        <value>Search opportunities</value>
+    </labels>
+    <labels>
+        <fullName>SearchBtn</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SearchBtn</shortDescription>
+        <value>Search</value>
+    </labels>
+    <labels>
+        <fullName>SearchingBtn</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SearchingBtn</shortDescription>
+        <value>Searching ...</value>
+    </labels>
+    <labels>
+        <fullName>TeamMemberRole</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TeamMemberRole</shortDescription>
+        <value>Contractor rep</value>
+    </labels>
+    <labels>
+        <fullName>TooManyRowsError</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>TooManyRowsError</shortDescription>
+        <value>The total number of open activities on the opportunities you selected is greater than the system can handle. Please reduce the number of opportunities to reassign</value>
+    </labels>
+    <labels>
+        <fullName>TooManyRowsSummary</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>TooManyRowsSummary</shortDescription>
+        <value>The view you selected returned more than 1000 rows. Only the 1000 first ones will be displayed</value>
+    </labels>
+    <labels>
+        <fullName>TooManyRowsTitle</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>TooManyRowsTitle</shortDescription>
+        <value>Too many rows returned</value>
+    </labels>
+    <labels>
+        <fullName>TotalFooterLabel</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>TotalFooterLabel</shortDescription>
+        <value>Number</value>
+    </labels>
+    <labels>
+        <fullName>Upload_File</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Upload File</shortDescription>
+        <value>Income_Document</value>
+    </labels>
+    <labels>
+        <fullName>ViewSearchSection</fullName>
+        <categories>Opty Reassign Page</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ViewSearchSection</shortDescription>
+        <value>Search with a view</value>
+    </labels>
+    <labels>
+        <fullName>WebSite_Form_URL</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>WebSite Form URL</shortDescription>
+        <value>https://louisville-tile--uat.sandbox.my.site.com/form/s/website-form</value>
+    </labels>
+    <labels>
+        <fullName>creditApplicatiobFromEmail</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>creditApplicatiobFromEmail</shortDescription>
+        <value>0D2010000004Elf</value>
+    </labels>
+    <labels>
+        <fullName>greeting</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>greeting</shortDescription>
+        <value>Aloha!</value>
+    </labels>
+    <labels>
+        <fullName>new_preferred_vendor_RFP_Link</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>new preferred vendor RFP Link</shortDescription>
+        <value>https://louisville-tile--uat.sandbox.my.site.com/PreferredVendor/s/preferred-vendor-rfp</value>
+    </labels>
+    <labels>
+        <fullName>priceBook_for_selection_sheet</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>priceBook for selection sheet</shortDescription>
+        <value>PriceBook for Selection Sheet</value>
+    </labels>
+    <labels>
+        <fullName>pricebook</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>pricebook</shortDescription>
+        <value>Standard Price Book</value>
+    </labels>
+</CustomLabels>

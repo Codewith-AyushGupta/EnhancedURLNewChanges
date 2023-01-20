@@ -1,0 +1,105 @@
+.THIS {
+    
+}
+.THIS .slds-accordion__list-item{
+    border:none;
+}
+.THIS .slds-accordion__summary-action{
+    background:#e5e5e5;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.THIS .alignright{
+    text-align:right;
+}
+
+.THIS .heading {
+    color: #032d60;
+    font-weight: bold;
+    font-size: 1.6rem;
+}
+
+.THIS .slds-form-element__label{
+    font-size: 0.85rem !important;
+    font-weight: bold;
+}
+
+.THIS .slds-form-element__input{
+    font-size: 0.7rem !important;
+}
+
+
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+
+.THIS #errorSectiontrue .slds-accordion__summary-action{
+    background:#ffecec !important;
+}
+.THIS #errorSectiontrue .slds-accordion__summary-action{
+    background:#ffecec !important;
+}
+.THIS #errorSectionfalse .slds-accordion__summary-action{
+    background:#e5e5e5;
+}
+.THIS .slds-textarea{
+    
+      height: 6rem !important;
+}
+
+/*.THIS .setBottomLabelMargin > label{
+    margin-bottom:22px;
+}*/
+
+@media (min-width:965px) and (max-width:1431px) {
+    .THIS .setDiscussMrgnBtm > label{
+        margin-bottom:22px;
+    }
+}
+
+@media (min-width: 1431px)  and (max-width:965px) {
+    .THIS .setDiscussMrgnBtm > label{
+        margin-bottom:22px;
+    }
+}
+
+@media only screen and (min-width:1417px) {
+    .THIS .setBottomLabelMargin > label{
+        margin-bottom:22px;
+    }
+}
+
+@media (min-width: 793px) and (max-width:926px) {
+    .THIS .setBottomLabelMargin > label{
+        margin-bottom:22px;
+    }
+}
+.THIS .setTopLabelMargin{
+     margin-top:-5px;
+}
+.THIS .setBottomLabelMarginExperienceProcess > label{
+    margin-bottom:43px;
+}
+.THIS .alignright{
+    text-align: right;
+}
+.THIS .icnfalse {
+    color:red;
+}
+/*.THIS .slds-textarea {
+    height:40px !important;
+}*/
+.THIS .headerName {
+    font-family: 'RobotoMedium'!important;
+    font-size: 15px;
+    color: #5a5a5a;
+    padding: 0px 24px;
+    background: #f8f8f8;
+}
+
+.THIS.completeBg{
+    background-color: #f8f9f9;
+    border: none;
+}

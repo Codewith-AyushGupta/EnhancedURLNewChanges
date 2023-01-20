@@ -1,0 +1,75 @@
+.THIS .slds-fade-in-open {
+    background: rgb(14 12 12 / 42%);
+}
+.THIS .slds-form-element {
+    display: flex !important;
+}
+.THIS .slds-form-element__label:empty {
+    margin: 0% 0%;
+    display: none;
+}
+.THIS .slds-tabs_card{
+    overflow:true;
+}
+.THIS .slds-card__body{
+    overflow-x: auto;
+}
+.THIS .min_width{
+    min-width : 230px;
+}
+.THIS .set_margin{
+   
+    position: sticky;
+    left: 0;
+}
+.THIS .min_width_for_date_input{
+    min-width: 137px;
+}
+.THIS .slds-form-element__label{
+    font-size: 0.85rem !important;
+    font-weight: bold;
+}
+.THIS.slds-modal__content{
+    background: whitesmoke;
+}
+.THIS .slds-card__body{
+    min-height: 30vh;
+}
+.THIS .slds-has-error .slds-form-element__help{
+    display:none;
+}
+.THIS.slds-form-element__input{
+    font-size: 0.7rem !important;
+}
+.THIS.cDisplayLibraryModel .slds-form-element__label{
+    display : none;
+}
+.THIS .category_style{
+    display:flex;
+}
+.THIS .style_headers{
+    min-width : 124px;
+    border-right : 1px solid rgba(0,0,0,0.5);
+    cursor : pointer;
+    background: #f2f7f8;
+}
+.THIS .action_button{
+    float: right;
+    margin-right: 20px;
+}
+.THIS .table_height{
+ 	max-height:430px;
+    overflow-y : auto;
+    padding-bottom:206px;
+}
+.THIS ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+.THIS ::-webkit-scrollbar-track {
+   display: none !important;
+}
+.THIS ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(0,0,0,0.4);
+}

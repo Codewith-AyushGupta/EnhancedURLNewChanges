@@ -1,0 +1,146 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                controller="LT_PreferredVendorRFPCtrl" access="global" >
+    
+    <!--Start Attributes-->
+    <aura:attribute name="account" type="object" default="{}"/>
+    <aura:attribute name="index" type="integer"/>
+    <aura:attribute name="lstAccountType" type="list"  default="[]"/>
+    <aura:attribute name="isSubmit" type="Boolean" default="false" />
+    
+    <!--List of States -->
+    <aura:attribute name="lstState" type="list"  default="[]"/>
+    
+    <!-- to disable/enable the delete button-->
+    <aura:attribute name="isDeleteBtnDisabled" type="Boolean" default="false" />
+    <aura:attribute name="deleteCurrentAccountRecord" type = "boolean"/>
+    <aura:attribute name="deleteIndex" type="Integer" />
+    <aura:attribute name="recordSectionName" type="string" default="CurrentAccount"/>
+    
+    <!-- register Sample item delete event -->
+    <aura:registerEvent name="deleteRecordEvent" type="c:deleteRecords"/>
+    <!--End Attributes-->
+    <aura:method name="validateAllAccounts" action="{!c.validateAllAccountsForm}" access="public" />
+    
+    <!-- shipping Address INFO-->
+    <aura:html tag="style">
+        html {
+        background: #f2f7f8;
+        }
+    </aura:html>
+    <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_xx-small slds-m-top_xx-small">
+        <!-- Address and street -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+            <lightning:input aura:id = "currentAccounts"
+                             type ="text" 
+                             label="Name"
+                             value="{!v.account.ct_Name}"
+                             required="true"
+                             disabled = "{!v.isSubmit}"/>	
+        </div>
+        
+        <!-- Attention to: -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+            
+            <lightning:select aura:id = "currentAccounts" 
+                              name="select1" 
+                              value="{!v.account.ct_Type}" 
+                              label="Type"
+                              required="true"
+                              disabled = "{!v.isSubmit}">
+                <option value="">Choose Department...</option>
+                <aura:iteration items="{!v.lstAccountType}" var="option">                                                
+                    <option value="{!option}" 
+                            selected="{!v.account.ct_Type == option}">{!option}</option>
+                </aura:iteration>                
+            </lightning:select>
+            
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+            <lightning:input aura:id = "currentAccounts"
+                             type ="text" 
+                             label=" Remark"
+                             value = "{!v.account.ct_Remark}"
+                             disabled = "{!v.isSubmit}"/>	
+        </div>
+    </div>
+    <!-- Shipping address City , state ,ZIP -->
+    <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_xx-small slds-m-bottom_xx-small" >
+        <!-- City Name -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+            <lightning:input aura:id = "currentAccounts"
+                             type ="text" 
+                             label=" City" 
+                             required="true"
+                             value = "{!v.account.ct_City}"
+                             disabled = "{!v.isSubmit}"/>	
+        </div>
+        <!-- state Name -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+            <lightning:select aura:id = "currentAccounts"
+                              name="select1" 
+                              value="{!v.account.ct_State}" 
+                              label="State" 
+                              required="true"
+                              disabled = "{!v.isSubmit}">
+                <option value="">Choose State...</option>
+                <aura:iteration items="{!v.lstState}" var="option">                                                
+                    <option value="{!option}" 
+                            selected="{!v.account.ct_State == option}">{!option}</option>
+                </aura:iteration> 
+            </lightning:select> 
+        </div>
+        
+        <!-- Purchase volume -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+            <lightning:input aura:id = "currentAccounts"
+                             type ="text"                            
+                             label="Purchase volume"
+                             value = "{!v.account.ct_PurchesVolume}" 
+                             onkeyup = "{!c.enterNumberOnly}"
+                             disabled = "{!v.isSubmit}"/>	
+            
+        </div>
+    </div>
+    <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_xx-small slds-m-bottom_xx-small" >
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_xx-small">
+            <lightning:input aura:id = "currentAccounts"
+                             type ="text"                            
+                             label="Length Of Relationship(in Year)"
+                             value = "{!v.account.ct_LengthOfRelationship}" 
+                             onkeyup = "{!c.enterNumberOnly}"
+                             required="true"/>	
+            
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12">
+            <div class="slds-m-top_large">
+                <lightning:buttonIcon class="{!'icn'+(or(v.isDeleteBtnDisabled,v.isSubmit)?true:false)}"   
+                                      iconName="utility:delete" 
+                                      size="large"   
+                                      variant="bare"
+                                      onclick = "{!c.openCurrentAccountRecord}" 
+                                      disabled = "{!or(v.isDeleteBtnDisabled,v.isSubmit)}" />
+            </div>
+        </div>
+    </div>
+    <!-- Delete Sample Item Confirmation Modal -->
+    <aura:if isTrue = "{!v.deleteCurrentAccountRecord}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Delete</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>
+                        Do you want to delete this Current Account?
+                    </p>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick = "{!c.closeCurrentAccountRecord}">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick = "{!c.deleteCurrentAccountRecord}">Yes</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+    
+</aura:component>

@@ -1,0 +1,27 @@
+<aura:component controller="WinningBidderAlertMessageController" implements="force:appHostable,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,force:hasRecordId" access="global" >
+    
+    
+    <aura:attribute name="winningBidderName" type="String" />
+    <aura:attribute name="isShowWarningMessage" type="Boolean" default="false" />
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    
+    <aura:if isTrue="{!v.isShowWarningMessage}">
+    <div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+        <span class="slds-assistive-text">warning</span>  
+        <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small" title="Description of icon when needed">
+        <lightning:icon iconName="utility:warning" alternativeText="warning" />
+        </span>
+        <h2>Because the winning bidder account is owned in Salesforce by the same person listed as the owner of this opportunity, opportunity splits will not be automatically calculated.  Opportunity splits will need to be set/edited manually by sales management.
+        </h2>
+        <div class="slds-notify__close">
+            <button class="slds-button slds-button_icon slds-button_icon-small" title="Close">               
+                <span class="slds-assistive-text">Close</span>
+            </button>
+        </div>
+    </div>
+    </aura:if>
+</aura:component>

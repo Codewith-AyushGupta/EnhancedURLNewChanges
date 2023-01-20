@@ -1,0 +1,8 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="Branch" type="String"/>
+    <aura:attribute name="ownerName" type="String"/>
+    <aura:attribute name="isBranch" type="boolean" default="false"/>
+    <aura:attribute name="ischeckAccountNull" type="boolean" default="false"/>
+    <aura:attribute name="branchId" type="String"/>
+    <aura:attribute name="accountAddress" type="Object"/>
+</aura:event>

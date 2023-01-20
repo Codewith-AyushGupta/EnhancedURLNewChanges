@@ -1,0 +1,76 @@
+<aura:component controller="DealerProfileController" 
+                extends="c:HandleErrorModal"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+        <aura:attribute name="recordsId" type="String" />
+
+    <!--This attribute use for dynamic populate Account category-->
+   
+    <aura:attribute name="dealerCustomer" type="Object[]" />
+    <aura:method name="childValidation" action="{!c.handleValidation}" access="public" />
+    <aura:attribute name="deleteRow" type="Integer"  />
+    <aura:handler name="removeItem" event="c:DisplayItemRemove" action="{!c.removeItems}"/>
+
+    <div class="slds-p-top_none ">
+        <div class="slds-scrollable_y" style="height:10rem;">
+
+        <table class="slds-table">
+            
+            <thead>
+                <tr>
+                    <div class="slds-grid  color">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                            <label class="slds-form-element__label">Customer Name</label>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                            <label class="slds-form-element__label" >Customer Type</label>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                            <label class="slds-form-element__label" >Sales Person</label>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 ">
+                            <label class="slds-form-element__label" >Supplier</label>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                            <label class="slds-form-element__label">Selections</label>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                            <label class="slds-form-element__label" >Notes</label>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 slds-align_absolute-center">
+                            <label class="slds-form-element__label" >Inactive</label>
+                        </div>
+                        <!--div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 slds-align_absolute-center">
+                            <label class="slds-form-element__label" >Action</label>
+                        </div-->
+                    </div>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <aura:iteration items="{!v.dealerCustomer}" var="dc" indexVar="index">
+                  
+                         <c:DealerCustomerInputBox dealerCustomer="{!dc}" index="{!index}" textAreaValue="{!dc.notes}" recordsId="{!v.recordsId}"/>
+   
+                </aura:iteration>
+            </tbody>
+        </table>
+            <div class="slds-clearfix">
+            <div class="slds-float_right">
+                <!-- Add More Sample Button -->
+                <lightning:button label="Add Dealer Customer" 
+                                  iconName="utility:add" 
+                                  iconPosition="right" 
+                                  class="slds-m-vertical_small slds-m-horizontal_small" 
+                                  variant="brand" 
+                                  onclick ="{!c.AddLtDisplayCarried}" 
+                                  />
+                
+            </div>
+        </div>
+        </div>
+        
+    </div>  
+    
+    
+</aura:component>

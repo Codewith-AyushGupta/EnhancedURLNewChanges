@@ -1,0 +1,1309 @@
+<aura:component controller="BusinessDetailsController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+     <!-- save the contact id  -->
+    <aura:attribute name ="contactID" type="String"/>
+    
+    <!-- save the submitted value  -->
+    <aura:attribute name ="isSubmitted" type="Boolean"/>
+        <aura:attribute name ="isTrueCreditAppsName" type="Boolean" default='false'/>
+
+    <aura:attribute name ="creditApplicationObject" type="Object" />
+     <aura:attribute name ="creditAppsName" type="String" />
+
+    <!--For Showing Or Hide Modal-->
+    <aura:attribute name="modalOpen" type="Boolean" default="false"/>
+    
+    <!-- Show spinner on page load -->
+    <aura:attribute name="isShowSpinner" type="Boolean" default="false" />
+    
+    <!-- do init  handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:if isTrue="{!v.isShowSpinner}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+    <!--  page background color  -->
+    <aura:html tag="style">
+        html {
+        background: #F8F9F9;
+        }
+    </aura:html>
+    
+    <!-- lightning:accordion -->
+    <br/>
+    <lightning:accordion aura:id="accordion" 
+                         allowMultipleSectionsOpen="true" 
+                         onsectiontoggle="{! c.handleSectionToggle }"
+                         activeSectionName="A">
+        <lightning:accordionSection name="A" label="Business Details">
+            <aura:set attribute="body">
+                <div class="slds-m-top_medium formmargin">
+                    <!--Basic details fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-2">
+                                    <strong >Date </strong><br/>
+                                    <span>     
+                                        <lightning:formattedDateTime aura:id="dt"
+                                                                     value="{!v.creditApplicationObject.businessDetails.currentDate}"
+                                                                     month="short"
+                                                                     day="numeric"
+                                                                     year="numeric"
+                                                                     timeZone="{!$Locale.timezone}"/>
+                                    </span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >DBA or Trade Name</strong><br/> <span>{!v.creditApplicationObject.businessDetails.dbaOrTradeName}</span>
+                                    <lightning:formattedDateTime value="{!v.creditApplicationObject.businessDetails.dbaOrTradeName}" year="numeric" day="2-digit" month="long" timeZone="UTC"/>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-2">
+                                    <strong >Date Established</strong><br/>   
+                                    <span>     
+                                        <lightning:formattedDateTime aura:id="dt"
+                                                                     value="{!v.creditApplicationObject.businessDetails.dateEstablished}"
+                                                                     month="short"
+                                                                     day="numeric"
+                                                                     year="numeric"
+                                                                     timeZone="{!$Locale.timezone}"/>
+                                    </span> 
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Legal Company Name </strong> <br/><span>{!v.creditApplicationObject.businessDetails.legalCompanyName}</span>    
+                                </div>
+                                
+                            </div> 
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Tax ID</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.taxID}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Annual Sales</strong> <br/>
+                                    <span> <lightning:formattedNumber value="{!v.creditApplicationObject.businessDetails.annualSales}" style="currency" currencyCode="USD"/></span>  
+                                    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Address Line 1</strong> <br/><span>{!v.creditApplicationObject.businessDetails.mainAddress.street} </span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >City</strong><br/> <span>{!v.creditApplicationObject.businessDetails.mainAddress.city}</span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >State</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.mainAddress.state}</span>    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Zip Code</strong>  <br/> <span>{!v.creditApplicationObject.businessDetails.mainAddress.zipCode}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Company Telephone</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.mainAddress.companyTelephone}</span>  
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Fax</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.mainAddress.fax}</span>     
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Billing Address -->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Billing Address
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin">
+                    <!--Billing Address fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Address Line 1</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.billingAddress.street}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >City</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.billingAddress.city} </span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >State</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.billingAddress.state} </span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Zip Code</strong><br/> <span>{!v.creditApplicationObject.businessDetails.billingAddress.zipCode}</span>  
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!-- Primary Contacts Fields -->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Primary Contact Information
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin">
+                    <!--Primary Contact fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Name</strong> <br/> <span> {!v.creditApplicationObject.businessDetails.primaryContactName} </span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Telephone</strong> <br/><span> {!v.creditApplicationObject.businessDetails.primaryContactPhone} </span> 
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Email</strong> <br/> <span> {!v.creditApplicationObject.businessDetails.primaryContactEmail} </span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Website Address</strong> <br/><span> {!v.creditApplicationObject.businessDetails.primaryContactWebAdd} </span>  
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_8-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Credit Limit Requested</strong> <br/> 
+                                    <span><lightning:formattedNumber value="{!v.creditApplicationObject.businessDetails.primaryContactCreditLimitReq}" style="currency" currencyCode="USD"/> </span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!--  Primary Accounts Payable Contact Information -->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Primary Accounts Payable Contact Information
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin">
+                    <!--Primary Accounts fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Name</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.primaryAccountName}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Telephone</strong><br/> <span>{!v.creditApplicationObject.businessDetails.primaryAccountTelephone} </span>    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Email</strong> <br/> <span> {!v.creditApplicationObject.businessDetails.primaryAccountEmail}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Preferred Method Of Invoice Delivery</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.primaryAccountMethodOfInvoice}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!--  Previous Employer -->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Previous Employer
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin">
+                    
+                    <!--Previous Employer fields   -->
+                    
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Business Name</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.previousEmpBusinessName}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Contact Name</strong>  <br/> <span>{!v.creditApplicationObject.businessDetails.previousEmpContactName}</span>  
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Telephone</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.previousEmpTelephone}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Email</strong> <br/> <span>{!v.creditApplicationObject.businessDetails.previousEmpEmail} </span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                
+                
+                <!-- Principals -->
+                
+                <lightning:card  title="List of principal" class="table_bg_color">
+                    
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-large-size_12-of-12 hide_table_on_mobile">
+                            <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols principal-table table_bg_color" role="grid">
+                                <thead >
+                                    <tr class="slds-line-height_reset">
+                                        <th class="border_bg_color" scope="col">
+                                            <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Principal Name</strong></div>
+                                        </th>
+                                        
+                                        <th class="border_bg_color" scope="col">
+                                            <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font"  ><strong>Position</strong></div>
+                                        </th>
+                                        
+                                        <th class="border_bg_color" scope="col">
+                                            <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Home Phone</strong></div>
+                                        </th>
+                                        
+                                        <th class="border_bg_color" scope="col">
+                                            <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Home Address</strong></div>
+                                        </th>
+                                        
+                                        <th class="border_bg_color" scope="col">
+                                            <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>City</strong></div>
+                                        </th>
+                                        
+                                        <th  class="border_bg_color" scope="col">
+                                            <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >State</div>
+                                        </th>
+                                        
+                                        <th  class="border_bg_color" scope="col">
+                                            <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Zip Code</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--Aura:Iteration Start-->
+                                    <aura:iteration items="{!v.creditApplicationObject.principals}" var="principalObject" >
+                                        
+                                        <tr class="slds-hint-parent" >
+                                            <td> {!principalObject.principalName} </td>
+                                            <td> {!principalObject.position} </td>
+                                            <td> {!principalObject.homePhone} </td>
+                                            <td> {!principalObject.street} </td>
+                                            <td> {!principalObject.city} </td>
+                                            <td> {!principalObject.state} </td>
+                                            <td> {!principalObject.zipCode} </td>
+                                        </tr>     
+                                        
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Mobile/Tablet screen table Div -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 hide_table_on_Desktop">
+                            <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid">
+                                <aura:iteration items="{!v.creditApplicationObject.principals}" var="principalObject" >
+                                    
+                                    <tr>
+                                        <td>
+                                            <table>
+                                                <tr class="slds-line-height_reset" >
+                                                    <td class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label" >Principal Name</div>
+                                                    </td>
+                                                    
+                                                    <td> 
+                                                        <div class="slds-truncate">
+                                                            {!principalObject.principalName} 
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label" >Home Phone</div>
+                                                    </td>
+                                                    <td> 
+                                                        <div class="slds-truncate">
+                                                            {!principalObject.position}
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label" >Home Address</div>
+                                                    </td>
+                                                    <td> 
+                                                        <div class="slds-truncate">
+                                                            {!principalObject.homePhone}
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label" >Home Phone</div>
+                                                    </td>
+                                                    <td> 
+                                                        <div class="slds-truncate">
+                                                            {!principalObject.street}
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label" >City</div>
+                                                    </td>
+                                                    <td> 
+                                                        <div class="slds-truncate">
+                                                            {!principalObject.city}
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label" >State</div>
+                                                    </td>
+                                                    <td> 
+                                                        <div class="slds-truncate">
+                                                            {!principalObject.state}
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                                <tr>
+                                                    <td class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label" >Zip Code</div>
+                                                    </td>
+                                                    <td> 
+                                                        <div class="slds-truncate">
+                                                            {!principalObject.zipCode} 
+                                                        </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                
+                                            </table>
+                                        </td>
+                                        
+                                    </tr>
+                                </aura:iteration>
+                                
+                            </table>
+                        </div>
+                        
+                    </div>
+                </lightning:card>
+            </aura:set>
+        </lightning:accordionSection>
+        
+        <!-- accordionSection B -->
+        <lightning:accordionSection name="B" label="Business Information">
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Business Information</strong> <br/> <span>{!v.creditApplicationObject.businessInformation.businessInformation}</span>  
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Date Business Commenced</strong> <br/>   
+                                <span>     
+                                    <lightning:formattedDateTime aura:id="dt"
+                                                                 value="{!v.creditApplicationObject.businessInformation.dateBusinessCommenced}"
+                                                                 month="short"
+                                                                 day="numeric"
+                                                                 year="numeric"
+                                                                 timeZone="{!$Locale.timezone}"/>
+                                </span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Type of Business </strong> <br/><span>{!v.creditApplicationObject.businessInformation.typeOfBusiness}</span>  
+                            </div>
+                            
+                        </div> 
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Date of Incorporation</strong> <br/>   
+                                <span>     
+                                    <lightning:formattedDateTime aura:id="dt"
+                                                                 value="{!v.creditApplicationObject.businessInformation.dateOfIncorporation}"
+                                                                 month="short"
+                                                                 day="numeric"
+                                                                 year="numeric"
+                                                                 timeZone="{!$Locale.timezone}"/>
+                                </span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Business Location is:</strong> <br/> <span>{!v.creditApplicationObject.businessInformation.businessLocation}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Principal Bank</strong> <br/> <span>{!v.creditApplicationObject.businessInformation.principalBank}</span>    
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Contact Name</strong> <br/> <span>{!v.creditApplicationObject.businessInformation.contactName}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Account Number</strong> <br/> <span> {!v.creditApplicationObject.businessInformation.accountNumber}</span>     
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Branch Address</strong> <br/> <span>{!v.creditApplicationObject.businessInformation.branchAddress}</span>    
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Telephone Number</strong> <br/> <span> {!v.creditApplicationObject.businessInformation.telephoneNumber}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Fax Number</strong> <br/> <span> {!v.creditApplicationObject.businessInformation.faxNumber}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >E -mail Address</strong> <br/> <span> {!v.creditApplicationObject.businessInformation.emailAddress}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--check box fields   -->
+            <div class="slds-m-top_medium formmargin">
+                
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium slds-border_bottom formmargin">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-p-bottom_medium slds-col slds-size_10-of-12">
+                                <strong>Do you pledge accounts receivable or inventory as a security when you<br/> borrow?</strong>    
+                            </div>
+                            <div class="slds-col slds-size_2-of-12">
+                                {!v.creditApplicationObject.businessInformation.pledgeAccountReceivable}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium slds-border_bottom formmargin">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_10-of-12">
+                                <strong>Are there any liens presently registered against any company, inventory,<br/> property, or asset?</strong>    
+                            </div>
+                            <div class="slds-col slds-size_2-of-12">
+                                {!v.creditApplicationObject.businessInformation.presentlyRegistered}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium slds-border_bottom formmargin">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_10-of-12">
+                                <strong >Has Applicant or any Principal Partner, Officer, proprietor filed for Bankruptcy in past 10 Years?</strong>    
+                            </div>
+                            <div class="slds-col slds-size_2-of-12">
+                                {!v.creditApplicationObject.businessInformation.hasApplicant}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium slds-border_bottom formmargin">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_10-of-12">
+                                <strong >Does the applicant or any principal partner officer or proprietor have a material claim, suit, judgement or tax claim pending against him/her?</strong>    
+                            </div>
+                            <div class="slds-col slds-size_2-of-12">
+                                {!v.creditApplicationObject.businessInformation.anyMaterialClaimPending}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-large-size_12-of-12  slds-p-horizontal_medium slds-border_bottom formmargin">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_medium slds-col slds-size_10-of-12 slds-large-size_5-of-12">
+                                <strong >Are Accounts Receivables currently Pledged?</strong>    
+                            </div>
+                            <div class="slds-p-around_medium slds-col slds-size_2-of-12">
+                                {!v.creditApplicationObject.businessInformation.areAccountsReceivables}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <br/>
+            
+            <!-- list of trade references -->
+            <lightning:card  title="List of trade reference" class="table_bg_color">
+                <div class="slds-grid slds-wrap">
+                    <!-- Desktop/Laptop screen table Div -->
+                    <div class="slds-large-size_12-of-12 hide_table_on_mobile">
+                        <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols table_bg_color" role="grid" aria-label="Example advanced table of Opportunities in actionable mode" >
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Trade Reference Name</div>
+                                    </th>
+                                    
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Contact Name</div>
+                                    </th>
+                                    
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Account Number</div>
+                                    </th>
+                                    
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Address</div>
+                                    </th>
+                                    
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >City</div>
+                                    </th>
+                                    
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >State</div>
+                                    </th>
+                                    
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Zip Code</div>
+                                    </th>
+                                    
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Telephone</div>
+                                    </th>
+                                    
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Fax</div>
+                                    </th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--Aura:Iteration Start-->
+                                <aura:iteration items="{!v.creditApplicationObject.tradeReferences}" var="tradeReference" >
+                                    
+                                    <tr class="slds-hint-parent" >  
+                                        <td> {!tradeReference.tradeReferenceName} </td>
+                                        <td> {!tradeReference.contactName} </td>
+                                        <td> {!tradeReference.account} </td>
+                                        <td> {!tradeReference.address} </td>
+                                        <td> {!tradeReference.city} </td>
+                                        <td> {!tradeReference.state} </td>
+                                        <td> {!tradeReference.zipCode} </td>
+                                        <td> {!tradeReference.telephone} </td>
+                                        <td> {!tradeReference.fax} </td>
+                                        
+                                    </tr> 
+                                    
+                                    <!--Aura Iteration Close-->
+                                </aura:iteration>
+                            </tbody>
+                            <!--Trade Reference Table Close-->
+                        </table>
+                    </div>
+                    
+                    
+                    <!-- Mobile/Tablet screen table Div -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 hide_table_on_Desktop">
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid">
+                            <aura:iteration items="{!v.creditApplicationObject.tradeReferences}" var="tradeReference">
+                                
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tr class="slds-line-height_reset" >
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Trade Reference Name</div>
+                                                </td>
+                                                
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.tradeReferenceName}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Contact Name</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.contactName}
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Account Number</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.account}
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Address</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.address}
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >City</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.city}
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >State</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.state}
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Zip Code</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.zipCode} 
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Telephone</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.telephone} 
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Fax</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!tradeReference.fax} 
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                        </table>
+                                    </td>
+                                    
+                                </tr>
+                            </aura:iteration>
+                            
+                        </table>
+                    </div>
+                </div>
+                
+            </lightning:card>
+            
+         <!-- accordionSection C -->
+        </lightning:accordionSection>
+        <lightning:accordionSection name="C" label="Agreement">
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Name of Authorized Officer</strong> <br/> <span> {!v.creditApplicationObject.agreement.authorizedOfficerName}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Title</strong> <br/> <span>{!v.creditApplicationObject.agreement.title}</span>    
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Date</strong> <br/>   
+                                <span>     
+                                    <lightning:formattedDateTime aura:id="dt"
+                                                                 value="{!v.creditApplicationObject.agreement.agreementDate}"
+                                                                 month="short"
+                                                                 day="numeric"
+                                                                 year="numeric"
+                                                                 timeZone="{!$Locale.timezone}"/>
+                                </span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                     
+                </div>
+            </div>
+            <!--  Terms and Conditions of sales -->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>
+                    Terms and Conditions of sales
+                </h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Date</strong> <br/>  
+                                <span>     
+                                    <lightning:formattedDateTime aura:id="dt"
+                                                                 value="{!v.creditApplicationObject.agreement.termAndConditionDate}"
+                                                                 month="short"
+                                                                 day="numeric"
+                                                                 year="numeric"
+                                                                 timeZone="{!$Locale.timezone}"/>
+                                </span>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Firm</strong> <br/> <span> {!v.creditApplicationObject.agreement.firm}</span>  
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Accepted By</strong> <br/> <span> {!v.creditApplicationObject.agreement.acceptedBy}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--  Continuing Guaranty -->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>
+                    Continuing Guaranty
+                </h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >In consideration of the Extension to</strong> <br/> <span>{!v.creditApplicationObject.agreement.considerationOfExtension}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                      <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Social Security #</strong> <br/> <span>{!v.creditApplicationObject.agreement.ssNumber}</span>   
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Name</strong> <br/> <span>{!v.creditApplicationObject.agreement.name}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Position</strong> <br/> <span> {!v.creditApplicationObject.agreement.position}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Home Address</strong> <br/> <span>{!v.creditApplicationObject.agreement.homeAddress}</span>    
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >City</strong> <br/> <span>{!v.creditApplicationObject.agreement.city}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >State</strong> <br/> <span> {!v.creditApplicationObject.agreement.state}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Zip Code</strong> <br/> <span> {!v.creditApplicationObject.agreement.zipCode}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Home Phone Number</strong> <br/> <span> {!v.creditApplicationObject.agreement.homePhoneNumber}</span>   
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>
+                    In testimony thereof, I have hereunto signed my name on this
+                </h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Day of</strong>  <br/> <span>{!v.creditApplicationObject.agreement.dayOf}</span>  
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Month</strong> <br/> <span> {!v.creditApplicationObject.agreement.month}</span>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Year</strong> <br/> <span>{!v.creditApplicationObject.agreement.year}</span> 
+                            </div>
+                            <div class="slds-col slds-size_1-of-2">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <br/>
+            
+            <!-- List Of Guarantor  -->
+            <lightning:card  title="List of guarantor" class="table_bg_color">
+                <div class="slds-grid slds-wrap">
+                    <!-- Desktop/Laptop screen table Div -->
+                    <div class="slds-large-size_12-of-12  hide_table_on_mobile">
+                        <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols table_bg_color" role="grid" aria-label="Example advanced table of Opportunities in actionable mode" >
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Guarantor Name</div>
+                                    </th>
+                                     
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Date</div>
+                                    </th>
+                                    <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Spouse's Name</div>
+                                    </th>
+                                   
+                                      <th class="border_bg_color" scope="col">
+                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Date</div>
+                                    </th>
+                                </tr>
+                            </thead> 
+                            
+                            <tbody>
+                                <!--Aura:Iteration Start-->
+                                <aura:iteration items="{!v.creditApplicationObject.guarantors}" var="Guaranty" indexVar="indexNumber">
+                                    <aura:if isTrue="{!Guaranty.isDelete != true}">
+                                        <tr class="slds-hint-parent" >  
+                                            <td>{!Guaranty.guarantorName}</td>
+                                            
+                                            <td>
+                                                <lightning:formattedDateTime aura:id="dt"
+                                                                             value="{!Guaranty.guarantorDate}"
+                                                                             month="short"
+                                                                             day="numeric"
+                                                                             year="numeric"
+                                                                             timeZone="{!$Locale.timezone}"/>
+                                            </td>
+                                            <td>{!Guaranty.spousesName}</td>
+                                           
+                                            <td>
+                                                <lightning:formattedDateTime aura:id="dt"
+                                                                             value="{!Guaranty.spousesDate}"
+                                                                             month="short"
+                                                                             day="numeric"
+                                                                             year="numeric"
+                                                                             timeZone="{!$Locale.timezone}"/>
+                                            </td>
+                                        </tr> 
+                                    </aura:if>
+                                    <!--Aura Iteration Close-->
+                                </aura:iteration>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    
+                    <!-- Mobile/Tablet screen table Div -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 hide_table_on_Desktop">
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid">
+                            <aura:iteration items="{!v.creditApplicationObject.guarantors}" var="Guaranty" >
+                                
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tr class="slds-line-height_reset" >
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Guarantor Name</div>
+                                                </td>
+                                                
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!Guaranty.guarantorName}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Date</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!Guaranty.guarantorDate}
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Spouse's Name</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!Guaranty.spousesName}
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                             <tr>
+                                                <td class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label" >Date</div>
+                                                </td>
+                                                <td> 
+                                                    <div class="slds-truncate">
+                                                        {!Guaranty.spousesDate} 
+                                                    </div>
+                                                </td>
+                                                
+                                            </tr>
+                                            
+                                          </table>
+                                    </td>
+                                    
+                                </tr>
+                            </aura:iteration>
+                            
+                        </table>
+                    </div>
+                    
+                </div>
+            </lightning:card>
+            <br/>
+            <br/>
+
+			 <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">            
+              <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Sales Tax Exemption Number</strong> <br/> <span>{!v.creditApplicationObject.agreement.salesTaxExemptionNumber}</span> 
+                            </div>
+
+                        </div>
+                    </div>
+              <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_8-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >If applicable,Indicate reason for exemption</strong> <br/> <span>{!v.creditApplicationObject.agreement.indicateReasonForExemption}</span> 
+                            </div>
+                            
+                        </div>
+                    </div>
+                 </div>
+            </div>
+            
+        </lightning:accordionSection>
+    </lightning:accordion>
+    
+    <br/>
+    <br/>
+    
+    <div class="slds-m-horizontal_x-small slds-m-top_x-small slds-p-horizontal_medium">
+        <aura:if isTrue="{!v.isSubmitted != true}">
+            <lightning:button class="slds-m-right_large" variant="brand" type="Back" label="Back" onclick="{!c.goToPreviousPage}"/>
+            <lightning:button class="slds-m-right_large" variant="brand" type="submit" label="Submit" onclick="{!c.showOpenModel}"/>
+        </aura:if>
+    </div>
+    
+    
+    <!--Modal-->
+    <aura:if isTrue="{!v.modalOpen}">
+       <div role="dialog" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header  modal-header">
+                    <h1 class="slds-text-heading--medium slds-text-color_inverse">Confirmation</h1>
+                </header>
+                <div class="slds-modal__content slds-p-around--medium  slds-text-heading_small">
+                    <b><p align="center">Please note, once you submit the form, you will not be able to make any change.<br/>Do you want to submit ?</p></b>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="brand" name='No' label='No' onclick='{!c.handleConfirmDialogNo}'/>
+                    <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogYes}'/>
+                </footer>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+</aura:component>

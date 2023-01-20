@@ -1,0 +1,148 @@
+<aura:component controller ="SampleRequestFormForInternalEmployees" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name = "deleteSampleModal" type = "boolean"/>
+    
+    <aura:attribute name="isProductSelected" 
+                    type="boolean" 
+                    default="false"
+                    description = "this is the flag used to display selected product information"/>
+    
+    <!-- delete sample item index number -->
+    <aura:attribute name="deleteIndex" type="Integer" />
+    
+    <!-- Sample Items Component Object List for remove 
+    <aura:attribute name="sampleComponents" type="Object[]" /> -->
+    
+    <!-- to disable/enable the delete button-->
+    <aura:attribute name="isDeleteBtnDisabled" type="Boolean" default="false" />
+    
+    
+    <!-- to disable/enable the delete button-->
+    <aura:attribute name="orderItemNotInList" type="Boolean" default="false" />
+    
+    <!-- variable for sample item -->
+    <aura:attribute name ="sampleItemData" type = "Object"/>
+    
+    <!-- ############ Aura Method ############ -->
+    
+    <!-- aura method to validate the Sample item form -->
+    <aura:method name="validateSampleItemForm" action="{!c.validateAllSampleForm}" access="public" />
+    
+    <!-- List for Quantity of sample -->
+    <aura:attribute name="LstQty" type="list" />
+    
+    <!-- List for Finish -->
+    <aura:attribute name="LstFinish" type="list" />
+    
+    <!-- register Sample item delete event -->
+    <aura:registerEvent name="deleteSampleEvent" type="c:deleteSampleItem"/>
+    
+    <!-- DO Init -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    
+    <!-- ########## Main Body ########## -->
+    
+    <!-- SampleItem form Container -->
+    <div class="slds-grid slds-gutters slds-wrap slds-box slds-m-bottom_small" style = "background-color: #f2f7f8;">
+        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_small">
+            <lightning:input aura:id = "sampleItemDetails"
+                             class="slds-m-horizontal_xx-small" 
+                             type="text" 
+                             value = "{!v.sampleItemData.Manufecturer_Site__c}"
+                             label="Manufacturer" 
+                             required="true"/>
+        </div>
+        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_small">
+            <lightning:input aura:id = "sampleItemDetails"
+                             class="slds-m-horizontal_xx-small" 
+                             type="text" 
+                             value = "{!v.sampleItemData.Series_Site__c}"
+                             label="Series" 
+                             required="true"/>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_small">
+            <lightning:input aura:id = "sampleItemDetails"
+                             class="slds-m-horizontal_xx-small" 
+                             type="text" 
+                             value = "{!v.sampleItemData.Color_Site__c}"
+                             label="Color" 
+                             required="true"/>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_small">
+            <lightning:input aura:id = "sampleItemDetails"
+                             class="slds-m-horizontal_xx-small" 
+                             type="Size" 
+                             value = "{!v.sampleItemData.Size_Site__c}"
+                             label="Size" 
+                             required="true"/>
+        </div>
+        
+        <!-- quantity -->        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 slds-m-bottom_small">
+            <lightning:select aura:id = "sampleItemDetails" 
+                              required = "true" 
+                              label="Quantity"
+                              value = "{!v.sampleItemData.Quantity_for_Sample__c}">
+                
+                <option value="">choose One...</option>
+                
+                <aura:iteration items="{!v.LstQty}" var="slt">
+                    <option text="{!slt}" value="{!slt}" selected="{!slt == v.sampleItemData.Quantity_for_Sample__c}"/>
+                </aura:iteration>
+                
+            </lightning:select> 
+        </div>
+        
+        <!-- quantity -->        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-m-bottom_small">
+            <lightning:select aura:id = "sampleItemDetails" 
+                              required = "true" 
+                              label="Finish"
+                              value = "{!v.sampleItemData.Finish__c}">
+                
+                <option value="">choose One...</option>
+                
+                <aura:iteration items="{!v.LstFinish}" var="slt">
+                    <option text="{!slt}" value="{!slt}" selected="{!slt == v.sampleItemData.Finish__c}"/>
+                </aura:iteration>
+                
+            </lightning:select> 
+        </div>
+        <!-- delete button -->
+        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 ">
+            <div class="slds-m-top_large">
+                <lightning:buttonIcon	class="{!'icn'+v.isDeleteBtnDisabled}" 
+                                      iconName="utility:delete" 
+                                      size="large"   
+                                      variant="bare"
+                                      onclick = "{!c.openSampleDeleteModal}" 
+                                      disabled = "{!v.isDeleteBtnDisabled}" />
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- Delete Sample Item Confirmation Modal -->
+    <aura:if isTrue = "{!v.deleteSampleModal}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Delete</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>
+                        Do you want to delete this sample ?
+                    </p>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick = "{!c.closeSampleDeleteModal}">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick = "{!c.deleteSampleItem}">Yes</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+</aura:component>

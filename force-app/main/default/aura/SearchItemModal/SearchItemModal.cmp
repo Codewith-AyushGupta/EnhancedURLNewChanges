@@ -1,0 +1,235 @@
+<aura:component controller="SearchItemModalController" 
+                extends="c:HandleErrorModal">
+    
+    
+    <!-- Aura Binding Inputs -->
+    <aura:attribute name="objectName" type="string" Description = "Name of the object on which query will be performed."/>
+    <aura:attribute name="fieldsToBeSearch" type="list" Description="Fields to be fetched from the query."/>
+    <aura:attribute name="placeholder" type="string" Description = "Placeholder for the search input"/>
+    <aura:attribute name="fieldsLabelToBeDisplayedInTable" type="list" Description="Table headings"/>
+    <aura:attribute name="fieldsToApplyFilterOn" type="list" Description = "API Names of query filter fields" />
+    <aura:attribute name="fieldsNameToBeDisplayedInTable" type="list" Description = "API names of fields to print data(NOT USING)"/>
+
+    <aura:attribute name="searchQuery" type="string" default="" Description = "Holds the value of search input"/>
+    <aura:attribute name="isModalOpen" type="Boolean" default="false" Description = "Flag to open or close this component"/>
+    <aura:attribute name="isTableOpen" type="Boolean" default="false" Description = "Flag to check if the table will get printed or not"/>
+    <aura:attribute name="totalResults" type="string" Description="Holds total number of results returned from Query as a formatted string"/>
+    <aura:attribute name="data" type="Object" Description="it's being used to hold the data that is going to render the table"/>
+    <aura:attribute name="masterData" type="Object" Description="Holds all products data returned from Query"/>
+    <aura:attribute name="tempSelectedProductsIds" type="List" Description="Contains Ids of selected products while checking the checkbox"/>
+    <aura:attribute name="selectedProductsIds" type="List" Description="used to send Ids of selected products to PARENT while clicking on SELECT ITEMS button"/>
+    <aura:attribute name="isSelectItemEnable" type="Boolean" default="true" Description="Flag to check if Select Item button should get enabled or not on parent"/>
+    <aura:attribute name="dataLoadSpinner" type="Boolean" default="false"  Description="use to enable/disable spinner during and after data fetching or changing data on table"/>
+    <aura:attribute name="inActivesAlso" type="Boolean" default="false" Description="Searvh inactive items also checkbox value"/>
+    <aura:attribute name="manufacturerList" type="Object[]" Description="Manufacturer's Data"/>
+    <aura:attribute name="searchList" type="List" Description="Holds a list that conntains keywords to search ( user input in => searchQuery )"/>
+    <aura:attribute name="color" type ="String" Description=""/>
+    <aura:attribute name="pattern" type ="String" Description=""/>
+    <aura:attribute name="selectedCatagory" type="String" />
+    <aura:attribute name="applyFilter" type="Boolean" default="false"/>
+    
+
+    
+    <!-- AURA Method -->    
+    
+    <aura:method name="sendSelectedProducts" action="{!c.sendSelectedProducts}" access="public"/>
+    
+    <div class="slds-grid slds-wrap slds-gutters" onkeypress="{!c.ifEnterKeyPressed}">
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_7-of-12">
+            <span><lightning:input
+                                   aura:id="searchFieldValidation"
+                                   required="true"
+                                   class="searchInput"
+                                   placeholder="{!v.placeholder}"
+                                   name="input1"
+                                   label="Search Product"
+                                   value="{!v.searchQuery}"
+                                   /></span>
+        </div>
+        
+        <div class="slds-col slds-size_1-of-2 slds-medium-size_2-of-12">
+            <span> <lightning:input class="slds-m-right_small" value="{!v.color}" name="input1" label="Enter Color"/></span>
+        </div>
+        <div class="slds-col slds-size_1-of-2 slds-medium-size_2-of-12">
+            <span><lightning:input class="slds-m-right_small" value="{!v.pattern}" name="input1" label="Enter Pattern"/></span>
+        </div>
+        <div class="slds-col slds-size_3-of-12 slds-medium-size_1-of-12 ">
+            <span><lightning:button
+                                    class="searchButton"
+                                    variant="brand"
+                                    label="Search"
+                                    title="Brand action"
+                                    onclick="{! c.searchQueryHandler }"
+                                    /></span>
+        </div>
+        <div class="slds-col slds-size_9-of-12 slds-medium-size_1-of-1 makeResponsive">
+        <lightning:input
+                         class="slds-m-top_x-small"
+                         aura:id="check"
+                         type="checkbox"
+                         checked="{!v.inActivesAlso}"
+                         label="Search Inactive Items also"
+                         name="input1"
+                         />
+        </div>
+    </div>
+    
+
+    
+    <div class="Spinner_Style">
+        <aura:if isTrue="{!v.dataLoadSpinner}">
+            <lightning:spinner
+                               alternativeText="Loading"
+                               size="medium"
+                               variant="brand"
+                               />
+        </aura:if>
+    </div>
+    <aura:if isTrue="{!v.isTableOpen}">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_2-of-12 manufacturerData">
+                <div>
+                    <lightning:verticalNavigation
+                                                  onselect="{! c.getProductsByManufacturer }"
+                                                  compact="true"
+                                                  >
+                        <lightning:verticalNavigationSection
+                                                             label="Manufacturer"
+                                                             class="slds-text-align_center"
+                                                             >
+                            <aura:iteration items="{!v.manufacturerList}" var="itr">
+                                <div class="sidePannel">
+                                    <lightning:verticalNavigationItemBadge
+                                                                           label="{!itr.Name}"
+                                                                           name="{!itr.Id}"
+                                                                           badgeCount="{!itr.Quantity}"
+                                                                           class="slds-text-align_left"
+                                                                           />
+                                </div>
+                                <hr />
+                            </aura:iteration>
+                        </lightning:verticalNavigationSection>
+                    </lightning:verticalNavigation>
+                </div>
+            </div>
+            <div class="slds-col slds-size_10-of-12 dataTableOverFlow">
+                <table
+                       class="slds-table slds-table_cell-buffer slds-table_bordered table"
+                       aria-labelledby="element-with-table-label other-element-with-table-label"
+                       >
+                    <thead>
+                        <tr class="slds-line-height_reset HeadTr">
+                            <th
+                                class="slds-text-align_right slds-cell_action-mode"
+                                scope="col"
+                                style="width:3.25rem"
+                                >
+                                <span id="column-group-header" class="slds-assistive-text"
+                                      >Choose a row</span
+                                    >
+                                <div class="slds-th__action slds-th__action_form">
+                                    <div class="slds-checkbox">
+                                        <input
+                                               type="checkbox"
+                                               name="options"
+                                               id="checkbox-unique-id-297"
+                                               value="checkbox-unique-id-297"
+                                               tabindex="0"
+                                               aria-labelledby="check-select-all-label column-group-header"
+                                               />
+                                    </div>
+                                </div>
+                            </th>
+                            
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Item">Item</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Description"
+                                     >Description</div
+                                    >
+                            </th>
+                            
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Color">Color</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Pattern">Pattern</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Description2"
+                                     >Description 2</div
+                                    >
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Inactive"
+                                     >Inactive</div
+                                    >
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration
+                                        items="{!v.data}"
+                                        var="itr"
+                                        indexVar="indexNum"
+                                        >
+                            <tr>
+                                <td data-label="check">
+                                    <div class="slds-truncate" title="check">
+                                        <ui:inputCheckbox
+                                                          aura:id="checkbox"
+                                                          name="{!itr.Id}"
+                                                          text="Select"
+                                                          label=""
+                                                          change="{!c.handleSelection}"
+                                                          class="checkBox"
+                                                          />
+                                    </div>
+                                </td>
+                                
+                                <td data-label="Item">
+                                    <div class="slds-truncate" title="Item"
+                                         ><aura:unescapedHtml value="{!itr.Product_Name__c}"
+                                                              /></div>
+                                </td>
+                                <td data-label="Description">
+                                    <div class="slds-truncate" title="Description"
+                                         ><aura:unescapedHtml
+                                                              value="{!itr.Product_Description__c}"
+                                                              /></div>
+                                </td>
+                                
+                                <td data-label="Color">
+                                    <div class="slds-truncate" title="Color"
+                                         ><aura:unescapedHtml value="{!itr.Color__c}"
+                                                              /></div>
+                                </td>
+                                <td data-label="Pattern">
+                                    <div class="slds-truncate" title="Pattern"
+                                         ><aura:unescapedHtml value="{!itr.Pattern__c}"
+                                                              /></div>
+                                </td>
+                                <td data-label="Description 2">
+                                    <div class="slds-truncate" title="Description 2"
+                                         ><aura:unescapedHtml
+                                                              value="{!itr.Product_Description_2__c}"
+                                                              /></div>
+                                </td>
+                                <td data-label="Inactice">
+                                    <div class="slds-truncate" title="Inactive"
+                                         >
+                                        <lightning:input type="checkbox" label="" name="" checked="{!!itr.IsActiveProduct__c}" disabled="true"/>
+                                        
+                                    </div>
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </aura:if>
+    
+</aura:component>

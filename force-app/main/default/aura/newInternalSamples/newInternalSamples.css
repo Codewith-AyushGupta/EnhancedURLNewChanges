@@ -1,0 +1,81 @@
+.THIS {
+    
+}
+
+.THIS .alignright{
+    text-align:right;
+}
+
+.THIS .heading {
+    color: #032d60;
+    font-weight: bold;
+    font-size: 1.6rem;
+}
+
+.THIS .slds-form-element__label{
+    font-size: 0.85rem !important;
+    font-weight: bold;
+}
+
+.THIS .slds-form-element__input{
+    font-size: 0.7rem !important;
+}
+
+
+.THIS.slds-spinner_container {  
+    z-index: 10000;
+    position: fixed;   
+}
+/*.THIS .slds-is-edited{
+background : #f1f7f8;
+}*/
+.THIS .slds-table_header-fixedfo{
+    font-size: 0.7rem;
+}
+
+.THIS #errorSectiontrue .slds-accordion__summary-action{
+    background:#ffecec !important;
+}
+
+.THIS #errorSectionfalse .slds-accordion__summary-action{
+    background:#e5e5e5 !important;
+}
+.THIS .editicon
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.THIS .CustomizationEdit
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* border: 1px solid; */
+    max-width: 79%;
+}
+
+.THIS .inputbox {
+    display: flex;
+}
+
+.THIS .modal_height{
+    min-height : 50vh;
+    overflow-y : hidden;
+}
+
+.THIS .max_table_height{
+     max-height : 50vh;
+}
+
+.THIS .error{
+    border : 2px Solid red;
+}
+@media(max-width:440px){
+    .THIS .none_float{
+
+       float: none;
+        
+    }
+}

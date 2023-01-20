@@ -1,0 +1,35 @@
+.THIS {
+    
+}
+
+.THIS .alignright{
+    text-align:right;
+}
+
+.THIS .heading {
+    color: #032d60;
+    font-weight: bold;
+    font-size: 1.6rem;
+}
+
+.THIS .slds-form-element__label{
+    font-size: 0.85rem !important;
+    font-weight: bold;
+}
+
+.THIS .slds-form-element__input{
+    font-size: 0.7rem !important;
+}
+
+
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+.THIS #errorSectiontrue .slds-accordion__summary-action{
+    background:#ffecec !important;
+}
+
+.THIS #errorSectionfalse .slds-accordion__summary-action{
+    background:#e5e5e5 !important;
+}

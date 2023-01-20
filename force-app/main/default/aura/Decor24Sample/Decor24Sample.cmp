@@ -1,0 +1,405 @@
+<aura:component controller="SampleRequestFormDecor24" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" >
+    <aura:handler name="branchEvent" event="c:eventsForBranch" action="{!c.handleBranchEvent}"/>
+    <!-- Object to set form values -->
+    <aura:attribute name="sampleFormDetailsObj" type="Object"/> 
+    <aura:attribute name="branchObj" type="Object"/>
+     <aura:attribute name="accountAddress" type="Object"/>
+    <!-- Spinner -->
+    <aura:attribute name ="Spinner" type= "boolean" default = "false"/>
+    
+    <!-- record Id -->    
+    <aura:attribute name="formId" type="String" default = ""/> 
+    <aura:attribute name="ownerName" type="String" default = ""/> 
+    <!-- saving flag to hide show the form -->
+    <aura:attribute name="hideFormFields" type="boolean" default = "false"/> 
+    
+    <!--handle Add SampleItem List-->
+    <aura:attribute name = "sampleItems" type = "Object[]" default = "[]" />
+    
+    <!-- show status alert -->
+    <aura:attribute name = "showStatusAlert" type = "boolean" default = "false"/>
+    
+    <!--pick list for State-->
+    <aura:attribute name = "stateLst" type = "Object[]"  />
+    
+    <!-- Remove from Required -->
+    <aura:attribute name = "RemoveFromRequired" type = "boolean" default = "true"/>
+    
+    <!-- Remove Job from Required -->
+    <aura:attribute name = "RemoveJobFromRequired" type = "boolean" default = "false"/>
+    
+    <!-- Remove Opportuntiy from Required -->
+    <aura:attribute name = "RemoveOpportunityFromRequired" type = "boolean" default = "false"/>
+    
+    <!--  Required for only Name And Email -->
+    <aura:attribute name = "requiredForNameAndEmail" type = "boolean" default = "true"/>
+    
+    <!--  Required for All fields -->
+    <aura:attribute name = "requiredForAll" type = "boolean" default = "true"/>
+    <!--  Required for All fields -->
+    <aura:attribute name = "checkAccountNull" type = "boolean" default = "true"/>
+    <!-- used to hold the selected opportunity selected -->
+    <aura:attribute name ="selectedOpportunity" type = "Object" default=""/>
+    
+    <!-- used to show 'How should the Sample be shipped' field help text -->
+    <aura:attribute name="showHelpTextOnPicklist" type="boolean" />
+    
+    <aura:handler name="change" value="{!v.selectedOpportunity}" action="{!c.itemsChange}"/>
+    
+    <!-- to count the number of added items which we are showing on ui -->
+    <aura:attribute name="totalNumberOfSampleItems" type="Integer" default="0" />
+    <!-- to Account Branch -->
+    <aura:attribute name="accountBranch" type="String" />
+     <!-- accordionName-->    
+    <aura:attribute name="accordionName" type="Integer" default = "0"/> 
+    
+    <!-- DO Init -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    
+    <!-- delete sample item EVENT handler-->
+    <aura:handler name="deleteSampleEvent" event="c:deleteSampleItem" action="{!c.deleteSampleByIndex}"/>
+    
+    <aura:attribute name ="selectedAccount" type = "Object" default=""/>
+    <aura:handler name="change" value="{!v.selectedAccount}" action="{!c.itemsChange}"/>
+    <aura:attribute name = "howMatToShip" type = "list"  />
+    <aura:attribute name = "wheresampletobeshipped" type = "list"  />
+    <!--  Branch -->
+    <aura:attribute name = "isBranch" type = "boolean" default = "false"/>
+    <!--  Address -->
+    <aura:attribute name = "isAddress" type = "boolean" default = "false"/>
+    <aura:html tag="style">
+        html {
+        background: #f2f7f8;
+        }
+    </aura:html>
+    
+    <!-- Container Element of All Elements-->
+    <!-- TO DO: Move in to Style -->
+    
+    <div class="container" style = "overflow-x:hidden; width:100% ; max-width:100%;">
+        
+        <!-- Louisville Tile Logo -->
+        <c:LouisvilleTileLogoForSampleItemForms />
+        
+        <!-- Heading of Form -->
+        <div class="slds-align_absolute-center slds-m-vertical_small" >
+            <h1 class = "heading slds-m-horizontal_large slds-m-bottom_large">
+                Decor 24 Samples
+            </h1>
+        </div>
+        
+        <aura:if isTrue="{!v.sampleFormDetailsObj.Name != null}">
+            <div class="slds-align_absolute-center slds-m-vertical_small" >
+                <h4 class = "slds-m-horizontal_large slds-m-bottom_large">
+                    <b>Form Name :</b>{!v.sampleFormDetailsObj.Name}
+                </h4>
+                <br/>
+                
+            </div>
+        </aura:if>
+        
+        
+        
+        <!-- status end -->
+        
+        <!-- ############# Form ############ -->
+        
+        <aura:if isTrue="{!!v.hideFormFields}">
+            <!-- Form row 1 -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                <!-- Customer Name -->
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <c:CustomLookup aura:id = "customLookupForAccount"
+                                    objectName="Account" 
+                                    fieldName="Name"
+                                    fieldsToBeDisplayed = "Name"
+                                    label="Account Name" 
+                                    selectedRecord = "{!v.selectedAccount}"
+                                    placeholder="Enter Value"
+                                    isRequired="true"/> 
+                    <aura:if isTrue="{!v.checkAccountNull}">
+                    <aura:if isTrue="{!!empty(v.accountBranch)}">
+                        Branch : 
+                        <aura:if isTrue="{!v.isBranch}">
+                            <label class="slds-form-element__label">{!v.accountBranch}</label>
+                            <aura:set attribute="else">
+                                <label class="slds-form-element__label" style = "color: red;">-Primary branch is not found on account, please edit and save account record to populate primary branch.</label>
+                            </aura:set>
+                        </aura:if>  
+                        <aura:if isTrue="{!v.isAddress}">
+                            
+                            <label class="slds-form-element__label" style = "color: red;">-There is no address on this branch. Please manually fill the address. </label>
+                        </aura:if> 
+                    </aura:if>
+                    </aura:if>
+                </div>
+                <!-- Customer Email -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "decorFormDetails" 
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="email"
+                                     value="{!v.sampleFormDetailsObj.Email_address_for_confirmation__c}" 
+                                     label="Email Address for Confirmation" 
+                                     required="true"
+                                     onkeyup ="{!c.validateEmailInputField}"/>   	
+                </div>
+            </div>
+            <!-- Form row 2 -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                
+                <!-- Business  Name -->
+                <div class="slds-col slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "decorFormDetails"
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="text" 
+                                     value="{!v.sampleFormDetailsObj.Business_Name__c}"
+                                     label="Business  Name" 
+                                     required="{!v.requiredForAll == true}"/>
+                </div>
+                <!-- Who is your LTD rep  -->
+                <div class="slds-col slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "decorFormDetails" 
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="text" 
+                                     value="{!v.sampleFormDetailsObj.Who_is_your_LT_sales_rep__c}" 
+                                     label="Who is your LTD rep " 
+                                     required="{!v.requiredForAll == true}"
+                                     onkeyup =""/>   	
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                <!-- Where sample to be shipped -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:select aura:id = "decorFormDetails" 
+                                      class="slds-m-horizontal_xx-small"                                      
+                                      label="Where sample to be shipped"
+                                      required="true"
+                                      value="{!v.sampleFormDetailsObj.Where_sample_to_be_shipped__c}"
+                                      onchange="{!c.sampleToBeShipped}"
+                                      >
+                        				
+                        <option text="Choose one.." value=""/>
+                        <aura:iteration items="{!v.wheresampletobeshipped}" var="sp">
+                            <option text="{!sp}" value="{!sp}" selected="{!v.sampleFormDetailsObj.Where_sample_to_be_shipped__c	 == sp}"/>
+                        </aura:iteration>
+                        
+                    </lightning:select>
+                </div>
+                
+                <!-- How should the sample be shipped  -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:select aura:id = "internalFormDetails" 
+                                      class="slds-m-horizontal_xx-small"                                      
+                                      label="How should the Sample be shipped"
+                                      required="{!v.shipToBranchOptionYes == true}"
+                                      value="{!v.sampleFormDetailsObj.How_material_be_ship_to_the_branch__c}"
+                                      onchange="{!c.showHelpText}">
+                        
+                        <option text="Choose one.." value=""/>
+                        
+                        <aura:iteration items="{!v.howMatToShip}" var="sp">
+                            <option text="{!sp}" value="{!sp}" selected="{!v.sampleFormDetailsObj.How_material_be_ship_to_the_branch__c  == sp}"/>
+                        </aura:iteration>
+                        
+                    </lightning:select>
+                     <aura:if isTrue="{!v.showHelpTextOnPicklist}">
+                            <label class="slds-form-element__label slds-p-left_xx-small">
+                                It would need to be picked up at the branch.
+                            </label>
+                        </aura:if>
+                </div>
+                
+                
+                
+            </div>
+            <!-- Form row 4 -->
+            <!-- Shipping address -->
+            <div class="slds-card slds-m-horizontal_medium slds-m-vertical_medium slds-p-horizontal_xx-small slds-p-vertical-small">
+                
+                <!-- Shipping heading -->
+                <div class="slds-m-horizontal_small slds-m-vertical_small slds-text-heading_small">
+                    Shipping Address <label Style = "color:red;"> *</label>
+                </div>
+                <!-- shipping Address INFO-->
+                <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_small slds-m-top_small" style = "background-color: #fff;">
+                    
+                    <!-- Attention to: -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                        <lightning:input aura:id = "decorFormDetails"
+                                         type ="text" 
+                                         label=" Attention to:"
+                                         value = "{!v.sampleFormDetailsObj.Care_of_Name__c}"
+                                         />	
+                    </div>
+                    
+                    <!-- Address and street -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                        <lightning:input aura:id = "decorFormDetails"
+                                         type ="text" 
+                                         label=" Street Address with apt/suite #"
+                                         value="{!v.sampleFormDetailsObj.Street_Address__c}"
+                                         required="{!v.requiredForAll == true}"/>	
+                    </div>
+                    <!--Phone number-->
+                   
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                    <lightning:input aura:id = "decorFormDetails" 
+                                     class="slds-m-horizontal_xx-small" 
+                                     type="text"
+                                     value = "{!v.sampleFormDetailsObj.Phone_number__c}" 
+                                     label="Phone Number" 
+                                     required="{!v.requiredForAll == true}"
+                                     maxlength = "10"
+                                     minlength="10"
+                                     onkeyup = "{!c.validatePhoneNumber}"/>
+                </div>
+                </div>
+                <!-- Shipping address City , state ,ZIP -->
+                <div class="slds-grid slds-gutters slds-wrap slds-m-horizontal_small slds-m-bottom_small" style = "background-color: #fff;">
+                    <!-- City Name -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                        <lightning:input aura:id = "decorFormDetails"
+                                         type ="text" 
+                                         label=" City" 
+                                         required="{!v.requiredForAll == true}"
+                                         value = "{!v.sampleFormDetailsObj.City__c}"/>	
+                    </div>
+                    <!-- state Name -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                        <lightning:input aura:id = "decorFormDetails"
+                                          label="State"
+                                          required="{!v.requiredForAll == true}"
+                                         value = "{!v.sampleFormDetailsObj.State__c}"/>
+                            
+                            
+                            <!--option value="">Choose State...</option>
+                            <aura:iteration items="{!v.stateLst}" var="option">
+                                
+                                <option value="{!option.value}" 
+                                        selected="{!v.sampleFormDetailsObj.State__c == option.value}">{!option.label}</option>
+                            </aura:iteration>
+                        </lightning:select-->
+                    </div>
+                    
+                    <!-- Postal/ZIP Code -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                        <lightning:input aura:id = "decorFormDetails"
+                                         type ="text"
+                                         maxlength = "5"
+                                         minlength = "5" 
+                                         label="Postal/ZIP Code"
+                                         required="{!v.requiredForAll == true}"
+                                         value = "{!v.sampleFormDetailsObj.Zip_Code__c}" 
+                                         onkeyup = "{!c.validateZipCode}"/>	
+                    </div>
+                </div>
+            </div>
+            <!-- form row 5 -->
+            <div class="slds-grid slds-gutters slds-wrap slds-p-horizontal_small">
+                
+                <!--Additional Notes -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                    <lightning:input aura:id = "decorFormDetails"
+                                     class="slds-m-horizontal_xx-small" 
+                                     type ="text" 
+                                     value = "{!v.sampleFormDetailsObj.Additional_notes__c}" 
+                                     label=" Additional Notes"/>	
+                </div>
+            </div>
+            
+            <!-- form row 6 -->
+             <div class="slds-card slds-m-horizontal_medium slds-m-vertical_x-large slds-p-horizontal_xx-small slds-p-vertical-small">
+                
+                <!-- Sample heading -->
+                <div class="slds-m-horizontal_small slds-m-vertical_small slds-text-heading_medium">
+              
+                    Sample Information
+                </div>
+               
+                 <!-- Sample Items -->
+                <!--accordion-->
+                
+                      <lightning:accordion aura:id="accordion" activeSectionName="{!v.accordionName}">
+                    <aura:iteration items = "{!v.sampleItems}" var = "sampleItem" indexVar="index">
+                        <aura:if isTrue="{!sampleItem.isDeleted__c != true}">
+                          <span id ="{!'errorSection'+sampleItem.isError}">  
+                     <lightning:accordionSection name="{!v.accordionName}" label="{!'Sample Item ' + (index+1)}">
+                           
+                            
+                            <aura:set attribute="body">
+                                <!-- Child Component -->
+                                
+                                    <c:SampleItems sampleItemData = "{!sampleItem}" 
+                                                   aura:id = "childComponent" 
+                                                   deleteIndex ="{!index}"
+                                                   
+                                                   isDeleteBtnDisabled="{!equals(v.totalNumberOfSampleItems, 1)}"/>
+                          
+                            </aura:set>
+                        </lightning:accordionSection>
+                              </span>
+                             	  </aura:if>
+                    </aura:iteration> 
+                </lightning:accordion>
+                <div class="slds-clearfix">
+                    <div class="slds-float_right">
+                        <!-- Add More Sample Button -->
+                        <lightning:button label="Add More" 
+                                          iconName="utility:add" 
+                                          iconPosition="right" 
+                                          class="slds-m-vertical_small slds-m-horizontal_small" 
+                                          variant="brand" 
+                                          onclick ="{!c.addMoreSampleItem}" 
+                                          />
+                        <!-- disabled = "{!greaterthanorequal(v.totalNumberOfSampleItems, 3)}" -->
+                        
+                        
+                    </div>
+                </div>
+                
+            </div>  
+           
+            <!-- Button Section -->
+            <div class="slds-grid slds-wrap">            
+                <div class="slds-col slds-size_12-of-12 alignright">
+                    <span>
+                        <lightning:button label="Save as Draft" 
+                                          iconName="utility:record_update" 
+                                          iconPosition="right"                                        
+                                          onclick = "{!c.saveDetails}"/>                    
+                        
+                        &nbsp;
+                        
+                        <lightning:button label="Submit" 
+                                          iconName="utility:save" 
+                                          iconPosition="right" 
+                                          variant="brand" 
+                                          onclick = "{!c.submitDetails}"/>                    
+                    </span>
+                </div>
+            </div>
+            <aura:set attribute="else">
+                <div style="padding: 3%;background-color: white;border-radius: 7px;">
+                    <center>
+                        
+                        <h1>
+                            Thank you the Request.Please Check your email for Form updates.                        
+                        </h1>
+                    </center>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+    
+    <!-- ########### -->
+    <!--loading spinner start... style=Brand Medium (blue dots)   -->
+    <aura:if isTrue="{!v.Spinner == true}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+    <!--  Loading spinner end--> 
+    
+</aura:component>

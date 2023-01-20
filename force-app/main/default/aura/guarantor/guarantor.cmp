@@ -1,0 +1,283 @@
+<aura:component controller="GuarantorController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <!-- to add multiple trade reference objects -->
+    <aura:attribute name="guarantorList" type="Object[]"/>
+    
+    <!-- guarantor object -->
+    <aura:attribute name="guarantorObject" type="Object"/>
+    
+    <!-- to get credit application form Id -->
+    <aura:attribute name="creditApplicationId" type="String"/>
+    
+    <!--For Showing Or Hide Modal-->
+    <aura:attribute name="modalOpen" type="Boolean" default="false"/>
+    
+    <!-- Show spinner on page load -->
+    <aura:attribute name="isShowSpinner" type="Boolean" />
+    
+    <!-- save the index number of selected Guarantor for Edit -->
+    <aura:attribute name="indexNumOfSelectedGuarantor" type="Integer" />
+    
+    <!-- when Guarantor selected for Edit then it should be true otherwise it should be false -->
+    <aura:attribute name="isEditGuarantorModal" Type="Boolean" default="false" />
+    
+    
+    <!-- return back the total number of Guarantors -->
+    <aura:method name="totalNumberOfGuarantors" action="{!c.countNumberofGuarantors}" access="public" />
+    
+    <!--For Showing Dilog Box-->
+    <aura:attribute name="showConfirmDialog" type="boolean" default="false"/>
+    
+    <!-- index number to delete record -->
+    <aura:attribute name="deleteIndexNumber" type="String" />
+    
+    
+    <!--Init for Loading-->
+    <aura:handler name="init" value="{!this}"  action="{!c.doInit}"/>
+    
+    
+    <!--Lightning card Start-->
+    <lightning:card  >  
+        <div class="slds-m-top_medium formmargin" >
+            
+            <!--Add More button for adding more records-->
+            <div align="left" class="slds-m-horizontal_x-small formmargin">
+                <lightning:button class="slds-m-right_large slds-m-left_x-small" variant="brand" label="Add Guarantor" onclick="{!c.openModelToFillForm}" />
+            </div>
+            
+        </div>
+        
+        <br/>
+        
+        <div class="slds-grid slds-wrap">
+            <!-- Desktop/Laptop screen table Div -->
+            <div class="slds-large-size_12-of-12  hide_table_on_mobile">
+                <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid" aria-label="Example advanced table of Opportunities in actionable mode" >
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate slds-form-element__label" >Guarantor Name</div>
+                            </th>
+                            
+                            <th class="" scope="col">
+                                <div class="slds-truncate slds-form-element__label" > Date</div>
+                            </th>
+                            
+                            <th class="" scope="col">
+                                <div class="slds-truncate slds-form-element__label" >Spouse's Name</div>
+                            </th>
+                            
+                            <th class="" scope="col">
+                                <div class="slds-truncate slds-form-element__label" > Date</div>
+                            </th>
+                            
+                            <th class=""  colspan="2" scope="col">
+                                <div class="slds-truncate slds-form-element__label" >Action</div>
+                            </th>
+                        </tr>
+                    </thead> 
+                    
+                    <tbody>
+                        <!--Aura:Iteration Start-->
+                        <aura:iteration items="{!v.guarantorList}" var="Guaranty" indexVar="indexNumber">
+                            <aura:if isTrue="{!Guaranty.isDelete != true}">
+                                <tr class="slds-hint-parent" >  
+                                    
+                                    <td>{!Guaranty.guarantorName}</td>
+                                    
+                                    <td> {!Guaranty.guarantorDate}</td>
+                                    
+                                    <td>{!Guaranty.spousesName}</td>
+                                    
+                                    <td> {!Guaranty.spousesDate}</td>
+                                    
+                                    <!--For Edit Button-->
+                                    <td class="slds-col">
+                                        <a name="{!indexNumber}" onclick="{!c.editGuarantorRecord}">
+                                            <lightning:icon iconName="utility:edit" size="small"/>
+                                            <span class="slds-assistive-text">Edit</span>
+                                        </a>
+                                        
+                                    </td>
+                                    <!--For Delete Button-->
+                                    <td class="slds-col">
+                                        <a name="{!indexNumber}" onclick="{!c.removeGuarantorRecord}" >
+                                            <lightning:icon iconName="utility:delete" size="small"/>
+                                            <span class="slds-assistive-text">delete</span>
+                                        </a>
+                                    </td>
+                                    
+                                </tr> 
+                            </aura:if>
+                            <!--Aura Iteration Close-->
+                        </aura:iteration>
+                        
+                    </tbody>
+                </table>
+            </div>
+            
+            
+            <!-- Mobile/Tablet screen table Div -->
+            <div class="slds-large-size_12-of-12  hide_table_on_Desktop">
+                <table class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid" >
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate slds-form-element__label" >Guarantor Name</div>
+                            </th>
+                            
+                            <th class="" scope="col">
+                                <div class="slds-truncate slds-form-element__label" >Spouse's Name</div>
+                            </th>
+                            
+                            <th class=""  colspan="2" scope="col">
+                                <div class="slds-truncate slds-form-element__label" >Action</div>
+                            </th>
+                        </tr>
+                    </thead> 
+                    
+                    <tbody>
+                        <!--Aura:Iteration Start-->
+                        <aura:iteration items="{!v.guarantorList}" var="Guaranty" indexVar="indexNumber">
+                            <aura:if isTrue="{!Guaranty.isDelete != true}">
+                                <tr class="slds-hint-parent slds-is-resizable" >  
+                                    
+                                    <td> 
+                                        <div class="slds-truncate">
+                                            {!Guaranty.guarantorName}
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div class="slds-truncate">
+                                            {!Guaranty.spousesName}
+                                        </div>
+                                    </td>
+                                    
+                                    <!--For Edit Button-->
+                                    <td class="slds-col">
+                                        <a name="{!indexNumber}" onclick="{!c.editGuarantorRecord}">
+                                            <lightning:icon iconName="utility:edit" size="small"/>
+                                            <span class="slds-assistive-text">Edit</span>
+                                        </a>
+                                    </td>
+                                    
+                                    <!--For Delete Button-->
+                                    <td class="slds-col">
+                                        <a name="{!indexNumber}" onclick="{!c.removeGuarantorRecord}" >
+                                            <lightning:icon iconName="utility:delete" size="small"/>
+                                            <span class="slds-assistive-text">delete</span>
+                                        </a>
+                                    </td>
+                                    
+                                </tr> 
+                            </aura:if>
+                            <!--Aura Iteration Close-->
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+        <!--Lightning Card End-->  
+    </lightning:card>
+    
+    <!--aura if For Showing Modal-->
+    <aura:if isTrue="{!v.modalOpen}">
+        <!--Modal-->
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header  modal-header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate slds-text-color_inverse">Add Continuing Guaranty</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <!--Continuing  Guaranty form-->
+                    <div class="slds-grid slds-wrap">
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12   slds-p-horizontal_medium  formmargin">
+                            <lightning:input class="slds-m-right_large"  aura:id="myinput"  type="Text"  label="Guarantor Name"  required="true"  value="{!v.guarantorObject.guarantorName}" />
+                        </div>                   
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12   slds-p-horizontal_medium  formmargin">
+                            <lightning:input class="slds-m-right_large"  aura:id="myinput"  type="Date"  label="Date"  required="true"  value="{!v.guarantorObject.guarantorDate}" />
+                        </div> 
+                        
+                         <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12   slds-p-horizontal_medium  formmargin">
+                            <lightning:input class="slds-m-right_large"
+                                             aura:id="myinput"
+                                             type="Text"
+                                             label="Email"
+                                             onblur="{!c.validateEmailField}"
+                                             required="true"
+                                             value="{!v.guarantorObject.guarantorEmail}" />
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12   slds-p-horizontal_medium  formmargin">
+                            <lightning:input class="slds-m-right_large"  aura:id="myinput"  type="Text"  label="Spouse's Name"  value="{!v.guarantorObject.spousesName}"/>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12   slds-p-horizontal_medium  formmargin">
+                            <lightning:input class="slds-m-right_large"  aura:id="myinput"  type="Date"  label=" Date"    value="{!v.guarantorObject.spousesDate}"/>
+                        </div>
+                        
+                         <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12   slds-p-horizontal_medium  formmargin">
+                            <lightning:input class="slds-m-right_large"
+                                             aura:id="myinput"
+                                             type="Text"
+                                             label="Email"
+                                             onblur="{!c.validateEmailField}"
+                                             value="{!v.guarantorObject.spousesEmail}" />
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button class="slds-button slds-button_neutral"  variant="brand" label="Cancel" onclick="{!c.hideModal}"/>
+                    <aura:if isTrue="{!v.isEditGuarantorModal}">
+                        <lightning:button variant="brand" label="Update" onclick="{!c.update}"/>
+                        <aura:set attribute="else">
+                            <lightning:button class="slds-button slds-button_brand"  variant="brand" label="Add" onclick="{!c.addIntoGuarantor}"/>
+                        </aura:set>
+                    </aura:if>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.showConfirmDialog}">
+        <!--Modal Box Start-->
+        <div role="dialog" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <!--Modal Box Header Start-->
+                <header class="slds-modal__header  modal-header">
+                    <h1 class="slds-text-heading--medium  slds-text-color_inverse">Confirmation</h1>
+                </header>
+                <!--Modal Box Header End-->
+                
+                <!--Modal Box Content Start-->
+                <div class="slds-modal__content slds-p-around--medium  slds-text-heading_small">
+                    <center><b>Are you sure you want to delete this Guarantor Record?</b></center>
+                </div>
+                <!--Modal Box Content End-->
+                
+                <!--Modal Box Button Start-->
+                <footer class="slds-modal__footer">
+                    <lightning:button  variant="brand" name='No' label='No' onclick='{!c.deleteConfirmDialogNo}'/>
+                    <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.deleteConfirmDialogYes}'/>
+                </footer>
+                <!--Modal Box Button End-->
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>            
+    </aura:if>
+    <!--End Delete Confirmation modal-->
+    
+
+    
+</aura:component>

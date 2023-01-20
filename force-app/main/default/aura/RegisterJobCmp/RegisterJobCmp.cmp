@@ -1,0 +1,151 @@
+<aura:component controller="RegisterJobCmpController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute type="object" name="oplitList"/>    
+    <aura:attribute name="mycolumns" type="List"/>    
+    <aura:attribute name="showAndHideModal" type="boolean"/>  
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="isButtonActive" type="Boolean" default="true" />
+    
+    <aura:if isTrue="{!v.showAndHideModal}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">You have select the following items to be registered</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    
+                    <lightning:datatable aura:id="opliTable"  
+                                         data="{! v.oplitList }"     
+                                         columns="{! v.mycolumns }"     
+                                         keyField="Id"    
+                                         hideCheckboxColumn="true"  
+                                         onsave="{! c.onSave }"/>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Brand action" onclick="{! c.handleClickCancle }" />
+                    <lightning:button variant="brand" label="Send Registration Email" title="Brand action" onclick="{! c.handleClickSendEmail }" />
+                </div>
+            </div>
+        </section>
+    </aura:if>
+    
+    <div class="slds-m-around_xx-large">
+        
+        <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+        <aura:if isTrue="{!v.isModalOpen}">
+            
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
+                <div class="slds-modal__container">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                        
+                        <span class="slds-assistive-text">Cancel and close</span>
+                    </button>
+                    <div class="slds-modal__header">
+                        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Job Registration Requirements With Vendors</h1>
+                    </div>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <table class="slds-table slds-table--bordered slds-table--striped">
+                            <thead>
+                                <th>
+                                    <td>Vendor Name</td>
+                                </th>
+                                <th>
+                                    <td>Minimum Requirement</td>
+                                </th>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Anatolia:</td>
+                                    <td>Minimum 10,000 SF of field or 5000 SF of mosaics</td>
+                                </tr>
+                                <tr>
+                                    <td>Artistic Tile:</td>
+                                    <td>$10,000 wholesale minimum</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>Crossville:</td>
+                                    <td>50/50 Split: Minimum 2500 SF or $10,000 in value.<br/>
+                                        95/5 Split: 7500 SF in tile or 2500 SF in panels</td>
+                                </tr>
+                                <tr>
+                                    <td>Florida Tile:</td>
+                                    <td>2500 SF minimum</td>
+                                </tr>
+                                <tr>
+                                    <td>Florim USA/Milestone:</td>
+                                    <td>5000 SF minimum</td>
+                                </tr>
+                                <tr>
+                                    <td>Florim Italy:</td>
+                                    <td>10,000 SF minimum</td>
+                                </tr>
+                                <tr>
+                                    <td>Island Stone:</td>
+                                    <td>$3,000 wholesale minimum</td>
+                                </tr>
+                                 <tr>
+                                     <td>Lungarno/Style Access</td>
+                                    <td>$5,000 wholesale minimum</td>
+                                </tr>
+                                <tr>
+                                    <td>Oceanside:</td>
+                                    <td>$5,000 wholesale minimum</td>
+                                </tr>
+                                <tr>
+                                    <td>Sonoma:</td>
+                                    <td>$15,000 wholesale minimum (registration expires after 6 months)</td>
+                                </tr>
+                                <tr>
+                                    <td>Wow Designs:</td>
+                                    <td>3000.00 sf minimum</td>
+                                </tr>
+                                
+                            </tbody>
+                            
+                        </table>
+                        
+                        <div class="slds-align_absolute-center" style="height:3rem"><h3><b><u>NO MINIMUM</u></b></h3></div>
+                        <ltng:require styles="/resource/SLDS090/assets/styles/salesforce-lightning-design-system.css" />        
+                        <ul class="slds-list_dotted">
+                            <li>American Olean</li>
+                            <li>Ann Sacks*</li>
+                            <li>Anthology</li>
+                            <li>Atlas Concorde (expires after 6 months)</li>
+                            <li>Jeffrey Court</li>
+                            <li>Marca Corona</li>
+                            <li>Mediterranea</li>
+                            <li>MLW Stone</li>
+                            <li>Portobello</li> 
+                            <li>Realstone</li>
+                            <li>Royal Mosa</li>  
+                            
+                        </ul>
+                        
+                        <div class="slds-form-element slds-p-top_x-small">
+                            <div class="slds-form-element__control">
+                                <div class="slds-checkbox">
+                                    <lightning:input type="checkbox" required="true" label="Ann Sacks will register all jobs on salesforce that they receive through Material Bank." name="input1" aura:id="checkboxValue" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeModel}">Cancel</button>
+                        
+                        <button class="slds-button slds-button_brand" onclick="{!c.openModel}">Save</button>
+                        
+                    </div>
+                </div>
+                
+                
+            </section>
+            
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,7 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" >
+    <div class="slds-grid">
+        <div class="slds-col slds-m-horizontal_large slds-m-large">
+            <img src="{!$Resource.LouisvilleTileLogo}"/>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,47 @@
+<aura:component controller='cleanUpComponentController' implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+	<aura:attribute type="OpportunityLineItem[]" name="opportunityLineItems"/>
+    <aura:attribute name="type" type="String"/>
+    <aura:attribute name="selectedRows" type="Object"/>
+    <aura:attribute name="selectedIds" type="List"/>
+    <aura:attribute name="maxRowSelection" type="Integer" default="5"/>
+    <aura:handler event="force:refreshView" action="{!c.init}" />
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="kerridgeLinkdata" type="List"/>
+    <aura:attribute name="selectedReports" type="object[]"/>
+    <aura:attribute name="isShowModel" type="Boolean" default='false'/>
+    <aura:attribute name="isShowSpinner" type="Boolean" default='false'/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:attribute name="recordId" type="String" />
+    
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_medium">
+  <div class="slds-modal__container">
+    <aura:if isTrue="{!v.isShowSpinner}">
+   <div class="demo-only" style="height:6rem;position:relative">
+  <div class="slds-spinner_container">
+    <div role="status" class="slds-spinner slds-spinner_medium">
+      <span class="slds-assistive-text">Loading</span>
+      <div class="slds-spinner__dot-a"></div>
+      <div class="slds-spinner__dot-b"></div>
+    </div>
+  </div>
+</div>
+    </aura:if>
+    <div class="slds-modal__header">
+      <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">List Of Products</h1>
+    </div>
+    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+         <lightning:datatable data="{! v.opportunityLineItems}" 
+                                                     columns="{! v.mycolumns }" 
+                                                     keyField="Id"
+                                                     onrowselection="{!c.handleSelect}"
+                                                     selectedRows="{! v.selectedRows }"
+                                                     />
+    </div>
+    <div class="slds-modal__footer">
+    <lightning:button variant="brand" label="Save" title="Brand action" onclick="{! c.saveButtonAction }" />
+    <lightning:button label="Cancel" title="Neutral action" onclick="{! c.closedComponent }"/>
+
+    </div>
+  </div>
+</section>
+</aura:component>

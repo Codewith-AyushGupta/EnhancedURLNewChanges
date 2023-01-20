@@ -1,0 +1,11 @@
+<aura:component controller="ImportantLinksController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="links" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:card title="Sample Request Forms Link">   
+            <aura:iteration items="{!v.links}" var="link">
+                <li>
+                    <a href="{!link.Value__c}" target="_blank">{!link.MasterLabel}</a>
+                </li>
+            </aura:iteration>
+          </lightning:card>
+</aura:component>

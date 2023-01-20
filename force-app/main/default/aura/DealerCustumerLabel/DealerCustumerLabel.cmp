@@ -1,0 +1,33 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+     
+        <table class="slds-table">
+        <thead>
+            <tr>
+                <div class="slds-grid  color">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                <label class="slds-form-element__label" for="unique-id-of-input">Customer name</label>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                <label class="slds-form-element__label" >Customer Type</label>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                <label class="slds-form-element__label" >Sales Person</label>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                <label class="slds-form-element__label" >Supplier</label>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                <label class="slds-form-element__label">Selections</label>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 ">
+                                <label class="slds-form-element__label" >Notes</label>
+            </div>
+        </div>
+            </tr>
+        </thead>
+        
+    </table>
+       
+    
+   
+</aura:component>

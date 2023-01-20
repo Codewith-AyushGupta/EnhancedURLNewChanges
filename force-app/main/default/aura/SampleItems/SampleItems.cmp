@@ -1,0 +1,299 @@
+<aura:component controller ="SampleRequestFormForInternalEmployees" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+
+    <aura:attribute name = "deleteSampleModal" type = "boolean"/>
+    <aura:attribute name="samplePartDescription" type="String" default="0" />
+    <aura:attribute name="quantityOfSampleItem" type="String" default="0"/>
+    <aura:attribute name="manufacturerName" type="String" default="0" />
+    <aura:attribute name="sampleName" type="String" default="0"/>
+    <aura:attribute name="isProductSelected" 
+                    type="boolean" 
+                    default="false"
+                    description = "this is the flag used to display selected product information"/>
+   <aura:attribute name="searchString" 
+                    type="string" 
+                    access="public" 
+                    default="" 
+                    description="String to search"/>
+    <aura:attribute name="isProductActive" type="Boolean" default="false"/>
+    <!-- delete sample item index number -->
+    <aura:attribute name="deleteIndex" type="Integer" />
+    
+    <!-- Sample Items Component Object List for remove 
+    <aura:attribute name="sampleComponents" type="Object[]" /> -->
+    
+    <!-- to disable/enable the delete button-->
+    <aura:attribute name="isDeleteBtnDisabled" type="Boolean" default="false" />
+    
+    
+    <!-- to disable/enable the delete button-->
+    <aura:attribute name="orderItemNotInList" type="Boolean" default="false" />
+    
+    <!-- variable for sample item -->
+    <aura:attribute name ="sampleItemData" type = "Object"/>
+    
+    <!-- ############ Aura Method ############ -->
+    
+    <!-- used to hold the selected product -->
+    <aura:attribute name ="selectedProduct" type = "Object" default=""/>
+    
+    <!-- used to hold the selected Manufacturer -->
+    <aura:attribute name ="selectedManufacturer" type = "Object"  default=""/>
+    
+    <!-- used to hold the selected Manufacturer's product -->
+    <aura:attribute name ="selectedManufacturerProduct" type = "Object" default=""/>
+    
+    <!-- aura method to validate the Sample item form -->
+    <aura:method name="validateSampleItemForm" action="{!c.validateAllSampleForm}" access="public" />
+    <aura:method name="samplePartDescriptionError" action="{!c.samplePartDescriptionForm}" access="public" />
+  	<aura:method name="quantityOfSampleItemError" action="{!c.quantityOfSampleItemAction}" access="public" />
+    <aura:method name="manufacturerNameError" action="{!c.manufacturerNameAction}" access="public" />
+    <aura:method name="sampleNameError" action="{!c.sampleNameAction}" access="public" />
+    <aura:method name="itemsChangeChild" action="{!c.itemsChange}" access="public" />
+    
+    <!-- List for Quantity of sample -->
+    <aura:attribute name="LstQty" type="list" />
+    
+    <!-- if user know sample item then show the field according to the value -->
+    <aura:attribute name="doYouKnowSampleItem" type="boolean" default="false"/>
+    
+    <!-- attribute used to get product details -->
+    <aura:attribute name="isProduct" type="Boolean" default="false"/>
+    
+    <!-- hide doYouKnowSampleItem when user select anything  -->
+    <aura:attribute name="doYouKnowSampleItemTab" type="boolean" default = "true"/>
+    
+    <aura:attribute name="selectedPattern"
+                    type="Object"
+                    default=""/>
+    <aura:attribute name="selectedColor"
+                    type="Object"
+                    default=""/>
+    
+    <aura:attribute name="filterData"
+                    type="Object"
+                    />
+    
+    <aura:attribute name="filterList" type="List" default="[]"/>
+    
+    <aura:handler name="change" value="{!v.selectedManufacturer}" action="{!c.itemsChange}"/>
+    <aura:handler name="change" value="{!v.selectedManufacturerProduct}" action="{!c.itemsChange}"/>
+    <aura:handler name="change" value="{!v.selectedProduct}" action="{!c.itemsChange}"/>
+    <aura:handler name="change" value="{!v.selectedOpportunity}" action="{!c.itemChange}"/>
+    <aura:handler name="change" value="{!v.doYouKnowSampleItem}" action="{!c.restProducts}"/>
+    
+    <aura:handler name="change" value="{!v.selectedManufacturer}" action="{!c.pushListValues}"/>
+    <aura:handler name="change" value="{!v.selectedPattern}" action="{!c.pushListValues}"/>
+    <aura:handler name="change" value="{!v.selectedColor}" action="{!c.pushListValues}"/>
+    <!-- register Sample item delete event -->
+    <aura:registerEvent name="deleteSampleEvent" type="c:deleteSampleItem"/>
+    
+    <!-- DO Init -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    <!-- ########## Main Body ########## -->
+    
+    <!-- SampleItem form Container -->
+    <div class="slds-grid slds-gutters slds-wrap slds-box " style = "background-color: #f2f7f8;">
+        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1  slds-clearfix">
+            
+            <lightning:input type="toggle" 
+                             label="Do you know sample item code ?"
+                             messageToggleActive = ""
+                             messageToggleInactive = ""
+                             name="input1" 
+                             checked="{!v.doYouKnowSampleItem}"
+                             class="slds-float_left"
+                             disabled = "{!v.orderItemNotInList == true}"/>
+            
+            <lightning:input type="toggle" 
+                             label="Sample item not in list ?"
+                             messageToggleActive = ""
+                             messageToggleInactive = ""
+                             name="input2" 
+                             class="slds-float_right"
+                             checked="{!v.orderItemNotInList}"/>
+            
+        </div>
+        
+        <!-- Form row 1 -->
+        
+        <!-- Sample Item Input -->
+        <!--<aura:if isTrue="{!(empty(v.selectedManufacturer))}">-->
+        <aura:if isTrue="{!v.doYouKnowSampleItem == true}">
+            <aura:if isTrue="{!v.orderItemNotInList == false}">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 ">
+                    
+                    <div class="slds-m-horizontal_xx-small">
+                        <c:CustomLookup aura:id="customLookupForSampleItem"
+                                        objectName="Product2" 
+                                        fieldsToBeDisplayed = "Name"
+                                        fieldName="Name"
+                                        label="Sample Items" 
+                                        iconName = "standard:products"
+                                        selectedRecord = "{!v.selectedProduct}"
+                                        placeholder="Enter Value"
+                                       
+                                        isRequired = "true"/>
+                    </div>
+                    
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_5-of-12 ">
+                    <lightning:input aura:id = "sampleItemDetails2" 
+                                     required = "true" 
+                                     label="Quantity of Sample Item"
+                                     value = "{!v.sampleItemData.Quantity_for_Sample__c}"/>
+                        
+                </div>
+                
+            </aura:if>
+        </aura:if>
+        
+        <!--  manufacturer -->
+        <!--<aura:if isTrue="{!(empty(v.selectedProduct))}">-->
+        <aura:if isTrue="{!v.doYouKnowSampleItem == false}">
+            <aura:if isTrue="{!v.orderItemNotInList == false}">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 ">
+                    
+                    <c:CustomLookup aura:id = "customLookupForManufacturer"
+                                    objectName="Manufacturer__c" 
+                                    fieldName="Name"
+                                    fieldsToBeDisplayed = "['Name']"
+                                    iconName = "standard:team_member"
+                                    label="Manufacturer" 
+                                    selectedRecord = "{!v.selectedManufacturer}"
+                                    placeholder="Enter Value"
+                                    
+                                    isRequired = "true"/>
+                </div>
+            </aura:if>
+        </aura:if>
+        <!-- Form row 2 -->
+        
+        <!-- Manufacture Item -->
+        <aura:if isTrue="{!v.doYouKnowSampleItem == false}">
+            <aura:if isTrue="{!v.orderItemNotInList == false}">
+               
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 ">                
+                    <c:CustomLookup aura:id = "customLookupForManufacturerItem"
+                                    objectName="Manufacturer_s_Items__c" 
+                                    fieldName="Product_Name__c"
+                                    fieldsToBeDisplayed = "['Product_Name__c','Product_Description__c','Product_Description_2__c','Color__c','Pattern__c']"
+                                    fieldsLabelToBeDisplayed = "['Name','Description 1','Description 2','Color','Pattern']"
+                                    queryfilterField = "Manufacturer__c"
+                                    queryfilterFieldValue = "{!v.selectedManufacturer.value}"                                
+                                    iconName = "standard:products"
+                                    selectedRecord = "{!v.selectedManufacturerProduct}"
+                                    label="Search For Sample Part #/Description/Color/Pattern" 
+                                    searchString="{!v.searchString}"
+                                    placeholder="Enter Value"
+                                    isRequired = "true"/>
+                </div>
+                
+                
+                <!-- quantity -->        
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 ">
+                    <lightning:input aura:id = "sampleItemDetails" 
+                                      required = "true" 
+                                      label="Quantity of Sample Item"
+                                     value = "{!v.sampleItemData.Quantity_for_Sample__c}" />
+                </div>
+            </aura:if>
+            
+        </aura:if>
+        
+        <!-- delete button -->
+         <aura:if isTrue="{!v.orderItemNotInList == false}">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 ">
+                <div class="slds-m-top_large">
+                    <lightning:buttonIcon	class="{!'icn'+v.isDeleteBtnDisabled}"   
+                                          iconName="utility:delete" 
+                                          size="large"   
+                                          variant="bare"
+                                          onclick = "{!c.openSampleDeleteModal}" 
+                                          disabled = "{!v.isDeleteBtnDisabled}" />
+                </div>
+            </div>
+        </aura:if>
+        
+       
+        <!-- optional row if user want to make custom sample order -->
+        <!-- Form row 2 -->
+        <aura:if isTrue="{!v.orderItemNotInList == true}">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 ">
+                
+                <lightning:input aura:id = "manufacturer" 
+                                 type="text"
+                                 value="{!v.sampleItemData.Manufacturer_Does_Not_Exits__c}" 
+                                 label="Manufacturer" 
+                                 required = "true" 
+                                 />   	   
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 ">
+                
+                <lightning:input aura:id = "sampleName" 
+                                 type="text"
+                                 value="{!v.sampleItemData.Sample_Item_Name__c}" 
+                                 label="Sample Name" 
+                                 required = "true" 
+                                 />   	   
+                
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                <lightning:input aura:id = "sampleItemDetails3" 
+                                 required = "true" 
+                                 label="Quantity of Sample Item"
+                                 value = "{!v.sampleItemData.Quantity_for_Sample__c}" />
+                
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 ">
+                <div class="slds-m-top_large">
+                    <lightning:buttonIcon	class="{!'icn'+v.isDeleteBtnDisabled}"   
+                                          iconName="utility:delete" 
+                                          size="large"   
+                                          variant="bare"
+                                          onclick = "{!c.openSampleDeleteModal}" 
+                                          disabled = "{!v.isDeleteBtnDisabled}" />
+                </div>
+            </div>
+        </aura:if>
+        
+        
+        <aura:if isTrue="{!v.isProductSelected}">
+            <!-- conditional row for the selected product details -->
+            <c:ProductDetails selectedManufacturerItem = "{!v.selectedManufacturerProduct}"
+                              selectedProduct = "{!v.selectedProduct}" />
+        </aura:if>
+        <!-- Customization -->        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 ">
+                 <lightning:textarea 
+                                class="slds-m-horizontal_xx-small" 
+                                type="text" 
+                                label="Customization Required"
+                                value = "{!v.sampleItemData.Customization__c}"
+                                />
+        </div>
+        
+    </div>
+    <!-- Delete Sample Item Confirmation Modal -->
+    <aura:if isTrue = "{!v.deleteSampleModal}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Delete</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>
+                        Do you want to delete this sample ?
+                    </p>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick = "{!c.closeSampleDeleteModal}">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick = "{!c.deleteSampleItem}">Yes</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>
+</aura:component>

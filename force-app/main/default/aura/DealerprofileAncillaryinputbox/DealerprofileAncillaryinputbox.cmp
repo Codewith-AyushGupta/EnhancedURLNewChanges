@@ -1,0 +1,87 @@
+<aura:component Controller="DealerProfileController"
+                extends="c:HandleErrorModal"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="ancillaryItems" type="Object" />
+    <aura:method name="sampleMethod" action="{!c.doInit}" />
+    <aura:attribute name="index" type="Integer"/>
+    <aura:attribute name="dealerProfileObj" type="Object"
+                    description="this's object used for parent object "/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="dealerType" type="String"/>
+    <aura:attribute name="deleteRow" type="Integer"  />
+    <aura:registerEvent name="removeItem" type="c:DisplayItemRemove" />
+    <aura:attribute name="createdDate" type="String" description="for Year Picklist" />
+    <aura:attribute name="openModal" type="Boolean" default="false"/>
+    <aura:attribute name="textAreaValue" type="String"/>
+    
+    
+    <table>
+        <thead></thead>
+        <tbody class="slds-box">
+            
+            <tr>
+                <div class="slds-grid ">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12" style="display:flex;">
+                         <lightning:helptext
+        content="This represents the vendor selling the material to the customer"
+    />
+                        <lightning:input name=""
+                                         class="widthCustom"
+                                         variant="label-hidden" 
+                                         placeholder="Supplier" 
+                                         value="{!v.ancillaryItems.Supplier}" 
+                                         onchange="{!c.updatefield}" 
+                                        /> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12">
+                        <lightning:input name="{}" variant="label-hidden" placeholder="Manufacturer" value="{!v.ancillaryItems.manufacturer}" onchange="{!c.updatefield}"/> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12">
+                        <lightning:input name="" variant="label-hidden" placeholder="Style Type" value="{!v.ancillaryItems.styleType}" onchange="{!c.updatefield}" /> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12">
+                        <lightning:input name="" variant="label-hidden" placeholder="Price" type="number" formatter="number" step="0.01" value="{!v.ancillaryItems.price}" onchange="{!c.updatefield}"/> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12">
+                        <lightning:input name="" variant="label-hidden" step="0.1" placeholder="Volume"  type="number" formatter="number" value="{!v.ancillaryItems.volume}" onchange="{!c.updatefield}"/> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12">
+                        <lightning:input name="" variant="label-hidden" value="{!v.ancillaryItems.whyDealerUsingProduct}" placeholder="Reason" onchange="{!c.updatefieldReason}" onclick="{!c.updatefieldReason}"/> 
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12">
+                        <lightning:buttonIcon  name="" variant="bare"  iconName="utility:delete" size="large" class="slds-align_absolute-center" onclick ="{!c.deleteRow}"/>  
+                    </div>
+                </div>
+                
+            </tr>
+            
+        </tbody>
+        
+    </table>
+    <aura:if isTrue="{!v.openModal}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                    
+                    <span class="slds-assistive-text">Cancel and close</span>
+                </button>
+                <div class="slds-modal__header">
+                    <p><h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Why is the client using products?</h1></p>
+                    <p><h5 style="color:red">(Maximum 255 characters allow)</h5></p>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:textarea name="input1" variant="label-hidden" placeholder="Maximum 255 characters allow" maxlength="254" value="{!v.textAreaValue}"/>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button label="Cancel" title="Cancel" onclick="{!c.closeModal }"/>
+                    
+                    <lightning:button variant="brand" label="Ok" title="Save" onclick="{!c.setFieldValue }" />
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>         
+    
+</aura:component>

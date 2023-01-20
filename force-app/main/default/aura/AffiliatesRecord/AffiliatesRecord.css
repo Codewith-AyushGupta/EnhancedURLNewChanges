@@ -1,0 +1,13 @@
+.THIS {
+    
+}
+
+.THIS .alignright{
+    text-align: right;
+}
+.THIS .icnfalse {
+    color:red;
+}
+.THIS .slds-textarea {
+    height:40px !important;
+}

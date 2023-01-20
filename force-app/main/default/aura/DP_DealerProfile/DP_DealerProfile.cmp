@@ -1,0 +1,389 @@
+<aura:component controller="DealerProfileController" 
+                extends="c:HandleErrorModal"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global"  >
+    <aura:handler name="init" 
+                  value="{!this}" 
+                  action="{!c.doInit}"
+                  description=" For Reload The Page"/>
+    <aura:attribute name="dealerCustomer"
+                    type="Object[]" 
+                    default="[]"
+                    description="This Object Store List of Child Object(dealerCustomer) data"/>
+    <aura:attribute name="currentDate" 
+                    type="date"
+                    description="This store current Date"/>
+    <aura:attribute name="dealerProfileCalculation" 
+                    type="Object"
+                    description="This's store for parent object date"/>
+    <aura:attribute name="storeAllCreatedRecord" 
+                    type="Object[]"
+                    description="This's store all dealer created records"/>
+    <aura:attribute name="AccountName" 
+                    type="String"
+                    description="This's store for Account Name"/>
+    <aura:attribute name="saleAndMarketId" 
+                    type="String"
+                    description="This's store sale And MarketId"/>
+    <aura:attribute name="totalAnnualRevenue33"
+                    type="Decimal" 
+                    description="custom label for 33"/>
+    <aura:attribute name="totalAnnualRevenue40" 
+                    type="Decimal" 
+                    description="custom label for 40"/>
+    <aura:attribute name="recordId" 
+                    type="String" 
+                    description="Get AccountId OnLoad"/>
+    <aura:attribute name="currentYear" 
+                    type="Integer" 
+                    description="Store current Year"/>
+    <aura:attribute name="selectedValue" 
+                    type="String" 
+                    description="Store the year Which comes from Search bar"/>
+    <aura:attribute name="dealerProfileCreatedDate" 
+                    type="String" 
+                    description="Store Formatted date which comes from search bar"/>
+    <aura:attribute name="accountCategory"
+                    type="String" 
+                    description="Store Account category Picklist value"/>
+    <aura:attribute name="accountCategoryMetadataData" 
+                    type="String" 
+                    description="Store Account Category as Dealer Which Comes From Metadata"/>
+    <aura:attribute name="selectedYear" 
+                    type="String" 
+                    description="Store The Record Created Year on Dealer Profile"/>
+    <aura:attribute name="buttonDisable" 
+                    type="boolean" 
+                    default="true"
+                    description="Button Disable/Enable When Record Save/Update"/>
+    <aura:attribute name="Spinner" 
+                    type="boolean" 
+                    default="false"
+                    description="Use Spinner When Record Save/Update"/>
+    <aura:attribute name="dealerProfileVisible" 
+                    type="boolean" 
+                    default="false"
+                    description="set visiblity  when account type is Dealer or Not"/>
+    <aura:attribute name="createdDate" 
+                    type="String" 
+                    description="for Year Picklist" />
+    <aura:method name="sampleMethod" 
+                 action="{!c.doInit}"/> 
+    
+    
+    <aura:if isTrue="{!v.accountCategory == v.accountCategoryMetadataData}">
+        <lightning:tabset selectedTabId="one" >
+            <lightning:tab label="Sales &amp; Market" id="one">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Created Date</th>
+                            <th>Last Modified Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.storeAllCreatedRecord}" var="dealer">
+                            <tr>
+                                <td>
+                                    
+                                    <a href="javascript:void(0)">
+                                        <lightning:badge label="{!dealer.Name}" onclick="{!c.handleCurrentYear}" class="slds-m-vertical_xx-small change_cursor"/>
+                                    </a>
+                                </td>
+                                <td><lightning:formattedDateTime value="{!dealer.CreatedDate}"/></td>
+                                <td><lightning:formattedDateTime value="{!dealer.LastModifiedDate}"/></td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                
+                <div class="container slds-p-left_x-small slds-p-right_x-small bgcolor" style = " width:95% ;margin: 0 auto;">
+                    <div class="slds-grid slds-wrap slds-p-vertical_x-small">                    
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 ">
+                            <lightning:select name="select1" label="How many tickets?" variant="label-hidden" aura:id="mySelect" value="{!v.selectedValue}" onchange="{!c.selectedYear}" >
+                                <option value="">Select Year---</option>
+                                <aura:iteration items="{!v.createdDate}" var="cd" indexVar="key">
+                                    <option text="{!cd}" value="{!cd}"  />
+                                </aura:iteration>
+                            </lightning:select>
+                        </div> 
+                        
+                        <aura:if isTrue="{!v.dealerProfileCreatedDate}">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 ">
+                                <span><div class="slds-text-heading_small slds-float_right"><b> <lightning:formattedDateTime value="{!v.dealerProfileCreatedDate}"/></b></div></span>
+                                
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 ">
+                                    <span><div class="slds-text-heading_small slds-float_right"><b><lightning:formattedDateTime value="{!v.currentDate}"/></b></div></span>
+                                </div>
+                            </aura:set>
+                        </aura:if> 
+                    </div>
+                    
+                    <aura:if isTrue="{!v.dealerProfileVisible}">
+                        <div>
+                            <article class="slds-card slds-wrap slds-p-vertical_x-small slds-p-bottom_x-small">
+                                <div class="slds-grid slds-wrap slds-gutters slds-p-horizontal_x-large ">
+                                    
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12">
+                                        <span><div class=" slds-text-heading_small"><b>Annual Sales and Purchase Data</b></div></span>
+                                        <div class="slds-grid slds-wrap slds-size_12-of-12 ">
+                                            <div class="slds-col slds-medium-size_10-of-12  slds-small-size_1-of-1">
+                                                <lightning:input class="helpText" aura:id="salesId" name="dAnnualSales" label="Total Annual Revenue" type="number" formatter="currency" step="0.01" variant="label-inline" value="{!v.dealerProfileCalculation.dealerAnnualSalesTotal}" onkeyup="{!c.updateDealerAnnualpurchaseTotal}" required="true" /><lightning:helptext content="Input by user" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-medium-size_2-of-12 slds-small-size_1-of-1 ">
+                                                <lightning:input name="annualsalesPercentage ( % )" type="decimal" class="slds-p-around_none manage_padding" formatter="percent" step="0.001" placeholder="%" variant="label-hidden" value="{!v.dealerProfileCalculation.dealerAnnualSalesTotalPercentage}" disabled="true" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-grid slds-wrap  slds-size_12-of-12 ">
+                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12 ">
+                                                <lightning:input name="dAnnualPurchases" class="helpText" type="number" label="Assumed Annual Purchases" variant="label-inline" formatter="currency" step="0.01" value="{!v.dealerProfileCalculation.dealerAnnualPurchase}" onchange="{!c.assumedAnnualPurchases}" disabled="true"/><lightning:helptext content="33% of Total Annual Revenue" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-small-size_1-of-1 slds-medium-size_2-of-12 ">
+                                                <lightning:input name="dAnnualPurchasesPercentage ( % )" class="slds-p-around_none" type="number"  placeholder="%" 	 variant="label-hidden" formatter="percent" step="0.001" value="{!v.dealerProfileCalculation.dealerAnnualPurchasePercentage}" onkeyup="{!c.updateDealerAnnualpurchase}" disabled="true" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-grid slds-wrap  slds-size_12-of-12 ">
+                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12">
+                                                <lightning:input  name="dAnnualTileSales" required="true" aura:id="salesId" label="Annual Tile Sales (Include labor)" class="helpText"  type="number" formatter="currency" step="0.01" value="{!v.dealerProfileCalculation.dealerAnnualTileSaleincludelabour}" variant="label-inline" onkeyup="{!c.setPercentAnnualTileSaleincludelabour}"/><lightning:helptext content="40% of Total Annual Revenue" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-medium-size_2-of-12  slds-small-size_1-of-1">
+                                                <lightning:input name="dAnnualTileSalesPercentage ( % )" placeholder="%" class="slds-p-around_none" type="number" variant="label-hidden" formatter="percent" step="0.001" value="{!v.dealerProfileCalculation.dealerAnnualTileSaleincludelabourPercentage}" onkeyup="{!c.dealerAnnualTileSaleincludelabour}" disabled="true"/>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-grid slds-wrap  slds-size_12-of-12 ">
+                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12">
+                                                <lightning:input name="dAnnualTilePurchases" label="Annual Tile + Ancillary Purchases " class="helpText" type="number" formatter="currency" step="0.01" variant="label-inline" value="{!v.dealerProfileCalculation.dealerAnnualTileandAnnualPurchase}" disabled="true"  /><lightning:helptext content="Tile Purchases + Ancillary Purchases" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-medium-size_2-of-12  slds-small-size_1-of-1">
+                                                <lightning:input name="dAnnualTilePurchasesPercentage ( % )" placeholder="%" type="number" class="slds-p-around_none"  variant="label-hidden" formatter="percent" step="0.001" value="{!v.dealerProfileCalculation.dealerAnnualTileandAnnualPurchasePercentage}" onkeyup="{!c.dealerAnnualTileandAnnualPurchasePercentage}" style="padding:0px !important" disabled="true"/>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-grid slds-wrap slds-size_12-of-12 ">
+                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12">
+                                                <lightning:input name="dTilePurchases" class="helpText" required="true" aura:id="salesId" label="Tile Purchases" type="number" variant="label-inline" formatter="currency" step="0.01" value="{!v.dealerProfileCalculation.tilePurchase}" onkeyup="{!c.setTilePurchasePercentage}"/><lightning:helptext content="40% of Assumed Annual Purchases" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-medium-size_2-of-12  slds-small-size_1-of-1">
+                                                <lightning:input name="dTilePurchasesPercantage" placeholder="%"  class="slds-p-around_none" type="number"  formatter="percent" step="0.001" variant="label-hidden" value="{!v.dealerProfileCalculation.tilePurchasePercentage}" disabled="true"/>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-grid slds-wrap  slds-size_12-of-12 ">
+                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12">
+                                                <lightning:input name="dAncilaryPurchases" required="true"  aura:id="salesId" type="number"  class="helpText" label="Ancillary Purchases" variant="label-inline" formatter="currency" step="0.01" value="{!v.dealerProfileCalculation.ancillaryPurchases}" onkeyup="{!c.setAncillaryPurchasesPercentage}"/><lightning:helptext content="33% of Assumed Annual Purchases" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-medium-size_2-of-12  slds-small-size_1-of-1">
+                                                <lightning:input name="dAncilaryPurchasesPercentage ( % )" type="number" placeholder="%" class="slds-p-around_none"  variant="label-hidden" formatter="percent" step="0.001" value="{!v.dealerProfileCalculation.ancillaryPurchasesPercentage}" disabled="true"/>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-grid slds-wrap slds-size_12-of-12 ">
+                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12">
+                                                <lightning:input name="dLTDTile" label="LTD Tile + Ancillary Sales"  class="helpText" type="number" variant="label-inline" formatter="currency" step="0.01" value="{!v.dealerProfileCalculation.ltdTileAndAncillarySales}" disabled="true" /><lightning:helptext content=" LTD Tile Sales + LTD Ancillary Sales" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-medium-size_2-of-12 slds-small-size_1-of-1">
+                                                <lightning:input name="dLTDTilePercentage ( % )" placeholder="%" class="slds-p-top_xx-small" type="number" variant="label-hidden"  formatter="percent" step="0.001" value="{!v.dealerProfileCalculation.ltdTileAndAncillarySalesPercentage}" disabled="true"/>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-grid slds-wrap  slds-size_12-of-12 ">
+                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12">
+                                                <lightning:input name="dLTDTileSales" required="true" aura:id="salesId" class="helpText"  label="LTD Tile Sales" type="number" variant="label-inline" formatter="currency" step="0.01" value="{!v.dealerProfileCalculation.ltdTileSale}" onkeyup="{!c.ltdTileSale}"/><lightning:helptext content="Input by user" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-medium-size_2-of-12 slds-small-size_1-of-1">
+                                                <lightning:input name="dLTDTileSalesPercentage ( % )" type="number"  placeholder="%" class="slds-p-top_xx-small" formatter="percent" step="0.001" variant="label-hidden" value="{!v.dealerProfileCalculation.ltdTileSalePercentage}" disabled="true"/>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="slds-grid slds-wrap  slds-size_12-of-12 ">
+                                            <div class="slds-col slds-size_1-of-1 slds-medium-size_10-of-12">
+                                                <lightning:input name="dLTDancilary" required="true" aura:id="salesId" class="helpText"  type="number" label="LTD Ancillary Sales" variant="label-inline" formatter="currency" step="0.01" value="{!v.dealerProfileCalculation.ltdAncillarySales}" onkeyup="{!c.ltdAncillarySales}" /><lightning:helptext content="Input by user" class="Inherited" />
+                                            </div>
+                                            <div class="slds-col slds-medium-size_2-of-12  slds-small-size_1-of-1">
+                                                <lightning:input name="dLTDancilaryPercentage ( % )" type="number" placeholder="%" class="slds-p-top_xx-small"  formatter="percent" step="0.001" variant="label-hidden" value="{!v.dealerProfileCalculation.ltdAncillarySalesPercentage}" disabled="true" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                            
+                            <div class="slds-grid slds-wrap slds-gutters">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-p-top_small">
+                                    <span><div class="slds-text-heading_small "><b>Market Share/Top Selling Styles</b></div></span>
+                                </div>
+                            </div>
+                            <div class="slds-scrollable">
+                                
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Opportunity Name">LTD Sales</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Account Name">Sales Volume</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Close Date">Market Share</div>
+                                            </th>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate" title="Stage">Market Share Target</div>
+                                            </th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="slds-hint-parent">
+                                            <th data-label=" LTD Tile + Ancillary Sales" scope="row">
+                                                <div class="slds-truncate" >
+                                                    LTD Tile + Ancillary Sales
+                                                </div>
+                                            </th>
+                                            <td data-label="Ltd tile with Ancillary">
+                                                <lightning:input name="ltdTileAndAncillary"  class="slds-p-top_xx-small" style="border:none" type="number" variant="label-hidden"  formatter="currency" value="{!v.dealerProfileCalculation.ltdTileAndAncillarySales}" disabled="true"/>
+                                                <!--div class="slds-truncate">${!v.dealerProfileCalculation.ltdTileAndAncillarySales}</div-->
+                                            </td>
+                                            <td data-label="Ltd tile with Ancillary percentage">
+                                                <lightning:input name="dLTDTilePercentage ( % )" placeholder="%" class="slds-p-top_xx-small" style="border:none" type="number" variant="label-hidden"  formatter="percent" step="0.001" value="{!v.dealerProfileCalculation.ltdTileAndAncillarySalesMarketShare}" disabled="true"/>
+                                            </td>
+                                            <td data-label="Prospecting">
+                                                <div class="slds-grid slds-gutters" >
+                                                    
+                                                    <lightning:input name="input1" required="true"  aura:id="salesId" type="number" variant="label-hidden"  value="{!v.dealerProfileCalculation.ltdTileAndAncillarySalesMarketShareTarget}" oncommit="{!c.enterNumberOnly}" formatter="percent" step="0.001"/>
+                                                    
+                                                </div>
+                                            </td>
+                                            
+                                            
+                                            
+                                            
+                                        </tr>
+                                        <tr class="slds-hint-parent">
+                                            <th data-label=" LTD Tile Sales" scope="row">
+                                                <div class="slds-truncate">
+                                                    LTD Tile Sales
+                                                </div>
+                                            </th>
+                                            <td data-label="Ltd tile sale">
+                                                <lightning:input name="ltdTileAndAncillary"  class="slds-p-top_xx-small" style="border:none" type="number" variant="label-hidden"  formatter="currency" value="{!v.dealerProfileCalculation.ltdTileSale}" disabled="true"/>
+                                                
+                                                <!--div class="slds-truncate" >${!v.dealerProfileCalculation.ltdTileSale}</div-->
+                                            </td>
+                                            <td data-label=" LTD Tile Sales percentage">
+                                                <lightning:input name="dLTDTileSalesPercentage ( % )" type="number" style="border:none" placeholder="%" class="slds-p-top_xx-small" formatter="percent" step="0.001" variant="label-hidden" value="{!v.dealerProfileCalculation.ltdTileSalesMarketShare}" disabled="true"/>
+                                            </td>
+                                            <td data-label="Prospecting">
+                                                
+                                                <div class="slds-grid slds-gutters" >
+                                                    
+                                                    <lightning:input name="input1" required="true" type="number" aura:id="salesId"  variant="label-hidden" value="{!v.dealerProfileCalculation.ltdTileSalesMarketShareTarget}"  oncommit="{!c.enterNumberOnly}" formatter="percent" step="0.001"/>
+                                                    
+                                                </div>
+                                            </td>
+                                            
+                                            
+                                        </tr>
+                                        <tr class="slds-hint-parent">
+                                            <th data-label="Opportunity Name" scope="row">
+                                                <div class="slds-truncate" >
+                                                    LTD Ancillary Sales
+                                                </div>
+                                            </th>
+                                            <td data-label="Account Name">
+                                                <lightning:input name="ltdTileAndAncillary"  class="slds-p-top_xx-small" style="border:none" type="number" variant="label-hidden"  formatter="currency" value="{!v.dealerProfileCalculation.ltdAncillarySales}" disabled="true"/>
+                                                <!--div class="slds-truncate" >${!v.dealerProfileCalculation.ltdAncillarySales}</div-->
+                                            </td>
+                                            <td data-label="Close Date">
+                                                <lightning:input name="dLTDancilaryPercentage ( % )" style="border:0" type="number" placeholder="%" class="slds-p-top_xx-small"  formatter="percent" step="0.001" variant="label-hidden" value="{!v.dealerProfileCalculation.ltdAncillarySalesMarketShare}" disabled="true" />
+                                            </td>
+                                            <td data-label="Prospecting">
+                                                
+                                                <div class="slds-grid slds-gutters" >
+                                                    
+                                                    <lightning:input name="input1" type="number" required="true" aura:id="salesId"  variant="label-hidden" value="{!v.dealerProfileCalculation.ltdAncillarySalesMarketShareTarget}" oncommit="{!c.enterNumberOnly}" formatter="percent" step="0.001"/>
+                                                    
+                                                </div>
+                                            </td>
+                                            
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="slds-p-left_large slds-p-right_large  slds-card slds-m-top_large">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_12-of-12 slds-p-bottom_small">
+                                        <span><div class="slds-text-heading_small"><b>Dealer Customer (Dealer Controlled Programs)</b></div></span>
+                                    </div>
+                                </div>
+                                <div class="slds-scrollable_y" style="height:10rem;"> 
+                                    {!v.dealerCustomer}
+                                    <aura:iteration items="{!v.dealerCustomer}" var="item">
+                                        
+                                    </aura:iteration>
+                                    <c:DP_DealerCustomers dealerCustomer="{!v.dealerCustomer}" recordsId="{!v.recordId}"/>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-clearfix">
+                                <div class="slds-float_right">
+                                    
+                                    <aura:if isTrue="{!v.buttonDisable}">
+                                        <lightning:button label="Save" 
+                                                          iconName="utility:save" 
+                                                          iconPosition="right" 
+                                                          class="slds-m-vertical_small slds-m-horizontal_small" 
+                                                          variant="brand" 
+                                                          onclick ="{!c.submitDetails}" 
+                                                          />
+                                        <aura:set attribute="else">
+                                            <lightning:button label="Update" 
+                                                              iconName="utility:save" 
+                                                              iconPosition="right" 
+                                                              class="slds-m-vertical_small slds-m-horizontal_small" 
+                                                              variant="brand" 
+                                                              onclick ="{!c.updateDetails}"
+                                                              />
+                                        </aura:set>
+                                    </aura:if>
+                                    
+                                </div>
+                            </div>
+                            
+                        </div> 
+                        
+                    </aura:if> 
+                    
+                </div>
+            </lightning:tab>
+            
+            <lightning:tab label="Ceramic Tile" id="two" >
+                <c:DP_DealerProfileCeramic aura:id="ceramicID" recordId="{!v.recordId}" />
+            </lightning:tab>
+            <lightning:tab label="Ancillary Items" id="three" >
+                <c:DP_DealerProfileAncillary aura:id="ancillaryId" recordId="{!v.recordId}" />
+            </lightning:tab>
+            <lightning:tab label="LVT " id="four">
+                <c:DP_DealerProfileLVT aura:id="lVTId" recordId="{!v.recordId}" />
+            </lightning:tab>
+            <lightning:tab  label="Laminate" id="five" >
+                <c:DP_DealerProfileLamiante aura:id="lamianteId" recordId="{!v.recordId}" />
+            </lightning:tab>
+        </lightning:tabset>
+        
+        <aura:if isTrue="{!v.Spinner}">
+            <lightning:spinner class="c-spinner" alternativeText="Please wait........." variant="brand" size="large"/>
+        </aura:if>
+        <aura:set attribute="else">
+            <div class="slds-align_absolute-center" style="height:5rem"><b>Selected Account is not dealer type.</b></div>
+        </aura:set>
+    </aura:if> 
+    
+    
+    
+</aura:component>

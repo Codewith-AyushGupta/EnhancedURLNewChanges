@@ -1,0 +1,232 @@
+<aura:component controller="AnnouncementController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+ 
+    <aura:attribute name="announcementObj" type="Object[]" />
+    <aura:attribute name="replyMessages" type="Object[]" />
+    <aura:attribute name="mainMessages" type="Object[]" />
+    <aura:attribute name="containMsg" type="Boolean" default="false" />
+    <aura:attribute name="copyAnnouncementObj" type="Object[]" />
+    
+    <!-- Do init -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    
+    <aura:attribute name="isSortByName" type="Boolean" default="false"/>
+    <aura:attribute name="isSortByDate" type="Boolean" default="false"/>
+    <aura:attribute name="isSortFirstTime" type="Boolean" default="true"/>
+    <aura:attribute name="isSortAsc" type="Boolean" default="true"/>
+    <aura:attribute name="selectedSortingField" type="String" default="Name"/>
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    
+    <aura:attribute name="displaySpinnerForReplyModal" 
+                    type="boolean" 
+                    default="false" 
+                    description="this is used to save the flag to hide and show spinner"/>
+    
+    
+    <aura:attribute name="displaySpinnerForMessageSentByMe" 
+                    type="boolean" 
+                    default="false" 
+                    description="this is used to save the flag to hide and show spinner"/>
+    
+    <!--event for reply key message-->
+    <aura:registerEvent name="KeyMessageReply" type="c:KeyMessageReplyModal" />
+    <aura:attribute name="currentRecordId" type="String" />    
+    
+    <div class="slds-grid slds-wrap">
+        <aura:if isTrue="{!v.containMsg}">
+            <div class="slds-align_absolute-center slds-m-vertical_small" >
+                <h4 class = "slds-m-horizontal_large slds-m-bottom_large">
+                    <b>No Message Found For You.</b>
+                </h4>
+                <br/>
+            </div>
+            <aura:set attribute="else">
+                <div class="slds-scrollable" style="height:11.5rem;">
+                    
+                    
+                    
+                    <!-- loading image section -->
+                    <aura:if isTrue="{!v.displaySpinnerForMessageSentByMe}">
+                        <lightning:spinner alternativeText="Loading" size="small" />
+                        
+                        <!-- table section to display message sent by logged in user -->
+                        <aura:set attribute="else">
+                            <table class="slds-table slds-no-row-hover slds-table_bordered slds-table_col-bordered slds-table_fixed-layout slds-table_resizable-cols" role="grid" aria-label="">
+                                <thead>
+                                    <tr class="slds-line-height_reset ">
+                                        <th class="" scope="col" style="width:3rem">
+                                            <div class="slds-truncate slds-form-element__label slds-p-left_x-small slds-align_absolute-center" >S.No.</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate slds-form-element__label slds-p-left_x-small slds-align_absolute-center" >Messages</div>
+                                        </th>
+                                         <th style="width:5rem" data-record="UserName" class="slds-is-resizable" scope="col" onclick="{!c.handleSorting}">
+                                            <a class="slds-th__action slds-text-link--reset">
+                                                <span class="slds-assistive-text">Sort</span>
+                                                <span class="slds-truncate" title="From">To
+                                                    <aura:if isTrue="{!v.isSortFirstTime}">
+                                                        &#9660;
+                                                    </aura:if> </span>
+                                                <aura:if isTrue="{!v.isSortByName}">
+                                                    <aura:if isTrue="{!v.isSortAsc}">
+                                                        &#9650;
+                                                        <aura:set attribute="else">
+                                                            &#9660;
+                                                        </aura:set>
+                                                    </aura:if> 
+                                                </aura:if>
+                                            </a>
+                                        </th>
+                                        <th style="width:5rem" data-record="CreatedDate" class="slds-is-resizable"  scope="col" onclick="{!c.handleSorting}">
+                                            <a class="slds-th__action slds-text-link--reset">
+                                                <span class="slds-assistive-text slds-text-link--reset">Sort</span>
+                                                <span class="slds-truncate" title="Date">Date
+                                                    <aura:if isTrue="{!v.isSortFirstTime}">
+                                                        &#9660;
+                                                    </aura:if> </span>
+                                                <aura:if isTrue="{!v.isSortByDate}">
+                                                    <aura:if isTrue="{!v.isSortAsc}">
+                                                        &#9650;
+                                                        <aura:set attribute="else">
+                                                            &#9660;
+                                                        </aura:set>
+                                                    </aura:if> 
+                                                </aura:if>
+                                            </a>
+                                        </th>                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.announcementObj}" var="item" indexVar="indexNumber">
+                                        <tr class="slds-hint-parent" >
+                                            <td class="slds-align_absolute-center" style="white-space: pre-wrap;">
+                                                <a href="javascript:void(0)" onclick="{!c.openReplyModal}" data-recId="{!item.Id}">
+                                                    <aura:if isTrue="{!item.Reply_Messages__r.length>0}">
+                                                        
+                                                        <lightning:icon iconName="utility:reply" alternativeText="Utility image" title="Image" size="xx-small" />{!indexNumber+1}
+                                                        <aura:set attribute="else">
+                                                            {!indexNumber+1}
+                                                        </aura:set>
+                                                        
+                                                    </aura:if> 
+                                                </a> 
+                                            </td>
+                                            <td style="white-space: pre-wrap;" class="slds-truncate">
+                                                <div style="height:18px;overflow:hidden;">
+                                                
+                                                <aura:if isTrue="{!item.Reply_Messages__r.length>0}">
+                                                    
+                                                    <a href="javascript:void(0)" onclick="{!c.openReplyModal}" data-recId="{!item.Id}"><aura:unescapedHtml value ="{!item.Message__c}" /></a>
+                                                    <aura:set attribute="else">
+                                                     <a href="javascript:void(0)" onclick="{!c.openReplyModal}" data-recId="{!item.Id}">   <aura:unescapedHtml value ="{!item.Message__c}" />
+                                                        </a>
+                                                        </aura:set>
+                                                </aura:if> 
+                                                </div>
+                                            </td>
+                                            <td>
+                                                
+                                                        <aura:if isTrue="{!item.Reply_Messages__r.length>1}">
+                                                            <aura:iteration items="{!item.Reply_Messages__r}" var="replyMsg" indexVar="indexNumber">
+                                                                 <aura:if isTrue="{!indexNumber==0}">
+                                                                    
+                                                                {!replyMsg.User__r.FirstName},....
+                                                                </aura:if>
+                                                            </aura:iteration>
+                                                        </aura:if> 
+                                                        <aura:if isTrue="{!item.Reply_Messages__r.length==1}">
+                                                            <aura:iteration items="{!item.Reply_Messages__r}" var="replyMsg" indexVar="indexNumber">
+                                                                {!replyMsg.User__r.FirstName}
+                                                            </aura:iteration>
+                                                        </aura:if> 
+                                                     
+                                            </td>
+                                            <td>
+                                                <lightning:formattedDateTime value="{!item.CreatedDate}" year="numeric" month="numeric" day="numeric" />
+                                            </td>
+                                            
+                                        </tr>     
+                                        
+                                    </aura:iteration>
+                                </tbody>
+                            </table> 
+                        </aura:set>
+                    </aura:if>
+                </div>  
+            </aura:set>
+        </aura:if>
+    </div>
+    
+    
+    <div class="slds-m-around_xx-small">
+        
+        <!--Use aura:if tag to display/hide popup based on isModalOpen value-->  
+        <aura:if isTrue="{!v.isModalOpen}">
+            
+            <!-- Modal/Popup Box starts here-->
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    
+                    <!-- Modal/Popup Box Header Starts here-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Details</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-scrollable" style="height:16rem;"> 
+                            <aura:if isTrue="{!!v.displaySpinnerForReplyModal}">
+                                <aura:set attribute="else">
+                                    <lightning:card>
+                                        <lightning:spinner alternativeText="Loading" size="small" />
+                                    </lightning:card>
+                                </aura:set>
+                                <aura:if isTrue="{!v.replyMessages.length>0}">
+                                    <p class="slds-main-message messagewidth">
+                                    <aura:unescapedHtml value ="{!v.replyMessages[0].Announcement__r.Message__c}" />
+                                </p>
+                                <aura:set attribute="else">
+                                   <p class="slds-main-message messagewidth">
+                                        <aura:unescapedHtml value ="{!v.mainMessages[0].Message__c}" />
+                                    </p>
+                                </aura:set>
+                                </aura:if>
+                                                                
+                                <aura:iteration items="{!v.replyMessages}" var="item" indexVar="indexNumber">
+                                    <div class="slds-clear-both">
+                                       
+                                    </div>
+                                    <div>
+                                        <p class="slds-float_right">                                                     
+                                            <span>&nbsp;<lightning:formattedDateTime value="{!item.CreatedDate}" year="numeric" month="numeric" day="numeric" /></span>
+                                            &nbsp;{!item.User__r.FirstName}&nbsp;
+                                            <lightning:icon iconName="standard:avatar" size="x-small"/>&nbsp;
+                                        </p>
+                                        
+                                        <p class="slds-replied-message slds-float_right messagewidth slds-clear-both">
+                                            <aura:unescapedHtml value ="{!item.Reply_Message__c}" />
+                                        </p>                                        
+                                    </div>
+                                </aura:iteration>
+                            </aura:if>
+                        </div>                        
+                    </div>
+                    
+                    <!--Modal/Popup Box Footer Starts here-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral"
+                                          label="Close"
+                                          title="Close"
+                                          onclick="{! c.closeModel }"/>                        
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,101 @@
+<aura:component controller="HomePageMainComponentController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="totalCountOfObject" type="Object"/>
+    <!-- Do init -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    
+    <article class="slds-card " style="height:15rem">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate ">
+                <div class="slds-media__body slds-align_absolute-center">
+                    <h2 class="slds-card__header-title">
+                        <span><lightning:icon iconName="standard:unified_health_score" alternativeText="Scorecard" title="Scorecard" /><b class="slds-m-left_small">Scorecard</b></span>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered" aria-label="Example table of Opportunities with no row hovers">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                    </th>
+                    <th class="" scope="col">
+                        <b>MTD</b>
+                    </th>
+                    <th class="" scope="col">
+                        <b>YTD</b>
+                    </th>
+                </tr>
+                
+                
+            </thead>
+            <tbody>
+               
+                <tr>
+                    <td data-label="Pipeline">
+                        <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                            <strong >
+                               Pipeline-  
+                                
+                            </strong>  
+                        </div>
+                    </td>
+                    <td>
+                        <a href= "https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Report/00O01000000ZMY8EAO/view?queryScope=userFolders" target="_blank"> <span>{!v.totalCountOfObject.opportunityByMonth}</span> </a>
+                    </td>
+                    <td>
+                        <a href= "https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Report/00O01000000ZMXKEA4/view?queryScope=userFolders" target="_blank">   {!v.totalCountOfObject.opportunityByYear}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-label="New Account">
+                        <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                            <strong > 
+                              New Accounts-  
+                            </strong>  
+                        </div>
+                    </td>
+                    <td>
+                        
+                        <a href= "https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Report/00O01000000ZMY3EAO/view?queryScope=userFolders" target="_blank"> <span>{!v.totalCountOfObject.accountByMonth}</span></a>
+                    </td>
+                    <td>
+                        <a href= "https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Report/00O78000000KmBOEA0/view?queryScope=userFolders" target="_blank"> {!v.totalCountOfObject.accountByYear}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-label="New Contacts">
+                        <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                            <strong >
+                                New Contacts- 
+                            </strong> 
+                        </div>
+                    </td>
+                    <td> <span> 
+                        <a href= "https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Report/00O78000000KmBYEA0/view?queryScope=userFolders" target="_blank">{!v.totalCountOfObject.contactByMonth}</a>
+                        </span></td>
+                    <td>
+                        <a href= "https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Report/00O01000000ZMYNEA4/view?queryScope=userFolders" target="_blank">  {!v.totalCountOfObject.contactByYear}</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-label="New Leads">
+                        
+                        <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                            <strong >
+                                New Leads- 
+                            </strong> 
+                        </div>
+                    </td>
+                    <td><span>
+                        <a href= "https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Report/00O01000000ZMYIEA4/view?queryScope=userFolders" target="_blank">{!v.totalCountOfObject.leadByMonth}</a>
+                        </span> </td>
+                    <td>
+                        <a href= "https://louisville-tile--uat.sandbox.lightning.force.com/lightning/r/Report/00O01000000ZMYDEA4/view?queryScope=userFolders" target="_blank">{!v.totalCountOfObject.leadByYear}</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        
+    </article>
+</aura:component>

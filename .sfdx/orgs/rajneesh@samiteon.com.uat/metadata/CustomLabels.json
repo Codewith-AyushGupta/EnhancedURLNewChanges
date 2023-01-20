@@ -1,0 +1,18 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005300000042XOPAA2",
+      "createdByName": "Rajneesh Samiteon",
+      "createdDate": "1970-01-01T00:00:00.000Z",
+      "fileName": "labels/CustomLabels.labels",
+      "fullName": "CustomLabels",
+      "id": "",
+      "lastModifiedById": "005300000042XOPAA2",
+      "lastModifiedByName": "Rajneesh Samiteon",
+      "lastModifiedDate": "1970-01-01T00:00:00.000Z",
+      "namespacePrefix": "",
+      "type": "CustomLabels"
+    }
+  ]
+}

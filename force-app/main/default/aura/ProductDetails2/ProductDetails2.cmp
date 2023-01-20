@@ -1,0 +1,46 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global"
+                controller="SampleRequestFormForInternalEmployees">
+   
+     <aura:attribute name ="selectedManufacturerItem" 
+                     type = "object"
+                     description = "used to hold the selected marufacture's item"/>
+    
+    <aura:attribute name ="selectedProduct" 
+                     type = "object"
+                     description = "used to hold the selected product Id"/>
+    
+    <aura:attribute name ="description" 
+                     type = "string"
+                     description = "used to hold description of product"/>
+    
+    <aura:attribute name ="description2" 
+                     type = "string"
+                     description = "used to hold description 2 of product"/>
+    
+    <aura:attribute name ="color" 
+                     type = "string"
+                     description = "used to hold color of product"/>
+    
+    <aura:attribute name ="pattern" 
+                     type = "string"
+                     description = "used to hold pattern of product"/>
+    
+    <aura:attribute name ="manufacturer" 
+                     type = "string"
+                     description = "used to hold manufacturer of product"/>
+    
+    <aura:handler name="init" 
+                  value="{!this}" 
+                  action="{!c.doInit}"
+                  description = "calling method on load"/>  
+   
+    
+    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+        Product Description : <b class="slds-text-body_small">{!v.description}</b>
+    </div>
+    
+    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+        Product Description2 :<b class="slds-text-body_small">{!v.description2}</b>
+    </div>
+</aura:component>

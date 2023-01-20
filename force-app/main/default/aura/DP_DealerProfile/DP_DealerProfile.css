@@ -1,0 +1,43 @@
+.THIS {
+    
+}
+.THIS .helpText{
+    float: left !important;
+    width: 95% ;
+}
+.THIS .bgcolor {
+    background:#F1F7F8;
+}
+.THIS .slds-form-element__input{
+    font-size: 0.7rem !important;
+    padding:inherit;
+}
+.THIS .slds-form-element__label{
+    font-size: 0.85rem !important;
+    /*font-weight: bold;*/
+}
+.THIS .slds-box{
+    border: 1px solid #7c7e7e;
+    border-radius: 22px;
+}
+.THIS .slds-input{
+    border: 1px solid rgba(0,0,0,0.3);
+	padding-left: 4px !important;
+    padding-right: 3px !important;
+}
+.THIS .slds-tabs_default__nav{
+    font-weight:800;
+}
+.THIS.cDealerProfile{
+    width: 100% !important;
+}
+.THIS .change_cursor{
+    cursor: pointer;
+}
+.THIS.c-spinner .slds-assistive-text {
+    clip: unset !important;
+    transform: rotate(270deg);
+    height: unset !important;
+    width: unset !important;
+    font-size: x-large;
+}

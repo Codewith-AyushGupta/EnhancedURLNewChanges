@@ -1,0 +1,461 @@
+<aura:component controller="AgreementController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="agreementObject" type="Object" /> 
+    
+    <!-- Show spinner on page load -->
+    <aura:attribute name="isShowSpinner" type="Boolean" default="true" />
+    
+    <!-- save the contact id  -->
+    <aura:attribute name ="contactID" type="String" />
+    
+    <!-- to store picklist field options -->
+    <aura:attribute name="AllPiclklistOptions" type="Object"/>
+    
+     <!-- Show Term And Conditions Modal on page load -->
+    <aura:attribute name="termAndConditionmodalOpen" type="Boolean" default="false" />
+    
+    <aura:attribute name="checkBoxValue" type="Boolean" default="false" />
+    <!-- do init  handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:if isTrue="{!v.isShowSpinner}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+    
+    <!--  page background color  -->
+    <aura:html tag="style">
+        html {
+        background: #F8F9F9;
+        }
+    </aura:html>
+    
+    <!-- Main div -->
+    <div class="slds-m-top_medium formmargin">
+        
+        <!--Agreement Fields -->
+        <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+            <h2>
+                Agreement
+            </h2>
+        </div>
+        
+        <!--Basic details fields   -->
+        <div class="slds-grid slds-wrap slds-m-top_x-small">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Name of Authorized Officer" value="{!v.agreementObject.authorizedOfficerName}" />
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" label="Title" required="true"  value="{!v.agreementObject.title}" />
+            </div>
+            
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"  type="date" aura:id="validField" required="true"  label="Date"  value="{!v.agreementObject.agreementDate}" />
+            </div>
+            
+        </div>
+        <br/>
+        
+        
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 aura:id="validField"
+                                 type="checkbox"
+                                 required="true"
+                                 label="Terms and Conditions of Sales"
+                                 checked="{!v.agreementObject.termAndConditionsOfSalesApproved}"
+                                 onchange="{!c.openModalForTermAndConditions}"/>
+            </div>
+            
+            <!--Modal Box For Terms And Conditions Of Sales Start-->
+            <aura:if isTrue="{!v.termAndConditionmodalOpen}">
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header modal-header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate  slds-text-color_inverse">Terms And Conditions of Sales</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <table style="width:100%;">
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <div><strong>SPECIAL ORDERS: </strong>Please allow at least ten (10) working days for all Special Orders after an order is submitted by City Sales. For all
+                                            special orders over $5,000, a purchase order on buyer’s letterhead or signed order acknowledgement will be required. Buyer may
+                                            cancel Special Orders only with the prior written consent of Louisville Tile, which we may withhold at our sole discretion. All
+                                            cancellations may be subject to payment to Louisville Tile for reasonable and proper cancellation charges.
+                                        </div>
+                                        <br/>
+                                        <div>Payment for SPECIAL ORDER PRODUCTS WILL BE COLLECTED AT TIME OF ORDER WITH LOUISVILLE TILE UNLESS AN OPEN ACCOUNT
+                                            EXISTS. FOR OPEN ACCOUNT CUSTOMERS, AN INVOICE WILL BE GENERATED AT TIME OF PICK UP AND PAYMENT IS DUE ON THE DATE
+                                            STATED IN THE INVOICE IN ACCORDANCE WITH OUR TERMS.
+                                        </div><br/>
+                                        <div>SPECIAL ORDERED MATERIAL IS NON-RETURNABLE. All special order product is to be picked up within ninety days of full order receipt
+                                            into LOUISVILLE TILE DISTRIBUTORS. If not picked up, the customer may be responsible for a 50% restock fee and freight costs incurred
+                                            by LOUISVILLE TILE DISTRIBUTORS.</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <div><strong>CLAIMS: </strong>
+                                            It is the buyer’s responsibility to inspect material purchased through LOUISVILLE TILE DISTRIBUTOR locations or through
+                                            direct shipment within 30 days of direct receipt or pick up/delivery and before installation. If for any reason the material is regarded
+                                            as unsatisfactory, LOUISVILLE TILE DISTRIBTORS must be notified in writing before installation is started. No claims will be allowed
+                                            after tile has been installed. No claims will be made on a second grade tile. No allowance will be made after tile is installed. 
+                                        </div>
+                                        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LOUISVILLE TILE DISTRIBUTORS will, at its option, either (1) provide substituted material (without allowance for installation)
+                                            or (2) refund to buyer the purchase price of defective materials upon their return to LOUISVILLE TILE DISTRIBUTORS in resaleable
+                                            condition.</div>
+                                        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Materials may be returned to LOUISVILLE TILE DISTRIBUTORS at LOUISVILLE TILE DISTRIBUTORS’ expense only after inspection
+                                            by LOUISVILLE TILE DISTRIBUTORS and after receipt of buyer of shipping instructions. LOUISVILLE TILE DISTRIBUTORS shall have no
+                                            liability whatsoever for incidential or consequential damages resulting from breach of any applicable warranty or otherwise. 
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <strong>RETURNS: </strong>Special order, close out, cut sheet goods, mixed shades and installation products or any materials in non-resaleable
+                                        packaging are non-returnable. Stock items may be returned within 30 days of invoice under the following conditions: 
+                                        <br/>
+                                        <ul>
+                                            <li>Field Tile: Four (4) full cartons only, must be the same shade and caliber</li>
+                                            <li>Trim and Mosaic: By the piece</li>
+                                        </ul>
+                                        All approved returns are subject to a 25% restock fee and must be returned within 30 days of invoice. Please note that it is the
+                                        responsibility of the customer and/or their installer to figure and provide quantities of tile/material needed. LOUISVILLE TILE
+                                        DISTRIBUORS is in no way liable or responsible for any overages or shortages of material. Please note that sizes provided are nominal
+                                        unless otherwise noted.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <div><strong>DELIVERY/HANDLING CHARGES: </strong>Louisville Tile delivery terms are FOB Our Warehouse. Additional charges for delivery and
+                                            handling may be applied at order entry if a direct ship or delivery to location other than our warehouse is selected. Please ask your
+                                            local branch customer service about delivery services and associated charges in your area. Delivery and shipping times are approximate
+                                            and are dependent upon product availability and prompt receipt by Seller of all information necessary to complete order. Any liability
+                                            of Louisville Tile for non-delivery of the Products shall be limited to replacing the Products within a reasonable time or adjusting the
+                                            invoice respecting such Products to reflect the actual quantity delivered. </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <div><strong>PAYMENT TERMS: </strong>Payment terms are Cash or COD except where Louisville Tile has extended credit to the Buyer. For credit
+                                            accounts, Louisville Tile will invoice Buyer for the Products on or about the shipment date thereof. Payment of each invoiced amount
+                                            is due within 30 days of the date of the invoice. 
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <div><strong>CREDIT CARD PROCESSING: </strong> A 3% convenience fee will be assessed on all credit card and certain debit card transactions to offset
+                                            rising merchant charges. Alternative payment options are always available free of charge. These include cash, check or ACH (e-check).
+                                            ACH (debit cards) may also be processed fee free if done in person.
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <div><strong>TAXES: </strong>By state law, we are required to charge state tax unless you have provided us with a valid and current tax exemption
+                                            certificate. Please confirm if tax is included in quotes received. Selection sheets produced in our showrooms do not include tax in
+                                            estimates by default. 
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <div><strong>PRICES: </strong>Because of current volatility in material supply and freight (both domestic and import), we wish to stress that our prices are
+                                            SUBECT TO CHANGE WITHOUT NOTICE. We have been able to give notice in the past, but future price developments could make this
+                                            impossible. All prices quoted are F.O.B. our warehouse, except where otherwise noted. Please reference your quote or selection
+                                            sheet number to ensure pricing when placing orders. 
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: justify;">
+                                        <br/>
+                                        <div> <strong>STONE PRODUCTS: </strong>Natural stone products include variations in color, pattern, density, shading and size. Please ask about sealing
+                                            recommendations with any stone product. Please remember to seal stone prior to grouting. It is recommended that stone products
+                                            be dry fitted prior to install.</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning:button variant="brand" name='Close' label='Close' onclick='{!c.hideModal}'/>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </aura:if>
+            
+            
+            
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="date" aura:id="validField" required="true" label="Date"  value="{!v.agreementObject.termAndConditionDate}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Firm"  value="{!v.agreementObject.firm}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Accepted By"  value="{!v.agreementObject.acceptedBy}"/>
+            </div>
+            
+        </div>
+        
+        <!-- Continuing Guaranty Fields -->
+        <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+            <h2>
+                Continuing Guaranty
+            </h2>
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField"  label="In consideration of the extension to"  value="{!v.agreementObject.considerationOfExtension}" placeholder="Name of Company"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small"
+                                     type="Text"
+                                     aura:id="validField"
+                                     required="true"
+                                     label="Social Security #"
+                                     minlength="9"
+                                     onblur = "{!c.formatSocialSecurityNumber}"
+                                     value="{!v.agreementObject.ssNumber}"/>
+                </span>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField"  label="Name"  value="{!v.agreementObject.name}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField"  label="Position"  value="{!v.agreementObject.position}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField"  label="Home Address"  value="{!v.agreementObject.homeAddress}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField"  label="City"  value="{!v.agreementObject.city}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:select class="slds-m-horizontal_small"  name="State" aura:id="validField"  label="State"  value="{!v.agreementObject.state}">
+                    <option value="">choose State...</option>
+                    <aura:iteration items="{!v.AllPiclklistOptions.statePicklistOptions}" var="option">
+                        <option value="{!option.value}" selected="{!v.agreementObject.state == option.value}">{!option.label}</option>   
+                    </aura:iteration>
+                </lightning:select>            
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small" 
+                                     type="Text" 
+                                     aura:id="validField" 
+                                     label="Zip Code"
+                                     minlength="5"
+                                     maxlength="5"
+                                     value="{!v.agreementObject.zipCode}"/>
+                </span>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small" 
+                                     type="Phone" 
+                                     aura:id="validField" 
+                                     minlength="10" 
+                                     label="Home Phone Number" 
+                                     onblur = "{!c.formatHomePhoneNumber}"
+                                     value="{!v.agreementObject.homePhoneNumber}"/>
+                </span>
+            </div>
+            
+        </div>
+        <br/>
+        
+        
+        <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+            <h2>
+                In testimony thereof, I have hereunto signed my name on this
+            </h2>
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                
+                <lightning:select class="slds-m-horizontal_small"   aura:id="validField"   label="Day of"   value="{!v.agreementObject.dayOf}" >
+                    <option value="">choose Day...</option>
+                    <aura:iteration items="{!v.AllPiclklistOptions.daysPicklistOptions}" var="option">
+                        <option value="{!option.value}" selected="{!v.agreementObject.dayOf == option.value}">{!option.label}</option>   
+                    </aura:iteration>
+                </lightning:select>
+                
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                
+                <lightning:select class="slds-m-horizontal_small" aura:id="validField" label="Month" value="{!v.agreementObject.month}">
+                    <option value="">choose Month...</option>
+                    <aura:iteration items="{!v.AllPiclklistOptions.monthPicklistOptions}" var="option">
+                        <option value="{!option.value}" selected="{!v.agreementObject.month == option.value}">{!option.label}</option>   
+                    </aura:iteration>
+                </lightning:select>
+                
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                
+                <lightning:select class="slds-m-horizontal_small" aura:id="validField"  label="Year" value="{!v.agreementObject.year}">
+                    <option value="">choose Year...</option>
+                    <aura:iteration items="{!v.AllPiclklistOptions.yearPicklistOptions}" var="option">
+                        <option value="{!option.value}" selected="{!v.agreementObject.year == option.value}">{!option.label}</option>   
+                    </aura:iteration>
+                </lightning:select>
+            </div>
+            
+        </div>
+        
+        
+        <br/>
+        <!-- child Component(guarantors) -->
+        
+        <div class="slds-m-top_medium" >
+            <aura:if isTrue="{!v.agreementObject != undefined}" >
+                <c:guarantor aura:id="guarantorCmp"  guarantorList="{!v.agreementObject.guarantors}" />  
+            </aura:if> 
+        </div>
+         <br/>
+        
+          <!-- List of Documents attached -->
+        <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+            <h2>
+                List of Documents attached
+            </h2>
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 aura:id="validField"
+                                 type="file"
+                                 label="Income Statement"
+                                 accept="application/pdf"
+                                 multiple="false"
+                                 name="{!$Label.c.Income_Statement}"
+                                 onchange="{!c.handleFilesChange}"/>
+                <div class="slds-text-body_small slds-m-horizontal_small slds-text-color_error">{!not(empty(v.agreementObject.agreementFiles.incomeStatement.fileName)) ? v.agreementObject.agreementFiles.incomeStatement.fileName : 'No File Selected..'} </div>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 aura:id="validField"
+                                 type="file"
+                                 label="Balance Sheet"
+                                 accept="application/pdf"
+                                 multiple="false"
+                                 name="{!$Label.c.Balance_Sheet}"
+                                 onchange="{!c.handleFilesChange}"/>
+                <div class="slds-text-body_small slds-m-horizontal_small slds-text-color_error">{!not(empty(v.agreementObject.agreementFiles.balanceSheet.fileName)) ? v.agreementObject.agreementFiles.balanceSheet.fileName : 'No File Selected..'} </div>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 aura:id="validField"
+                                 type="file"
+                                 label="Most Recent Years Tax Returns"
+                                 accept="application/pdf"
+                                 multiple="false"
+                                 name="{!$Label.c.Most_Recent_Years_Tax_Returns}"
+                                 onchange="{!c.handleFilesChange}"/>
+                <div class="slds-text-body_small slds-m-horizontal_small slds-text-color_error">{!not(empty(v.agreementObject.agreementFiles.mostRecentYearsTaxReturns.fileName)) ? v.agreementObject.agreementFiles.mostRecentYearsTaxReturns.fileName : 'No File Selected..'} </div>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 aura:id="validField"
+                                 type="file"
+                                 label="Other Document"
+                                 accept="application/pdf"
+                                 multiple="false"
+                                 name="{!$Label.c.Other_Document}"
+                                 onchange="{!c.handleFilesChange}"/>
+                <div class="slds-text-body_small slds-m-horizontal_small slds-text-color_error">{!not(empty(v.agreementObject.agreementFiles.otherDocument.fileName)) ? v.agreementObject.agreementFiles.otherDocument.fileName : 'No File Selected..'} </div>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField"  label="Other:Describe"  value="{!v.agreementObject.otherDescribe}"/>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small" 
+                                     type="Text" 
+                                     aura:id="validField"  
+                                     label="Sales Tax Exemption Number (If Applicable)"
+                                     value="{!v.agreementObject.salesTaxExemptionNumber}" />
+                </span>
+            </div> 
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField"  label="Indicate reason for exemption"  value="{!v.agreementObject.indicateReasonForExemption}"/>
+            </div> 
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 aura:id="validField"
+                                 type="file"
+                                 label="Attach copy of exemption certificate"
+                                 accept="application/pdf"
+                                 multiple="false"
+                                 name="{!$Label.c.Attach_copy_of_exemption_certificate}"
+                                 onchange="{!c.handleFilesChange}"/>
+                <div class="slds-text-body_small slds-m-horizontal_small slds-text-color_error">{!not(empty(v.agreementObject.agreementFiles.attachCopyOfExemptionCertificate.fileName)) ? v.agreementObject.agreementFiles.attachCopyOfExemptionCertificate.fileName : 'No File Selected..'} </div>
+            </div>
+            
+        </div>
+        
+      
+
+       <br/>
+        
+        <!--Save Button-->
+        <div class="slds-m-horizontal_x-small slds-m-top_x-small slds-p-horizontal_medium">
+            <lightning:button class="slds-m-right_small" variant="brand" label="Back" onclick="{!c.goToPreviousPage }"/>
+            <lightning:button class="slds-m-right_small" variant="brand" label="Save" onclick="{!c.validateFormFields }"/>
+            <aura:if isTrue="{!greaterthan(v.agreementObject.compeletedStepNumber, 2)}">
+                <lightning:button class="slds-m-right_small" variant="brand" type="Next" label="Next" onclick="{!c.validateFormFields}"/>
+            </aura:if>
+        </div>
+        
+    </div>
+</aura:component>

@@ -1,0 +1,103 @@
+<aura:component controller="CreditApplicationFormController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    
+    <!--handle event for update step   -->
+    <aura:handler event="c:CreditApplicationFormStepsUpdate" action="{!c.updateStep}" />
+    <aura:attribute name ="creditAppsObjectName" type="String" />
+    <aura:attribute name ="creditAppsName" type="String" />
+    <aura:attribute name ="isTrueCreditAppsName" type="Boolean" default='false'/>
+    <!--to handle lock form for user -->
+     <aura:attribute name="isSubmittedForm" type="String" />
+    
+    <!-- Show spinner on page load -->
+    <aura:attribute name="isShowSpinner" type="Boolean" default="false" /><!-- true -->
+    
+    <!-- Show Verification Modal on page load -->
+    <aura:attribute name="isShowModal" type="Boolean" default="false" /> <!-- true -->
+    
+    <!-- user entered verification Code -->
+    <aura:attribute name="verificationCode" type="String" />
+    
+    <aura:attribute name="currentStep" type="String" default="1" />
+    <aura:attribute name="refreshStep" type="Boolean" default="true" />
+    
+    <aura:attribute name="contactid" type="String" />
+    
+     <!-- System generated verification Code -->
+    <aura:attribute name="systemGeneratedVerificationCode" type="String" />
+    
+    <!-- Do init Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.isShowSpinner}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+    
+    <!-- Modal -->
+    <aura:if isTrue="{!v.isShowModal}">
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Email Verification</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <p>Verification Code has sent on your Email Address.</p>
+                <br/>	    
+                <lightning:input class="slds-m-right_large" variant="label-inline" label="Enter Verification Code" value="{!v.verificationCode}"/>
+                <br/>
+                <lightning:button variant="brand" label="Verify" title="Verify" onclick="{! c.verfiyVerficationCode }" />
+            </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+   
+    <aura:if isTrue="{!v.isTrueCreditAppsName == false}">
+    <aura:if isTrue="{!v.creditAppsObjectName!=''}">
+            <div class="slds-align_absolute-center slds-l-vertical_small" >
+                <h4 class = "slds-l-horizontal_large slds-m-bottom_large">
+                    <b>Form Name :</b>{!v.creditAppsObjectName}
+                </h4>
+            </div>
+        </aura:if>
+    </aura:if>
+    <aura:if isTrue="{!v.isTrueCreditAppsName == true}">
+    
+            <div class="slds-align_absolute-center slds-l-vertical_small" >
+                <h4 class = "slds-l-horizontal_large slds-m-bottom_large">
+                    <b>Form Name :</b>{!v.creditAppsName}
+                </h4>
+            </div>
+       
+    </aura:if>
+    <aura:if isTrue="{!v.contactid != undefined}"> <!--{!!v.isShowModal}-->
+        
+        <!--Form Steps (Progress bar) -->
+        <!--<aura:if isTrue="{!v.refreshStep}">-->
+            <lightning:progressIndicator currentStep="{!v.currentStep}" type="path" variant="base" >
+                <lightning:progressStep label="Business Details" value="1" />
+                <lightning:progressStep label="Business Information" value="2" />
+                <lightning:progressStep label="Agreement" value="3"/>
+                <lightning:progressStep label="Complete" value="4"/>
+            </lightning:progressIndicator>
+        <!--</aura:if>-->
+       
+        <aura:if isTrue="{!v.currentStep == '1'}">
+            <c:businessDetails contactID="{!v.contactid}" isShowSpinner="{!v.isShowSpinner}"/>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.currentStep == '2'}">
+            <c:businessInformation contactID="{!v.contactid}" />
+        </aura:if>
+        
+        <aura:if isTrue="{!v.currentStep == '3'}">
+           <c:agreement contactID="{!v.contactid}" />
+        </aura:if>
+        
+        <aura:if isTrue="{!v.currentStep == '4'}">
+            <c:creditApplicationFormReview contactID="{!v.contactid}" isSubmitted="{!v.isSubmittedForm}" creditAppsName='{!v.creditAppsName}' isTrueCreditAppsName='{!v.isTrueCreditAppsName}' />
+        </aura:if>
+        
+    </aura:if>
+    
+</aura:component>

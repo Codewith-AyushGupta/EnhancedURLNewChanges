@@ -1,0 +1,27 @@
+<aura:component controller="HomePageOpportunitiesController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+  <aura:attribute name="links" type="List"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <article class="slds-card" style="opacity:1;">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate ">
+                <div class="slds-media__body slds-align_absolute-center">
+                    <h2 class="slds-card__header-title slds-align_absolute-center">
+                        <span><lightning:icon iconName="standard:opportunity" alternativeText="Kerridge links" /><b class="slds-m-left_small">Opportunities</b></span>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-p-around_small">
+       
+                <aura:iteration items="{!v.links}" var="link">
+                <li>
+                    <a href="{!link.Value__c}" target="_blank">{!link.Name__c}</a>
+                </li>
+            </aura:iteration>
+        </div>
+    </article>
+     
+   
+    
+
+</aura:component>

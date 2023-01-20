@@ -1,0 +1,3 @@
+<aura:event type="component" description="Event template" >
+    <aura:attribute name="indexNumber" type="String" />
+</aura:event>

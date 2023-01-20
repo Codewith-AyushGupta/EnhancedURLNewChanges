@@ -1,0 +1,362 @@
+<aura:component controller="BusinessDetailsController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name ="businessDetailsObject" type="Object" />
+    
+    <!-- To store today's date -->
+    <aura:attribute name="currentDate" type="String"/>
+    
+    <!-- to store State picklist field options -->
+    <aura:attribute name="StatePiclklistOptions" type="Object[]"/>
+    
+    <!-- to check previous employee fileds required or not -->
+    <aura:attribute name="isPreviousRequired" type="Boolean" default="false" />
+    
+    <!-- Show spinner on page load -->
+    <aura:attribute name="isShowSpinner" type="Boolean" default="true" />
+    
+    <aura:attribute name="checkBoxValue" type="Boolean" default="false" />
+    
+    <!-- save the contact id  -->
+    <aura:attribute name ="contactID" type="String" />
+    
+    <!-- do init  handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <!--  page background color  -->
+    <aura:html tag="style">
+        html {
+        background: #F8F9F9;
+        }
+    </aura:html>
+    
+    
+    <!-- Spinner -->
+    <aura:if isTrue="{!v.isShowSpinner}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+    <!-- Main div -->
+    <div class="slds-m-top_medium formmargin">
+        
+        <!--Basic details fields   -->
+        <div class="slds-grid slds-wrap slds-m-top_x-small">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="date" aura:id="validField" required="true" label="Date" value="{!v.businessDetailsObject.currentDate}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" label="DBA or Trade Name" value="{!v.businessDetailsObject.dbaOrTradeName}" />
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"  
+                                 type="date" 
+                                 aura:id="validField" 
+                                 required="true" 
+                                 max="{!v.currentDate}" 
+                                 onchange="{!c.checkEstablishedDate}" 
+                                 label="Date of Incorporation" 
+                                 value="{!v.businessDetailsObject.dateEstablished}" />
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Legal Company Name" value="{!v.businessDetailsObject.legalCompanyName}" />
+            </div>
+            
+            
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small" 
+                                     label="Tax ID/EIN"
+                                     aura:id="validField"
+                                     required="true"
+                                     minlength="9"
+                                     onblur = "{!c.formatEinNumber}"
+                                     name="Body1"
+                                     value="{!v.businessDetailsObject.taxID}"/>
+                </span> 
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small"  type="number" formatter="currency" aura:id="validField" required="true" label="Annual Sales" value="{!v.businessDetailsObject.annualSales}"/>
+                </span>
+            </div>
+        </div>
+        
+        <div class="slds-grid slds-wrap slds-m-top_x-small">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Address Line 1" value="{!v.businessDetailsObject.mainAddress.street}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"  type="Text" aura:id="validField" required="true" label="City" value="{!v.businessDetailsObject.mainAddress.city}" />
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:select class="slds-m-horizontal_small"  name="State" aura:id="validField" required="true" label="State" value="{!v.businessDetailsObject.mainAddress.state}">
+                    <option value="">choose State...</option>
+                    <aura:iteration items="{!v.StatePiclklistOptions}" var="option">
+                        <option value="{!option.value}" selected="{!v.businessDetailsObject.mainAddress.state == option.value}">{!option.label}</option>
+                    </aura:iteration>
+                </lightning:select>            
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small" 
+                                     type="text" 
+                                     aura:id="validField"
+                                     minlength="5"
+                                     maxlength="5"
+                                     required="true" 
+                                     label="Zip Code" 
+                                     value="{!v.businessDetailsObject.mainAddress.zipCode}"/>
+                </span>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small"  
+                                     type="Phone" 
+                                     onblur = "{!c.formatPhoneNumber}"
+                                     aura:id="validField" 
+                                     required="true"
+                                     label="Company Telephone"
+                                     value="{!v.businessDetailsObject.mainAddress.companyTelephone}"/>
+                </span>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small"  
+                                     type="Phone" 
+                                     onblur ="{!c.formatFaxNumber}"
+                                     aura:id="validField" 
+                                     minlength="10" 
+                                     label="Fax" 
+                                     value="{!v.businessDetailsObject.mainAddress.fax}"/>
+                </span>
+            </div>
+        </div>
+        
+        
+        <!-- check box for billing address required -->
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+            <lightning:input class="slds-m-horizontal_small" 
+                             aura:id="checkBox" 
+                             type="checkbox" 
+                             label="Billing Address (Same as Above)"
+                             checked="{!v.checkBoxValue}"
+                             onchange="{!c.onChange}"/>
+        </div>
+        
+        
+        <div class="slds-grid slds-wrap slds-m-top_x-small">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Address Line 1" value="{!v.businessDetailsObject.billingAddress.street}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"  type="Text" aura:id="validField" required="true" label="City" value="{!v.businessDetailsObject.billingAddress.city}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:select class="slds-m-horizontal_small" name="State" aura:id="validField" required="true" label="State" value="{!v.businessDetailsObject.billingAddress.state}">
+                    <option value="">Choose State...</option>
+                    <aura:iteration items="{!v.StatePiclklistOptions}" var="option">
+                        <option value="{!option.value}" selected="{!v.businessDetailsObject.billingAddress.state == option.value}">{!option.label}</option>
+                    </aura:iteration>
+                </lightning:select>     
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small" 
+                                     type="text" 
+                                     aura:id="validField" 
+                                     required="true"
+                                     minlength="5"
+                                     maxlength="5"
+                                     label="Zip Code" 
+                                     value="{!v.businessDetailsObject.billingAddress.zipCode}"/>
+                </span>
+            </div>
+        </div>
+        
+        
+        <!-- Primary Contacts Fields -->
+        <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+            <h2>
+                Primary Contact Information
+            </h2>
+        </div>
+        
+        
+        <div class="slds-grid slds-wrap">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Name" value="{!v.businessDetailsObject.primaryContactName}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small" 
+                                     type="Phone" 
+                                     aura:id="validField" 
+                                     required="true" 
+                                     label="Telephone" 
+                                     onblur = "{!c.formatPhoneNumber}" 
+                                     value="{!v.businessDetailsObject.primaryContactPhone}"/> 
+                </span>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 type="Email"
+                                 aura:id="validField" 
+                                 required="true"
+                                 label="Email"
+                                 onblur="{!c.validateEmailField}"
+                                 value="{!v.businessDetailsObject.primaryContactEmail}" />
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 type="Text"
+                                 aura:id="validField"
+                                 label="Website Address"
+                                 value="{!v.businessDetailsObject.primaryContactWebAdd}" />
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small"  
+                                     type="number" 
+                                     formatter="currency"
+                                     aura:id="validField"
+                                     required="true"
+                                     label="Credit Limit Requested" 
+                                     value="{!v.businessDetailsObject.primaryContactCreditLimitReq}"/>
+                </span>
+            </div>
+        </div>
+        
+        <!-- Primary Accounts Payable -->
+        <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+            <h2>
+                Primary Accounts Payable Contact Information
+            </h2>
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Name" value="{!v.businessDetailsObject.primaryAccountName}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small" 
+                                     type="Phone"
+                                     aura:id="validField"
+                                     label="Telephone"
+                                     required="true"
+                                     minlength="10"
+                                     onblur = "{!c.formatPhoneNumber}"
+                                     value="{!v.businessDetailsObject.primaryAccountTelephone}"/>
+                    
+                </span>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 type="Email"
+                                 aura:id="validField"
+                                 required="true"
+                                 label="Email"
+                                 onblur="{!c.validateEmailField}"
+                                 value="{!v.businessDetailsObject.primaryAccountEmail}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <!-- <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="true" label="Preferred Method Of Invoice Delivery" value="{!v.businessDetailsObject.primaryAccountMethodOfInvoice}"/> -->
+                <lightning:select  class="slds-m-horizontal_small" aura:id="validField" required="true" label="Preferred Method Of Invoice Delivery" value="{!v.businessDetailsObject.primaryAccountMethodOfInvoice}" >
+                    <option value="">Select One</option>
+                    <option value="Paper">Paper</option>
+                    <option value="Email">Email</option>
+                </lightning:select>
+            </div>
+            
+        </div>
+        
+        <div class="slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+            <h2>
+                Company Information
+            </h2>
+        </div>
+        <br/>
+        <div class="slds-text-heading_small slds-p-horizontal_medium">
+            If in Business for Less than 2 Years, Please provide name and telephone number of previous employer or Business.  
+        </div>
+        <div class="slds-m-top_x-small slds-text-heading_small slds-p-horizontal_medium">
+            <h2>
+                Previous Employer
+            </h2>
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small" type="Text" aura:id="validField" required="{!v.isPreviousRequired}" label=" Business Name" value="{!v.businessDetailsObject.previousEmpBusinessName}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"  type="Text" aura:id="validField" required="{!v.isPreviousRequired}" label="Contact Name" value="{!v.businessDetailsObject.previousEmpContactName}"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <span onkeypress="{!c.NumberCheck}">
+                    <lightning:input class="slds-m-horizontal_small"
+                                     type="Phone"  
+                                     aura:id="validField" 
+                                     label="Telephone" 
+                                     required="{!v.isPreviousRequired}"
+                                     onblur = "{!c.formatPhoneNumber}" 
+                                     value="{!v.businessDetailsObject.previousEmpTelephone}"/>
+                </span>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                <lightning:input class="slds-m-horizontal_small"
+                                 type="Email"
+                                 aura:id="validField"
+                                 required="{!v.isPreviousRequired}"
+                                 label="Email"
+                                 onblur="{!c.validateEmailField}"
+                                 value="{!v.businessDetailsObject.previousEmpEmail}"/>
+            </div>
+        </div>
+        
+        <!-- child Component(principals) -->
+        <div class="slds-m-top_medium" >
+            <aura:if isTrue="{!v.businessDetailsObject != undefined}" >
+                <c:principals aura:id="principalCmp" isShowSpinner="{!v.isShowSpinner}" listOfPrincipalObj="{!v.businessDetailsObject.principals}" />  
+            </aura:if> 
+        </div> 
+        <div class="slds-grid slds-wrap slds-m-top_x-small">
+            <div class="slds-m-horizontal_x-small slds-m-top_x-small slds-p-horizontal_medium">
+                <lightning:button class="slds-m-right_large" variant="brand" label="Save" onclick="{! c.validateFormFields }"/>
+                <aura:if isTrue="{!greaterthan(v.businessDetailsObject.compeletedStepNumber, 0)}">
+                    <lightning:button class="slds-m-right_large" variant="brand" label="Next" onclick="{! c.validateFormFields }"/>
+                </aura:if>
+            </div>
+        </div>
+    </div>
+    
+    
+</aura:component>

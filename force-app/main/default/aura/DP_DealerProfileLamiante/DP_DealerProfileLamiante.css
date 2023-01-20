@@ -1,0 +1,18 @@
+.THIS {
+}
+
+.THIS .color{
+    background:#f2f7f8;
+}
+
+.THIS .slds-form-element__label{
+    font-size: 0.85rem !important;
+    font-weight: bold;
+}
+.THIS.c-spinner .slds-assistive-text {
+    clip: unset !important;
+    transform: rotate(270deg);
+    height: unset !important;
+    width: unset !important;
+    font-size: x-large;
+}

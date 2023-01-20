@@ -1,0 +1,38 @@
+.THIS .slds-col span{
+    color:#666666
+}
+
+.THIS .table_bg_color{
+   background: #F8F9F9;
+}
+
+.THIS .border_bg_color{
+   background: #f2f2f2;
+}
+
+.THIS .table_header_font{
+    font-size: 11pt;
+    font-weight: bold;
+}
+
+
+.THIS .paddRight{
+    padding-right : 5% !important;
+}
+
+
+@media (max-width: 480px) {
+  .THIS .hide_table_on_mobile {   
+    display: none;
+  }
+}    
+@media (min-width: 480px) {
+  .THIS .hide_table_on_Desktop {
+    display: none;
+  }
+        
+}
+
+.THIS .modal-header{
+    background-color:#245F90;
+}

@@ -1,0 +1,22 @@
+.THIS  .formmargin{
+    margin-top : 10px;
+}
+.THIS .slds-form-element__label{
+    font-weight : 800;
+}
+
+@media (max-width: 480px) {
+  .THIS .hide_table_on_mobile {   
+    display: none;
+  }
+}    
+@media (min-width: 480px) {
+  .THIS .hide_table_on_Desktop {
+    display: none;
+  }
+        
+}
+
+.THIS .modal-header{
+    background-color:#245F90;
+}

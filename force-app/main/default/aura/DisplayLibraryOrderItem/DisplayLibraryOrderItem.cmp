@@ -1,0 +1,478 @@
+<aura:component controller="DisplayLibraryOrderItemController" 
+                extends="c:HandleErrorModal"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" >
+    <aura:attribute name='branchMaterialPicklistDetails' type="List" description="handle picklist value of branch material should be shipped"/>
+    <aura:attribute name='shipToLuisvillPicklistDetails' type="List" description="handle picklist value of ship to louisville tiles branch"/>
+    <aura:attribute name='sampleShippedPicklistDetails' type="List" />
+    <aura:attribute name='sampleShippedBranchPicklistDetails' type="List" description="handle picklist value of branch material should be shipped to branch"/>
+    <aura:attribute name='categoryDIsplayPicklistDetails' type="List" description="handle picklist value of category"/>
+    <aura:attribute name="hideFormFields" type="boolean" default = "false" description="Hide/unhide form fields"/>
+    <aura:attribute name='displaylibraryOrderObject' type='Object' description="holds all data of current open/new form" />
+    <aura:attribute name='searchmodel' type='boolean' default='false'/>
+    <aura:attribute name='searchitemmodalStatus' type='boolean' default='false'/>
+    <aura:attribute name='isSelectedProduct' type='boolean' default='false'/>
+    <aura:attribute name = "QuantityHandler" type = "boolean" default = "true"/>
+    <aura:attribute name="selectedProductsData" type="List" default="[]"/>
+    <aura:attribute name = "CustomizationHandler" type = "boolean" default = "true"/>
+    <aura:attribute name='ShipStatus' type='boolean' default=''/>
+    <aura:attribute name='ParentShipStatus' type='boolean' default='false'/>
+    <aura:attribute name='ShipStatusvalue' type='string'/>
+    <aura:attribute name='relatedAccount' type='object'/>
+    <aura:attribute name="isSelectItemEnable" type="Boolean" default="true" Description="Flag to check if Select Item button should get enabled or not" />
+    <aura:attribute name="totalResults" type="string" Description="Holds total number of results returned from Query as a formatted string"/>
+    <aura:attribute name ="selectedProductsIds" type = "List" default = "[]"  Description="Ids of selected products on SearchItemModal component"/> 
+    <aura:attribute name="category" type="string" Description="Attribute is used to handle categories for different products"/>
+    <aura:attribute name ="showSpinner" type= "boolean" default = "false" Description="to hide/unhide spinner"/>
+    <aura:attribute name="showSearch" type="Boolean" Description="to hide/unhide search box dialogue"/>
+    <aura:attribute name="applyFilter" type="Boolean" default="false" Description="a flag to specify a specific filter should apply or not"/>
+    <aura:attribute name="savedFormNumber" type="String" Description="Stores name of the form that is just saved"/>
+    <aura:attribute name="isSelectBoxDisable" type="Boolean" Description="To enable/disable select(Lightning:select) of category"/>
+    <aura:attribute name= "dataOfExistingForms" type="List" Description="Holds data of all forms on a account that is currently open"/>
+    <aura:attribute name="isFieldsDisabled" type="Boolean" Description="To enable/disable input fields "/>
+    <aura:attribute name="noItemSelected" type="Boolean" Description="renders a error message if user has not selected any item."/>
+    <!--
+    <aura:attribute name="invalidFieldsExist" type="Boolean" Description="Renders a messages that shows all invalid fields."/>
+    <aura:attribute name="invalidFields" type = "List" Description="Holds invalid fields name if there is any"/>
+    -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- to handle the file object -->
+    <aura:attribute name ="fileObj" type = "Object" Description="Holds the value of uploaded file"/>
+    
+    <aura:handler name="change" value="{!v.selectedProductsIds}" action="{!c.getSelectedProducts}"/>
+    
+    <aura:html tag="style">
+        html {
+        background: #f2f7f8;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.showSpinner}">
+        <lightning:spinner alternativeText="Loading" size="medium" variant="brand"/>
+    </aura:if>
+    <aura:if isTrue="{!!v.hideFormFields}">
+        <lightning:buttonIcon iconName="utility:back" variant="bare" onclick="{! c.goBack }" alternativeText="Back" title="Back" size="large"/>
+        <aura:if isTrue="{!v.displaylibraryOrderObject.Name != null}">
+            <div class="slds-align_absolute-center slds-m-vertical_small" >
+                <h4 class = " slds-m-horizontal_large slds-m-bottom_large">
+                    <b>Form Name : </b>{!v.displaylibraryOrderObject.Name}
+                </h4>
+            </div>
+        </aura:if>   
+        
+        <div class="slds-grid slds-wrap slds-gutters">
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                <lightning:input aura:id = "internalFormDetails"
+                                 required='true'
+                                 label='Employee Name'
+                                 class="slds-m-horizontal_xx-small slds-m-bottom_medium" 
+                                 type="text" 
+                                 value="{!v.displaylibraryOrderObject.Employee_name__c}"
+                                 disabled="{!v.isFieldsDisabled}"
+                                 />
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                <lightning:input aura:id = "internalFormDetails" 
+                                 required='true'
+                                 label='Email Address for Confirmation'
+                                 class="slds-m-bottom_medium slds-m-horizontal_xx-small" 
+                                 type="email"
+                                 value="{!v.displaylibraryOrderObject.Email_address_for_confirmation__c}"
+                                 disabled="{!v.isFieldsDisabled}"/>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                <lightning:input aura:id = "internalFormDetails" 
+                                 class="slds-m-horizontal_xx-small slds-m-bottom_medium" 
+                                 type="text"
+                                 value="{!v.displaylibraryOrderObject.Contact_Name__c}"
+                                 label='Dealer Name'
+                                 placeholder="Account/Customer/Client Name"
+                                 disabled="{!v.isFieldsDisabled}"
+                                 /> 
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                <lightning:input class="slds-m-bottom_medium slds-m-horizontal_xx-small" 
+                                 type ="text" 
+                                 label='Additional Notes'
+                                 maxlength="250" 
+                                 value = "{!v.displaylibraryOrderObject.Additional_notes__c}"
+                                 disabled="{!v.isFieldsDisabled}"
+                                 />
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                <lightning:select name="ShipStatusValue"
+                                  aura:id = "internalFormDetails"
+                                  onchange="{!c.ShippingStatusHandler}" 
+                                  value="{!v.displaylibraryOrderObject.Ship_to_Louis_tile_branch__c}" 
+                                  label='Ship to Louisville-tile branch?' 
+                                  required="true" 
+                                  disabled="{!v.isFieldsDisabled}">
+                    <option value="">choose one...</option>
+                    <aura:iteration items="{!v.shipToLuisvillPicklistDetails}" var="item">
+                        <option text="{!item}" value="{!item}" />
+                    </aura:iteration> 
+                </lightning:select> 
+            </div>
+            <aura:if isTrue="{!v.ParentShipStatus}">
+                <aura:if isTrue="{!v.ShipStatus}">
+                    <!-- change dynamic picklist   -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                        <lightning:select name="select1"  value="{!v.displaylibraryOrderObject.Branch_Material_Should_Be_Shipped_To__c}" label = "Select branch material should be shipped to? " required="true" aura:id = "internalFormDetails" disabled="{!v.isFieldsDisabled}">
+                            <option value="">choose one...</option>
+                            <aura:iteration items="{!v.branchMaterialPicklistDetails}" var="item">
+                                <option text="{!item}" value="{!item}" />
+                            </aura:iteration> 
+                        </lightning:select>
+                    </div>
+                    <aura:set attribute="else">
+                        <lightning:card class='Address ' title='Shipping Address' iconName="standard:address">
+                            <div class="slds-card slds-m-horizontal_medium slds-m-vertical_medium ">
+                                <!-- shipping Address INFO-->
+                                <div class="slds-grid slds-wrap slds-m-top_small" >
+                                    <!--Attention to: -->
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                                        <lightning:input aura:id = "internalFormDetails"
+                                                         type ="text" 
+                                                         label="Attention to:"
+                                                         value="{!v.displaylibraryOrderObject.Care_of_Name__c}"
+                                                         disabled="{!v.isFieldsDisabled}"/>	
+                                    </div>
+                                    
+                                    <!-- Address and street -->
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                                        <lightning:input aura:id = "internalFormDetails"
+                                                         type ="text" 
+                                                         label="Street Address with apt/suite #"
+                                                         value="{!v.displaylibraryOrderObject.Street_Address__c}"
+                                                         required="true"
+                                                         disabled="{!v.isFieldsDisabled}"/>	
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                                        <lightning:input aura:id = "internalFormDetails" 
+                                                         class="slds-m-horizontal_xx-small" 
+                                                         type="tel"
+                                                         value = "{!v.displaylibraryOrderObject.Phone_number__c}" 
+                                                         label="Phone Number" 
+                                                         required="true"
+                                                         maxlength = "10"
+                                                         minlength="10"
+                                                         disabled="{!v.isFieldsDisabled}"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Shipping address City , state ,ZIP -->
+                                <div class="slds-grid slds-wrap slds-m-bottom_x-small" >
+                                    
+                                    <!-- City Name -->
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                                        <lightning:input aura:id = "internalFormDetails"
+                                                         type ="text" 
+                                                         label="City" 
+                                                         required="true"
+                                                         value = "{!v.displaylibraryOrderObject.City__c}"
+                                                         disabled="{!v.isFieldsDisabled}"/>	
+                                    </div>
+                                    
+                                    <!-- state Name -->
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                                        <lightning:input aura:id = "internalFormDetails"
+                                                         label="State"
+                                                         required="true"
+                                                         value = "{!v.displaylibraryOrderObject.State__c}"
+                                                         disabled="{!v.isFieldsDisabled}"/>
+                                    </div>
+                                    <!-- Postal/ZIP Code -->
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_x-small">
+                                        <lightning:input aura:id = "internalFormDetails"
+                                                         type ="tel"
+                                                         maxlength = "5"
+                                                         minlength = "5" 
+                                                         label="Postal/ZIP Code"
+                                                         required="true"
+                                                         value = "{!v.displaylibraryOrderObject.Zip_Code__c}"
+                                                         disabled="{!v.isFieldsDisabled}"
+                                                         />	
+                                    </div>
+                                    
+                                    <!--Phone number-->
+                                    
+                                </div>
+                            </div>
+                        </lightning:card>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+                            <lightning:select name="select1" value="{!v.displaylibraryOrderObject.How_Material_Be_Shipped_To_Customer__c}" label = "How should the Sample be shipped?" required="true" aura:id = "internalFormDetails" disabled="{!v.isFieldsDisabled}">
+                                <option value="">choose one...</option>
+                                <aura:iteration items="{!v.sampleShippedPicklistDetails}" var="item">
+                                    <option text="{!item}" value="{!item}" />
+                                </aura:iteration> 
+                            </lightning:select>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:if>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_x-small">
+            
+            
+            <aura:if isTrue="{!v.ParentShipStatus}">
+                <aura:if isTrue="{!v.ShipStatus}">
+                    <lightning:select name="select1" value="{!v.displaylibraryOrderObject.How_material_be_ship_to_the_branch__c}" label = "How should the Sample be shipped? " required="true" aura:id = "internalFormDetails" disabled="{!v.isFieldsDisabled}">
+                        <option value="">choose one...</option>
+                        <aura:iteration items="{!v.sampleShippedBranchPicklistDetails}" var="item">
+                            <option text="{!item}" value="{!item}" />
+                        </aura:iteration> 
+                    </lightning:select>
+                </aura:if>
+            </aura:if> 
+        </div>
+        
+        
+        <div class="slds-m-top_medium slds-col slds-size_1-of-1 ">
+            <!-- Sample heading -->
+            <div class="slds-box " style="min-height: 30vh;" aura:id="validatorClass">
+                <p class='slds-text-heading_medium'><lightning:icon iconName="utility:color_swatch" alternativeText="Display Item" title="Display Item" size="x-small"/> Display Items</p>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12">
+                    <lightning:select aura:id="validateFields" label="Select category" name="Category__c" value="{!v.category}" onchange="{!c.handleSearchVisibility}" class="slds-m-horizontal_small" disabled="{!v.isSelectBoxDisable}">
+                        <option value="">choose category...</option>
+                         <aura:iteration items="{!v.categoryDIsplayPicklistDetails}" var="item">
+                            <option text="{!item}" value="{!item}" />
+                        </aura:iteration> 
+                    </lightning:select>
+                </div>
+                <aura:if isTrue="{!v.showSearch}">
+                    <br/>
+                    <div class="adjust_width slds-col slds-size_1-of-1">
+                        <c:SearchItemModal aura:id="searchModal"
+                                           isModalOpen = "{! v.isModalOpen}"
+                                           objectName="Manufacturer_s_Items__c" 
+                                           fieldsToBeSearch = "['Color__c','Manufacturer_Name__c','Manufacturer__c', 'Pattern__c' , 'Product_Description_2__c' , 'Product_Description__c' , 'Product_Name__c' , 'Product__c']" 
+                                           fieldsToApplyFilterOn ="['Concatenated_Data__c']"
+                                           placeholder="Search via name, description, pattern, color, description 2 or manufacturer"
+                                           isSelectItemEnable = "{!v.isSelectItemEnable}"
+                                           totalResults = "{!v.totalResults}"
+                                           selectedProductsIds = "{!v.selectedProductsIds}"
+                                           selectedCatagory = "{!v.category}"
+                                           applyFilter = "{!v.applyFilter}"/> 
+                        
+                    </div>
+                    <div class="slds-modal__footer slds-col slds-size_1-of-1">
+                        <div class="totalSize slds-float_left">
+                            <aura:unescapedHtml value="{!v.totalResults}" />
+                        </div>
+                        <div>
+                            <lightning:button
+                                              variant="brand"
+                                              class="slds-button slds-button_neutral"
+                                              disabled="{!v.isSelectItemEnable}"
+                                              onclick="{!c.retrieveSelectedProducts}"
+                                              >Select item</lightning:button> 
+                            
+                            <lightning:button
+                                              class="slds-button slds-button_neutral"
+                                              onclick="{!c.closeSearchItemModal}"
+                                              >Cancel</lightning:button>
+                            
+                        </div>
+                    </div>
+                </aura:if>
+            </div>  
+            
+            
+            <aura:if isTrue="{!v.isSelectedProduct}">
+                <br/>
+                <br/>
+                <div class="slds-box ">
+                    <p class='slds-text-heading_medium'><lightning:icon iconName="utility:products" alternativeText="Selected Item(s)" title="Selected Item(s)" size="small"/> Selected Items</p>
+                    <!-- Selected Products Items -->
+                    <div class="slds-col slds-size_1-of-1 slds-scrollable slds-m-bottom_small max_table_height">
+                        
+                        <table
+                               class="slds-table slds-table_cell-buffer slds-table_bordered table"
+                               aria-labelledby="element-with-table-label other-element-with-table-label"
+                               >
+                            
+                            <thead>
+                                <tr class="slds-line-height_reset HeadTr">                                
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Manufacturer">Manufacturer</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Item">Item</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Description">Description</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Color">Color</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Pattern">Pattern</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Description2">Description 2</div>
+                                    </th>
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Quantity">Quantity</div>
+                                    </th>
+                                    <!--
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Customizations">Any Customizations</div>
+                                    </th>-->
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Delete">Delete</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration
+                                                items="{!v.selectedProductsData}"
+                                                var="itr"
+                                                indexVar="indexNum"
+                                                >
+                                    <aura:if isTrue="{! itr.showInTable}">
+                                        <tr>                                    
+                                            <td data-label="Manufacturer Name">
+                                                <div class="slds-truncate" title="Manufacturer">{!itr.Manufacturer_Name__c}</div>
+                                            </td>
+                                            
+                                            <td data-label="Manufacturer Name">
+                                                <div class="slds-truncate" title="Item">{!itr.Product_Name__c}</div>
+                                            </td>                                    
+                                            <td data-label="Product Description">
+                                                <div class="slds-truncate" title="Product Description">{!itr.Product_Description__c}</div>
+                                            </td>
+                                            <td data-label="Color">
+                                                <div class="slds-truncate" title="Color">{!itr.Color__c}</div>
+                                            </td>
+                                            <td data-label="Pattern">
+                                                <div class="slds-truncate" title="Pattern">{!itr.Pattern__c}</div>
+                                            </td>
+                                            <td data-label="Description 2">
+                                                <div class="slds-truncate" title="Description 2">{!itr.Product_Description_2__c}</div>
+                                            </td>
+                                            <td  class='editicon' data-label="Quantity">
+                                                <div style="display:flex!important; flex-direction:row">
+                                                    <lightning:input type='text' class='inputbox' aura:id='internalFormDetails' required='true' name="quantity" label="Quantity" variant="label-hidden" value="{!itr.Quantity_for_Sample__c}" disabled="{!v.isFieldsDisabled}"/>
+                                                </div>
+                                            </td>
+                                            <!--
+                                            <td data-label="Customization" onclick='{!c.CustomizationHandlerMethod}'>
+                                                <aura:if isTrue="{!v.CustomizationHandler}">
+                                                    <div class ='CustomizationEdit'>
+                                                        <div class="slds-truncate" title="Customization">{!itr.Customization__c}</div>
+                                                        <lightning:buttonIcon iconName="utility:edit" variant="bare"   alternativeText="edit" title="edit" />
+                                                    </div>
+                                                    <aura:set attribute="else">
+                                                        <lightning:input class='inputbox' name="input1" value="{!itr.Customization__c}" />
+                                                    </aura:set>
+                                                </aura:if>
+                                            </td>  -->
+                                            <td data-label="delete">
+                                                <lightning:buttonIcon name='{!indexNum}' iconName="utility:delete" variant="bare" onclick='{!c.handleDeleteAction}'  alternativeText="delete" title="delete" class="slds-button_icon-error" disabled="{!v.isFieldsDisabled}"/>
+                                            </td>
+                                        </tr>
+                                    </aura:if>
+                                </aura:iteration>
+                            </tbody>
+                        </table>      
+                    </div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.noItemSelected}">
+                <p class="slds-text-color_error slds-m-left_small">*Please select atleast one Sample.</p>
+            </aura:if>
+            
+            
+            
+        </div>   
+        
+        
+        <br/>
+        <!-- on Hold 
+        <aura:if isTrue="{!v.invalidFieldsExist}">
+            <h3 class="slds-text-color_error slds-text-heading_small">&nbsp;&nbsp;<b>Please fill these fields.</b></h3>
+            <ul>
+                <aura:iteration items="{!v.invalidFields}" var="item">
+                    <li class="slds-text-color_error">&emsp;&bull;&nbsp;{!item}</li>
+                </aura:iteration>
+            </ul>
+        </aura:if>
+        -->
+        <div class="slds-grid slds-wrap ">  
+            
+            <div class="slds-col slds-size_12-of-12 alignright">
+                <span>
+                    <lightning:button label="Save as Draft" 
+                                      class='slds-m-bottom_medium'
+                                      iconName="utility:record_update" 
+                                      iconPosition="right"
+                                      name="Save as Draft"
+                                      onclick = "{!c.saveDisplayOrderItemForm}"
+                                      disabled="{!v.isFieldsDisabled}"/>                    
+                    
+                    &nbsp;                
+                    <lightning:button label="Submit" 
+                                      iconName="utility:save" 
+                                      class='slds-m-bottom_medium'
+                                      iconPosition="right"
+                                      name="Submitted"
+                                      variant="brand" 
+                                      onclick = "{!c.saveDisplayOrderItemForm}"
+                                      disabled="{!v.isFieldsDisabled}"/>                    
+                </span>
+            </div>
+        </div>
+        <aura:set attribute="else">
+            <span class="slds-float_right">
+                <lightning:button variant="brand" label="New" title="Create new Form" iconName="utility:add" iconPosition="right" onclick="{! c.createNewForm }" />
+            </span>
+            <br/>
+            <br/>
+            <div class="slds-box slds-p-around_none">
+                <p class='slds-text-heading_medium'><lightning:icon iconName="utility:layout_overlap" alternativeText="Selected Item(s)" title="Selected Item(s)" size="small"/> Display item request(s)</p>
+                <!-- Selected Products Items -->
+                <div class="slds-col slds-size_1-of-1 slds-scrollable slds-m-bottom_small max_table_height">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered  " >            
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Opportunity Name">Form Number</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Opportunity Name">Employee Name</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Opportunity Name">Status</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Opportunity Name">Submitted Date</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>                   
+                            <aura:iteration items="{!v.dataOfExistingForms}" var="item">
+                                <tr class="slds-hint-parent">
+                                    <td data-label="Form Number">
+                                        <div class="slds-truncate" title="Form Number"><lightning:button variant="base" label="{!item.Name}" title="Form Number" name="{!item.Id}" onclick="{! c.openSelectedForm}"/></div>
+                                    </td>
+                                    <td data-label="Employee Name">
+                                        <div class="slds-truncate" title="Employee Name">{!item.Employee_name__c}</div>
+                                    </td>
+                                    <td data-label="Status">
+                                        <div class="slds-truncate" title="Status">{!item.Sample_Request_Form_Status__c}</div>
+                                    </td>
+                                    <td data-label="Submitted Date">
+                                        <div class="slds-truncate" title="Submitted Date">
+                                            <lightning:formattedDateTime value="{!item.Submitted_Date__c}" year="numeric" month="numeric" day="numeric"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>                    
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </aura:set>
+    </aura:if> 
+</aura:component>

@@ -1,0 +1,174 @@
+<aura:component controller="AnnouncementController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <!-- variable for announcement -->
+    <aura:attribute name ="announcementObjForReply" type = "Object"/>
+    <aura:attribute name ="announcementObj" type = "Object"/>
+    <aura:attribute name="showModal" type="Boolean"/>
+    <aura:attribute name="showData" type="Boolean" default="true"/>
+    <aura:attribute name="showReplyModal" type="Boolean" default="true"/>
+    <aura:attribute name="showButton" type="Boolean" default="true"/>
+    <aura:attribute name="showKeyMessage" type="Boolean" default="true"/>
+    <aura:attribute name="showReplyKeyMessage" type="Boolean" default="false"/>    
+    
+    <!-- Do init -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:attribute name="errorMessage" type="String" default="You haven't composed anything yet."/>
+    <aura:attribute name="validity" type="Boolean" default="true"/>
+    
+    <!-- used to hold the selected User or group  -->
+    <aura:attribute name ="selectedUser" type = "String[]" default="[]"/>
+    <aura:attribute name ="selectedUserId" type = "list" default="[]"/>
+    
+    <aura:attribute name ="selectedUserReply" type = "String"/>
+    <aura:attribute name ="selectedUserForReply" type = "String[]"/>    
+    <aura:attribute name="selectedUserString" type="String"/>
+    
+    <aura:attribute name="user" type="Object[]"/>
+    <aura:attribute name="recordId" type="String" />
+     <aura:handler name="change" value="{!v.selectedUser}" action="{!c.itemsChange}"/>
+    
+    <!--handle KeyMessagereply Event-->
+    <aura:handler name="KeyMessageReply" event="c:KeyMessageReplyModal" action="{!c.handleKeyMessage}"/>
+    <aura:registerEvent name="getUserByIds" type="c:getUserById" />
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <!--<div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span><lightning:icon iconName="standard:announcement" alternativeText="Key Messages" title="Key Messages" /><b class="slds-m-left_small"></b></span>
+                    </h2>
+                </div>
+            </div>-->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small ">
+                <lightning:button label="Send Message" 
+                                  iconName="utility:new_direct_message" 
+                                  iconPosition="right"  
+                                  variant="brand"
+                                  onclick = "{!c.openModal}"/>
+                
+            </div>
+            
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-m-bottom_small">
+                <div class="slds-clearfix">
+  <div class="slds-float_right">
+    
+ 
+                <aura:if isTrue="{!v.showButton}">
+                    
+                    <lightning:input type="toggle"                                      
+                                     name="input2" 
+                                     checked="true" 
+                                     messageToggleActive="Send To Me"
+                                     messageToggleInactive="Send By Me"
+                                     onchange = "{!c.handleToggleChange}"
+                                     aura:id="messageTypeToggle"/>
+                </aura:if> 
+       </div>
+</div>
+            </div>
+        </div>
+        <aura:if isTrue="{!v.showData}">
+            <c:announcementData/>
+            <aura:set attribute="else">
+                <c:ReplyMessageData />
+            </aura:set>
+        </aura:if> 
+    </article>
+    <aura:if isTrue="{!v.showModal}">
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_medium" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="slds-modal__container">
+                
+                <header class="slds-modal__header modal-header">
+                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate slds-text-heading_small">Key Message</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    
+                    <!-- Main Input Fields -->
+                    <div class="slds-grid slds-gutters slds-wrap slds-box slds-m-horizontal_small slds-m-bottom_small" >
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_small slds-form-element__label">
+                            <c:MultiSelectLookup aura:id = "customLookupForUser"
+                                                 objectName="User" 
+                                                 selectedDataObj="{!v.user}"
+                                                 fieldName="Name" 
+                                                 label="Message To" 
+                                                 newSelectedRecord="{!v.selectedUserForReply}"
+                                                 selectedRecords = "{!v.selectedUser}"
+                                                 iconName="standard:user" 
+                                                 selectedUserId="{!v.selectedUserId}"
+                                                 placeholder="Enter User Name"
+                                                 isRequired="true"/>
+                            
+                        </div>
+                        <div class="slds-p-left_small slds-form-element__label">
+                            <h2>Message</h2>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_small">
+                            <lightning:inputRichText aura:id = "announcementDetails" 
+                                                     variant="bottom-toolbar"
+                                                     value="{!v.announcementObj.Message__c}"
+                                                     label="Message"
+                                                     required="true"
+                                                     messageWhenBadInput="{!v.errorMessage}"
+                                                     valid="{!v.validity}"
+                                                     />
+                        </div>
+                        
+                    </div>  
+                     <aura:if isTrue="{!v.showReplyModal}">
+                        
+                        <div class="slds-p-left_small slds-form-element__label">
+                            <h2>Reply</h2>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-m-bottom_small">
+                            <lightning:inputRichText aura:id = "announcementDetails" 
+                                                     variant="bottom-toolbar"
+                                                     value="{!v.announcementObj.Reply_message__c}"
+                                                     label="Message"
+                                                     required="true"
+                                                     messageWhenBadInput="{!v.errorMessage}"
+                                                     valid="{!v.validity}"
+                                                     />
+                        </div>
+                        
+                    </aura:if>
+                    
+                </div>
+                <aura:if isTrue="{!v.showKeyMessage}">
+                    <footer class="slds-modal__footer">
+                        <div class="slds-col slds-size_12-of-12 alignright">
+                            <span>
+                                <lightning:button label="Send" 
+                                                  class="slds-m-horizontal_xx-small"
+                                                  variant="brand" 
+                                                  onclick = "{!c.submitDetails}"/> 
+                                
+                                <lightning:button label="Cancel" 
+                                                  iconPosition="right"
+                                                  onclick="{!c.hideModel }"/>
+                            </span>
+                        </div>  
+                    </footer>
+                </aura:if>
+                <aura:if isTrue="{!v.showReplyKeyMessage}">
+                    <footer class="slds-modal__footer">
+                        <div class="slds-col slds-size_12-of-12 alignright">
+                            <span>
+                                <lightning:button label="Send" 
+                                                  class="slds-m-horizontal_xx-small"
+                                                  variant="brand" 
+                                                  onclick = "{!c.submitReplyDetails}"/> 
+                                
+                                <lightning:button label="Cancel" 
+                                                  iconPosition="right"
+                                                  onclick="{!c.hideModel }"/>
+                            </span>
+                        </div>  
+                    </footer>
+                </aura:if>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

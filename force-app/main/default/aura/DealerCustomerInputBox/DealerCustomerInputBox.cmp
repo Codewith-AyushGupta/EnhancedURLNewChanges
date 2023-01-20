@@ -1,0 +1,91 @@
+<aura:component Controller="DealerProfileController" 
+                extends="c:HandleErrorModal"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="openModal" type="Boolean" default="false"/>
+    <aura:attribute name="textAreaValue" type="String"/>
+    <aura:attribute name="accountCategory" type="List"/>
+    <!--This attribute use for dynamic populate sections-->
+    <aura:attribute name="selections" type="List"/>
+            <aura:attribute name="recordsId" type="String" />
+
+    <aura:attribute name="dealerCustomer" type="Object"
+                    description="this's object used for child object "/>
+    
+    <aura:attribute name="recordId" type="String" description="get record id on doinit"/>
+    <aura:attribute name="dealerType" type="String"/>
+    <aura:attribute name="createdDate" type="String" description="for Year Picklist" />
+    <aura:registerEvent name="removeItem" type="c:DisplayItemRemove" />
+    <aura:attribute name="index" type="Integer"/>
+    
+    <table>  
+        <thead></thead>
+        <tbody>
+            
+            <tr class="slds-box">
+                <div class="slds-grid ">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12">
+                        <lightning:input aura:id="DCField" name="" variant="label-hidden" placeholder="Customer Name" value='{!v.dealerCustomer.customerName}' onchange="{!c.updatefield}" /> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12">
+                        <lightning:select aura:id="DCField" name="" variant="label-hidden" class="label-hide" value='{!v.dealerCustomer.customerType}' onchange="{!c.updatefield}" >
+                            <option value="">--None--</option>
+                            <aura:iteration items="{!v.accountCategory}" var="ac" indexVar="key">
+                                <option text="{!ac}" value="{!ac}" selected="{!ac==v.dealerCustomer.customerType}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12">
+                        <lightning:input aura:id="DCField" name="" variant="label-hidden" value='{!v.dealerCustomer.salesperson}' placeholder="Sales Person" onchange="{!c.updatefield}"/> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12"> 
+                        <lightning:input aura:id="DCField" name="" variant="label-hidden" placeholder="Supplier" value='{!v.dealerCustomer.supplier}' onchange="{!c.updatefield}" /> 
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12">
+                        <lightning:select aura:id="DCField" name="" variant="label-hidden" class="label-hide" value='{!v.dealerCustomer.selections}' onchange="{!c.updatefield}" >
+                            <option value="">--None--</option>
+                            <aura:iteration items="{!v.selections}" var="selection" indexVar="key">
+                                <option text="{!selection}" value="{!selection}" selected="{!selection==v.dealerCustomer.selections}" />
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12">
+                        <lightning:input aura:id="DCField" name="" variant="label-hidden" placeholder="Notes" value='{!v.dealerCustomer.notes}'  onchange="{!c.updatefieldReason}" onclick="{!c.updatefieldReason}" /> 
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12 slds-align_absolute-center">
+                        <lightning:input  name="{!v.index}" type="checkbox" variant="label-hidden" value='{!v.dealerCustomer.inactive}' checked="{!v.dealerCustomer.inactive}" onchange="{!c.updateCheckboxes}" />
+                    </div>
+                    <!--div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-12">
+                                        <lightning:buttonIcon  name="{!index}" variant="bare" disabled = "{!v.deleteRow == 1}" iconName="utility:delete" size="large" class="slds-align_absolute-center" onclick ="{!c.deleteRow}"/>  
+                            </div-->
+                </div>
+            </tr>
+            
+        </tbody>
+    </table>
+    <aura:if isTrue="{!v.openModal}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                    
+                    <span class="slds-assistive-text">Cancel and close</span>
+                </button>
+                <div class="slds-modal__header">
+                    <p><h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Notes</h1></p>
+                    <p><h5 style="color:red">(Maximum 255 characters allow)</h5></p>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:textarea name="input7" variant="label-hidden" placeholder="Maximum 255 characters allow" maxlength="254" value="{!v.textAreaValue}"/>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button label="Cancel" title="Cancel" onclick="{!c.closeModal }"/>
+                    
+                    <lightning:button variant="brand" label="Ok" title="Save" onclick="{!c.setFieldValue }" />
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </aura:if>  
+    
+</aura:component>

@@ -1,0 +1,1433 @@
+<aura:component Controller="LT_PreferredVendorRFPCtrl" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" >
+    <aura:attribute name ="preferredVendorObject" type="Object" />
+    <aura:attribute name="activeSections" type="List" default="['SectionA','affiliates']" /> 
+    <aura:attribute name="allSectionData" type="object" />
+    <aura:attribute name="allFileData" type="object"/>
+    
+    <aura:attribute name="sectionAWarehouse" type="List" default="{!v.allFileData.sectionAWarehouse}"/>
+    <aura:attribute name="sectionAManufacturingDetails" type="List" default="{!v.allFileData.sectionAManufacturingDetails}"/>
+    <aura:attribute name="sectionBDistributor" type="List" default="{!v.allFileData.sectionBDistributor}"/>
+    <aura:attribute name="sectionBManufacturer" type="List" default="{!v.allFileData.sectionBManufacturer}"/>
+    <aura:attribute name="sectionBBalanceSheet" type="List" default="{!v.allFileData.sectionBBalanceSheet}"/>
+    <aura:attribute name="sectionBAgreement" type="List" default="{!v.allFileData.sectionBAgreement}"/>
+    <aura:attribute name="sectionCStrategicPlanning" type="List" default="{!v.allFileData.sectionCStrategicPlanning}"/>
+    
+    <aura:attribute name="masterSectionAWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionAWrapper" default="{!v.allSectionData.masterSectionAWrapper}"/>
+    <aura:attribute name="masterSectionBWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionBWrapper" default="{!v.allSectionData.masterSectionBWrapper}"/>
+    <aura:attribute name="masterSectionCWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionCWrapper" default="{!v.allSectionData.masterSectionCWrapper}"/>
+    <aura:attribute name="masterSectionDWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionDWrapper" default="{!v.allSectionData.masterSectionDWrapper}"/>
+    <aura:attribute name="masterSectionEWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionEWrapper" default="{!v.allSectionData.masterSectionEWrapper}"/>
+    <aura:attribute name="masterSectionFWrapper" type="LT_PreferredVendorRFPCtrl.MasterSectionFWrapper" default="{!v.allSectionData.masterSectionFWrapper}"/>
+    
+    <!--  page background color  -->
+    <aura:html tag="style">
+        html {
+        background: #F8F9F9;
+        }
+    </aura:html>
+    
+    <!-- lightning:accordion -->
+    <br/>
+    
+    <lightning:accordion aura:id="accordion" 
+                         allowMultipleSectionsOpen="true" 
+                         onsectiontoggle="{! c.handleSectionToggle }"
+                         activeSectionName="A">
+        <lightning:accordionSection name="A" label=" Section A: Profile of Manager and Firm">
+            <aura:set attribute="body">
+                <div class="slds-m-top_medium formmargin">
+                    <!--Basic details fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-2">
+                                    <strong >Firm Name: </strong>&nbsp;<span>{!v.masterSectionAWrapper.firm.firmName}</span> 
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Street Address with apt/suite #:</strong>&nbsp;<span>{!v.masterSectionAWrapper.firm.streetAddress}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Attention to:</strong> &nbsp;<span>{!v.masterSectionAWrapper.firm.attentionTo}</span>   
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >City:</strong>&nbsp; <span>{!v.masterSectionAWrapper.firm.city}</span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >State:</strong> &nbsp;<span>{!v.masterSectionAWrapper.firm.state}</span>    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Zip Code:</strong>  &nbsp; <span>{!v.masterSectionAWrapper.firm.postalCode}</span>   
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Affiliates Name &#38; Address -->
+                <div class=" slds-m-top_x-large slds-text-heading_small">
+                    <h2>
+                        Affiliates Name &#38; Address
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin">
+                    <!--Billing Address fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-2">
+                                    <strong >Do you have any Affiliates? </strong>&nbsp;<span>{!v.masterSectionAWrapper.anyAffilate}</span> 
+                                </div>
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.masterSectionAWrapper.anyAffilate == 'Yes'}">
+                            <lightning:card  title="List of Affiliate" class="table_bg_color">
+                                <div class="slds-grid slds-wrap">
+                                    <div class="slds-large-size_12-of-12">
+                                        <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols principal-table table_bg_color" role="grid">
+                                            <thead >
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Affiliate Name</strong></div>
+                                                    </th>
+                                                    
+                                                    <th class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font"  ><strong>Street Address with apt/suite #</strong></div>
+                                                    </th>
+                                                    
+                                                    <th class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Attention to</strong></div>
+                                                    </th>
+                                                    
+                                                    <th class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>City</strong></div>
+                                                    </th>
+                                                    
+                                                    <th  class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >State</div>
+                                                    </th>
+                                                    
+                                                    <th  class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Zip Code</div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!--Aura:Iteration Start-->
+                                                <aura:iteration items="{!v.masterSectionAWrapper.affiliates}" var="Affiliates" >
+                                                    <tr class="slds-hint-parent" >
+                                                        <td> {!Affiliates.af_Name} </td>
+                                                        <td> {!Affiliates.af_streetAddress} </td>
+                                                        <td> {!Affiliates.af_attentionTo} </td>
+                                                        <td> {!Affiliates.af_city} </td>
+                                                        <td> {!Affiliates.af_state} </td>
+                                                        <td> {!Affiliates.af_postalCode} </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </lightning:card>
+                        </aura:if>
+                    </div>
+                </div>
+                
+                
+                <!--Firm History Fields -->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Firm History
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin">
+                    <!--Primary Contact fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                    <strong >State of incorporation (or country):</strong> &nbsp;<span>{!v.masterSectionAWrapper.history.stateOfIncorporation}</span>    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-12 slds-large-size_3-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Tax Id:</strong> &nbsp;<span>{!v.masterSectionAWrapper.history.taxId}</span>    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_5-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 setBottomLabelMargin">
+                                    <strong >Any customer or distributor legal suits currently pending or settled in past 5 years:</strong> &nbsp;<span>{!v.masterSectionAWrapper.history.legalSuitePending}</span>    
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Any government legal action currently pending or settled in past 5 years:</strong> &nbsp;<span>{!v.masterSectionAWrapper.history.governmentLegalAction}</span>    
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+                
+                <!-- Key Contact Professional(s) -->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Key Contact Professional(s)
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin">
+                    <!--Primary Accounts fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <lightning:card  title="List of Key Contact" class="table_bg_color">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-large-size_12-of-12">
+                                    <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols principal-table table_bg_color" role="grid">
+                                        <thead >
+                                            <tr class="slds-line-height_reset">
+                                                <th class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Who would be directly involved with servicing LT?</strong></div>
+                                                </th>
+                                                
+                                                <th class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font"><strong>First Name</strong></div>
+                                                </th>
+                                                
+                                                <th class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Last Name</strong></div>
+                                                </th>
+                                                
+                                                <th class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Phone</strong></div>
+                                                </th>
+                                                
+                                                <th  class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Email</div>
+                                                </th>                                                    
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Aura:Iteration Start-->
+                                            <aura:iteration items="{!v.masterSectionAWrapper.keyContacts}" var="Contacts" >
+                                                <tr class="slds-hint-parent" >
+                                                    <td> {!Contacts.kc_role} </td>
+                                                    <td> {!Contacts.kc_firstName} </td>
+                                                    <td> {!Contacts.kc_lastName} </td>
+                                                    <td> {!Contacts.kc_phone} </td>
+                                                    <td> {!Contacts.kc_email} </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </lightning:card>
+                    </div>
+                </div>
+                
+                <!--Warehouse-->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Warehouse
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin"> 
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong>Do you have a detailed logistics and warehouse plan for LT and if no are you prepared to craft one if awarded Preferred Partner status?</strong><br/><span>{!v.masterSectionAWrapper.warehouse.isLogisticAndWarehousePlan}</span>   
+                                </div>
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.masterSectionAWrapper.warehouse.isLogisticAndWarehousePlan == 'Yes'}">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                        <strong >Uploaded File</strong> <br/>
+                                        <span><c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionAWarehouse}" isSubmit="true"/></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.masterSectionAWrapper.warehouse.isLogisticAndWarehousePlan == 'No'}">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                        <strong >Please specify the reason.</strong><br/><span>{!v.masterSectionAWrapper.warehouse.inputRemark}</span>  
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </div>
+                </div>
+                
+                <!--Dedicated Service Department-->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Dedicated Service Department
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin"> 
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                    <strong >Is there a central ticket system or process for inquiry of issues?</strong> <br/><span>{!v.masterSectionAWrapper.serviceDepartment.centralTicketingSystem}</span>    
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >How are delivery delays communicated to LT?</strong><br/><span>{!v.masterSectionAWrapper.serviceDepartment.deliveryCommunication}</span>  
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >What is your corporate philosophy around service of accounts?</strong><br/><span>{!v.masterSectionAWrapper.serviceDepartment.corporatePhilosophy}</span>  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!--Affiliate companies dealing with dealers-->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>Affiliate companies dealing with dealers</h2>
+                </div>
+                <div class="slds-m-top_medium formmargin"> 
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                    <strong >Do you or any of your affiliated companies sell directly to dealers or retail?</strong> 
+                                    <br/>
+                                    <span>{!v.masterSectionAWrapper.affiliateCompanies.directlySellDealer}</span>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!--Manufacturing Details-->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>Manufacturing Details</h2>
+                </div>
+                <div class="slds-m-top_medium formmargin"> 
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                    <strong >What is your manufacturing capacity per day for any single SKU?</strong>
+                                    <br/>
+                                    <span>{!v.masterSectionAWrapper.manufacturingDetail.manufacturerCapacity}</span>    
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Do you outsource any of your product to third party manufacturers?</strong>
+                                    <br/>
+                                    <span>{!v.masterSectionAWrapper.manufacturingDetail.thirdPartyRevenue}</span>  
+                                </div>
+                            </div>
+                        </div>
+                        <aura:if isTrue="{!v.masterSectionAWrapper.manufacturingDetail.thirdPartyRevenue == 'Yes'}">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                        <strong >What percentage of total revenue do they represent?</strong><br/><span>{!v.masterSectionAWrapper.manufacturingDetail.percentTotalRevenue}</span>  
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Please provide a short video of your manufacturing facility.</strong><br/><span>{!v.masterSectionAWrapper.manufacturingDetail.manufacturingVideo}</span>  
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                    <strong >Uploaded Video</strong> 
+                                    <br/>
+                                    <span><c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionAManufacturingDetails}" isSubmit="true"/></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!--Experience with Partners & Insurance-->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Experience with Partners &#38; Insurance
+                    </h2>
+                </div>
+                <div class="slds-m-top_medium formmargin"> 
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                    <strong >Does your company have experience with other multi-state and multi-branch distribution partners?</strong> 
+                                    <br/> 
+                                    <span>{!v.masterSectionAWrapper.experiencePartner.distribution}</span>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!--Current Top (7) Accounts-->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>Current Top (7) Accounts</h2>
+                </div>
+                <div class="slds-m-top_medium formmargin">
+                    <!--Primary Accounts fields   -->
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <lightning:card  title="List of Top (7) Account" class="table_bg_color">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-large-size_12-of-12">
+                                    <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols principal-table table_bg_color" role="grid">
+                                        <thead >
+                                            <tr class="slds-line-height_reset">
+                                                <th class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Name</strong></div>
+                                                </th>
+                                                
+                                                <th class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font"><strong>Type</strong></div>
+                                                </th>
+                                                
+                                                <th class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Remark</strong></div>
+                                                </th>
+                                                <th class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>City</strong></div>
+                                                </th>
+                                                <th  class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >State</div>
+                                                </th>  
+                                                <th  class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Purchase volume</div>
+                                                </th>
+                                                <th  class="border_bg_color" scope="col">
+                                                    <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Length Of Relationship(in Year)</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!--Aura:Iteration Start-->
+                                            <aura:iteration items="{!v.masterSectionAWrapper.currentTopAccount}" var="account" >
+                                                <tr class="slds-hint-parent" >
+                                                    <td> {!account.ct_Name} </td>
+                                                    <td> {!account.ct_Type} </td>
+                                                    <td> {!account.ct_Remark} </td>
+                                                    <td> {!account.ct_City} </td>
+                                                    <td> {!account.ct_State} </td>
+                                                    <td> {!account.ct_PurchesVolume} </td>
+                                                    <td> {!account.ct_LengthOfRelationship} </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </lightning:card>
+                    </div>
+                </div>
+                
+                <!--Insurance-->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>Insurance</h2>
+                </div>
+                <div class="slds-m-top_medium formmargin"> 
+                    <div class="slds-grid slds-wrap slds-m-top_x-small">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                    <strong >What level of E and O or professional liability insurance do you carry?</strong>
+                                    <br/> 
+                                    <span>{!v.masterSectionAWrapper.insurance.insuranceCarried}</span>    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aura:set>
+        </lightning:accordionSection>
+        
+        <!-- accordionSection B -->
+        <lightning:accordionSection name="B" label=" Section B: Financial and Purchasing Requirements">
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>Product Guarantees</h2>
+                </div>
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Time to report defects for eligibility of guarantee.</strong>
+                                <br/> 
+                                <span>{!v.masterSectionBWrapper.productGuaranteedCompany.timeReportDefect}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Quality including shading and other defects.</strong> 
+                                <br/> 
+                                <span>{!v.masterSectionBWrapper.productGuaranteedCompany.isQualityShading}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Delivery</strong> <br/> <span>{!v.masterSectionBWrapper.productGuaranteedCompany.isDelivery}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    
+                   
+                   <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-large-size_12-of-12  slds-p-horizontal_medium  formmargin">
+                       <div class="slds-m-top_x-small">
+                           <h1>Detail SOP for remediation by </h1>
+                       </div>
+                    </div>
+                  
+                   <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Distributor:</strong>&nbsp;&nbsp;&nbsp;&nbsp;<span>{!v.masterSectionBWrapper.productGuaranteedCompany.isSOPDistributor}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Manufacturer:</strong>&nbsp;&nbsp;&nbsp;&nbsp;<span>{!v.masterSectionBWrapper.productGuaranteedCompany.isSOPManufacturer}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Uploaded Distributor File Name</strong>
+                                <br/>
+                                <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionBDistributor}" isSubmit="true"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Uploaded Manufacturer File Name</strong>
+                                <br/>
+                                <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionBManufacturer}" isSubmit="true"/>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shipping information-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>
+                    Shipping information
+                </h2>
+            </div>
+            <div class="slds-m-top_medium formmargin"> 
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong >Are shipments by job or mixed pallets?</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.shipmentType}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong >Freight calculation– Please provide overview, formulas for freight, carriers, options to pay 
+                                    freight directly, other critical factors.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.freightCalculation}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Describe your freight saving program available to LT.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.freightSavingProgram}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Describe your packaging and handling fees and parameters.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.packagingHandlingFee}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Describe your fuel surcharge program and how charges are calculated.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.fuelSurcharge}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Describe any potential additional fees to LT not addressed above.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.additionalFees}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Ship on time standard (what % of orders ship as promised).</strong> 
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.shipTimeStandard}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong >Ship on time actual (2020, 2021, YTD in %).</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.ShipTimeActual}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Backorder actual (2020, 2021, YTD).</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.backorderActual}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Backorder standard</strong> 
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.shippingInformation.backorderStandard}</span>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            <!-- National Account-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2> National Account</h2>
+            </div>
+            <div class="slds-m-top_medium formmargin"> 
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Willing to provide National Account Pricing based on aggregate proposed volume and discounts?</strong>
+                               <br/>
+                                <span>{!v.masterSectionBWrapper.nationalAccount.isNationalAccountPricing}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong >Is potential Partner willing to hold inventory under a blanket PO and ship on demand? </strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.nationalAccount.willingToHoldInventory}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>What is the minimum production run per SKU?</strong> 
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.nationalAccount.minimumProduction}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Describe process and policy.</strong> 
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.nationalAccount.processPolicy}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Describe firm policy to meet build schedules of proposed national accounts and meet lead times.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.nationalAccount.describeBuildSchedule}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Accountability to any second choice material from special production run?</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.nationalAccount.specialProduction}</span>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Private Label-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Private Label</h2>
+            </div>
+            <div class="slds-m-top_medium formmargin"> 
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Willingness to support LT private label program?</strong> 
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.privateLabel.isSupportLTPrivateLabel}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Describe any restrictions or items for attention in private label.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.privateLabel.privateLabelRestrictions}</span>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Financial Considerations-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Financial Considerations</h2>
+            </div>
+            <div class="slds-m-top_medium formmargin"> 
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>List terms proposed and confirmation of meeting minimum requirements listed above.</strong> 
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.financialConsideration.termsProposed}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Can you please share your last year balance sheet?</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.financialConsideration.balanceSheet}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!v.masterSectionBWrapper.financialConsideration.balanceSheet == 'Yes'}">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                    <strong>Uploaded Balancesheet File Name</strong>
+                                    <br/>
+                                    <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionBBalanceSheet}" isSubmit="true"/>    
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{!v.masterSectionBWrapper.financialConsideration.balanceSheet == 'No'}">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                    <strong>Please provide reason.</strong> 
+                                    <br/>
+                                    <span>{!v.masterSectionBWrapper.financialConsideration.balanceSheetReason}</span>    
+                                </div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Please provide copy of standard purchasing agreement and current price list.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.financialConsideration.isStandardPurchaseAgreement}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Confirmation of providing uniform pricing to LT on all SKU selected.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.financialConsideration.isUniformPricing}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Confirmation of full distribution rights in all states LT currently operating in.</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.financialConsideration.isFullDistributionRights}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>Uploaded Price &#38;  Agreement File Name</strong>
+                                <br/>
+                                <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionBAgreement}" isSubmit="true"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!--Vendor Rebate Program-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2> Vendor Rebate Program</h2>
+            </div>
+            <div class="slds-m-top_medium formmargin"> 
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1 ">
+                                <strong>List all eligible rebate programs/policy to LT and current schedule of rebates including any buyback on excess inventory</strong>
+                                <br/>
+                                <span>{!v.masterSectionBWrapper.rebateProgram.rebateProgramsPolicy}</span>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning:accordionSection>
+        
+        <!-- accordionSection C -->
+        <lightning:accordionSection name="C" label=" Section C: Partnership">
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss how you will help to identify products that complement and enhance our current lineup and market presence</strong>
+                                <br/> 
+                                <span>{!v.masterSectionCWrapper.strategicPlanning.complementProductDetail}</span>   
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <!--What training do you provide to?--> 
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Describe the typical product launch and how you envision working with LT to ensure a successful launch of new products.</strong> 
+                                <br/>
+                                <span>{!v.masterSectionCWrapper.strategicPlanning.productLaunchDetails}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-large-size_12-of-12  slds-p-horizontal_medium  formmargin">
+                        <div class="slds-m-top_x-small">
+                            <h1>What training do you provide to? </h1>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Showroom designers</strong> 
+                                <br/> <span>{!v.masterSectionCWrapper.strategicPlanning.trainingsProvidesDesigner}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>External sales team</strong> <br/> <span>{!v.masterSectionCWrapper.strategicPlanning.trainingProvidedSales}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Customer service team</strong> <br/> <span>{!v.masterSectionCWrapper.strategicPlanning.trainingsProvidesServiceTeam}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Key customer</strong> <br/> <span>{!v.masterSectionCWrapper.strategicPlanning.trainingProvidedKeyCustomer}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Do you have a strategic plan in place to grow the LT business and revenues?</strong> <br/> <span>{!v.masterSectionCWrapper.strategicPlanning.strategicBusiness}</span>    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Uploaded Strategic Planning File</strong>
+                                <br/>
+                                <c:LT_PreferredVendorFileUploadDelete listFileUploaded ="{!v.sectionCStrategicPlanning}" isSubmit="true"/>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!--  Marketing Support -->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Marketing Support</h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >What marketing support (print, digital, media, ground, and collateral material) do you provide during a product launch?</strong> <br/> <span>{!v.masterSectionCWrapper.support.marketingSupportProvided}</span> 
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>What are the cost parameters and specifically outlay the process and cost factors?</strong> <br/> <span>{!v.masterSectionCWrapper.support.costParameters}</span>  
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Can samples be obtained by the piece or are entire boxes required</strong> <br/> <span>{!v.masterSectionCWrapper.support.obtainSamples}</span>   
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Can you provide custom boards to our specifications or are they standard issue?</strong> <br/> <span>{!v.masterSectionCWrapper.support.customBoards}</span>   
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_4-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Can we select specific SKU’s for the product launch or is it a set package?</strong> <br/> <span>{!v.masterSectionCWrapper.support.specificSKULaunch}</span>   
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Company Policy-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Company Policy</h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >What is your Company policy concerning discontinued series?</strong> <br/> <span>{!v.masterSectionCWrapper.discontinuedSeries}</span>   
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>What is your Company policy concerning price increases?</strong> <br/> <span>{!v.masterSectionCWrapper.priceIncreases}</span>   
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+            
+            <!--Agreement-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Agreement</h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >We have a Distribution Agreement which discusses territory, 
+                                    protections, pricing, market support, sales targets and quotas, private label, 
+                                    and exclusivity. Are you willing to enter into and negotiate such an agreement 
+                                    to meet the minimum requirements to obtain Preferred Partnership status?  </strong>  <br/> <span>{!v.masterSectionCWrapper.agreement.distributionAgreement}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Promotion and Sales-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Promotion and Sales</h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss your merchandising program, visualization tools, 
+                                    and digital tools such as QR codes or other tools to help in promotion and sales.</strong>  <br/> <span>{!v.masterSectionCWrapper.tools.merchandiseProgram}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Preferred partner-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Preferred partner</h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Please describe Preferred Partner ability to participate in this process and schedule.</strong>  <br/> <span>{!v.masterSectionCWrapper.preferredPartner.preferredPartnerAbility}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Product Viability and History-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Product Viability and History</h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss how you can provide and help develop a product roadmap and lifecycle to keep LT current and at the front of the development curve in new product offering.</strong>  <br/> <span>{!v.masterSectionCWrapper.productViabilityHistory.productRoadmap}</span>  
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >We seek unique and innovative and solution-based product offerings please discuss how you differentiate yourself to help LT achieve this goal.</strong>  <br/> <span>{!v.masterSectionCWrapper.productViabilityHistory.uniqueInnovativeSolution}</span>  
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss your development and design team that makes your product development industry leaders.</strong>  <br/> <span>{!v.masterSectionCWrapper.productViabilityHistory.discussDesign}</span>  
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss your support pieces in trim and accessories Merchant.</strong>  <br/> <span>{!v.masterSectionCWrapper.productViabilityHistory.discussSupportPrices}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning:accordionSection>
+        
+        
+        <!-- accordionSection D -->
+        <lightning:accordionSection name="D" label="Section D: Marketing">
+            <div class="slds-m-top_medium formmargin">
+                
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                        Marketing Plan and Budget
+                    </h2>
+                </div>
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Discuss the LT marketing plan you propose and include a well-defined budget to drive brand awareness.</strong> <br/> <span>{!v.masterSectionDWrapper.ltMarketingPlan}</span>   
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!--Real-Estate Requirement-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>
+                   Real-Estate Requirement
+                </h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss the real estate requirements within our showrooms and your expectations.</strong> <br/> <span>{!v.masterSectionDWrapper.realEstateRequirement.realestate}</span> 
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>List the costs to LT involved in this program.</strong> <br/> <span>{!v.masterSectionDWrapper.realEstateRequirement.listCostsLT}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Digital Library-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>
+                    Digital Library
+                </h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss your digital library and its availability to LT to utilize in its marketing efforts.</strong> <br/> <span>{!v.masterSectionDWrapper.digitalLibrary}</span>   
+                            </div>
+                        </div>
+                    </div>               
+                </div>
+            </div>
+            
+            <!--Marketing efforts-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Marketing efforts</h2>
+            </div>
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss your in person marketing efforts for events, tradeshow, vendor showcase and other marketing opportunities.</strong>  <br/> <span>{!v.masterSectionDWrapper.personMarketingEfforts}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+            
+            <!--Experience and process of your wholesaler/marketing manager-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Experience and process of your wholesaler/marketing manager</h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss the experience and process of your wholesaler/marketing manager and how they will develop the branches.
+                                         What is the frequency of visits,methodology, provision of lead opportunities and responsiveness of this person?</strong>  <br/> <span>{!v.masterSectionDWrapper.wholesalerMarket.marketingManager}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <br/>
+            
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Please provide 3 references of non-LT companies and individuals for each individual on the team.</h2>
+            </div>
+            <lightning:card  title="List of Non-LT Company" class="table_bg_color">
+                                <div class="slds-grid slds-wrap">
+                                    <div class="slds-large-size_12-of-12">
+                                        <table aria-multiselectable="true" class="slds-table slds-table_bordered slds-table_fixed-layout slds-table_resizable-cols principal-table table_bg_color" role="grid">
+                                            <thead >
+                                                <tr class="slds-line-height_reset">
+                                                    <th class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Company Name</strong></div>
+                                                    </th>
+                                                    
+                                                    <th class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font"  ><strong>First Name</strong></div>
+                                                    </th>
+                                                    
+                                                    <th class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Last Name</strong></div>
+                                                    </th>
+                                                    
+                                                    <th class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" ><strong>Phone</strong></div>
+                                                    </th>
+                                                    
+                                                    <th  class="border_bg_color" scope="col">
+                                                        <div class="slds-truncate slds-form-element__label slds-p-around_x-small table_header_font" >Email</div>
+                                                    </th>                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!--Aura:Iteration Start-->
+                                                <aura:iteration items="{!v.masterSectionDWrapper.nonLTReferences}" var="nonLTReferences" >
+                                                    <tr class="slds-hint-parent" >
+                                                        <td> {!nonLTReferences.kc_company} </td>
+                                                        <td> {!nonLTReferences.kc_firstName} </td>
+                                                        <td> {!nonLTReferences.kc_lastName} </td>
+                                                        <td> {!nonLTReferences.kc_phone} </td>
+                                                        <td> {!nonLTReferences.kc_email} </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </lightning:card>
+            
+            <!--Merchandising Support-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Merchandising Support</h2>
+            </div>
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Merchandising support is critical – discuss your approach to dealer boards, arch cards, 
+                                        binders and catalogs as well as any other merchandising support you would provide to 
+                                        LT as a Preferred Partner.</strong>  <br/> <span>{!v.masterSectionDWrapper.merchandisingSupport}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+        </lightning:accordionSection>
+        
+         <!-- accordionSection E -->
+        <lightning:accordionSection name="E" label="Section E: Technology">
+            <div class="slds-m-top_medium formmargin">
+                
+                <!--visualization tools and capabilities-->
+                <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                    <h2>
+                       Online Capabilities
+                    </h2>
+                </div>
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>Describe your online capabilities to LT for reporting, payments, inventory, 
+                                        customer order tracking and status, freight, sales performance to track rebate status, and other critical elements.</strong> <br/> <span>{!v.masterSectionEWrapper.onlineCapabilities}</span>   
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Uptime Performance-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>
+                   Uptime Performance
+                </h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >What is your uptime performance of this system 2020, 2021, most recent 6 mo.’s, YTD?</strong> <br/> <span>{!v.masterSectionEWrapper.uptimePerformance}</span> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--visualization tools and capabilities-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>
+                    visualization tools and capabilities
+                </h2>
+            </div>
+            
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1  slds-medium-size_12-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss your visualization tools and capabilities.</strong> <br/> <span>{!v.masterSectionEWrapper.visualizationTech}</span>   
+                            </div>
+                        </div>
+                    </div>               
+                </div>
+            </div>
+            
+            <!--Differentiate Technology-->
+            <div class=" slds-m-top_x-large slds-text-heading_small slds-p-horizontal_medium">
+                <h2>Differentiate Technology</h2>
+            </div>
+            <div class="slds-m-top_medium formmargin">
+                <!--Continuing Guaranty fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong >Discuss your inAny other technology that differentiates you or is under development.</strong>  <br/> <span>{!v.masterSectionEWrapper.differentiateTechnology}</span>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </lightning:accordionSection>
+        
+        <!-- accordionSection F -->
+        <lightning:accordionSection name="F" label="Section F: Misc">
+            <div class="slds-m-top_medium formmargin">
+                <!--Basic details fields   -->
+                <div class="slds-grid slds-wrap slds-m-top_x-small">
+                    
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12  slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>What sets you apart from the competition? What is your competitive advantage that you bring to LT?</strong> <br/> <span>{!v.masterSectionFWrapper.competitiveAdvantage}</span>   
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12   slds-p-horizontal_medium  formmargin slds-border_bottom">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-p-around_xx-small slds-col slds-size_1-of-1">
+                                <strong>What assets or resources will you provide to help LT achieve its mission, target goals, and expand its market share?" </strong> <br/> <span>{!v.masterSectionFWrapper.assetProvided}</span>   
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </lightning:accordionSection>
+    </lightning:accordion>
+    <br/>
+    <br/>    
+    
+</aura:component>

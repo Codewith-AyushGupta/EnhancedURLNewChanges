@@ -1,0 +1,10 @@
+<aura:component controller="BusinessDetailsController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
+		
+    <aura:attribute name="copyUrl" type="String" />
+    <aura:attribute name="recordId" type="String" />
+  
+    <!-- Do init Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+   
+</aura:component>

@@ -1,0 +1,128 @@
+<aura:component controller="SendCreditApplicationFormLinkController" 
+                implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" >
+    
+    <!-- Show spinner on page load -->
+    <aura:attribute name="isShowSpinner" type="Boolean" default="false" />
+    <!-- Show modal on 
+    <aura:attribute name="showConfirmDialog" type="Boolean" default="false"/>-->
+    
+    <!-- contact  -->
+    <aura:attribute name="contact" type="Object" />
+    
+    <aura:attribute name="contactName" type="String" />
+    
+    <!-- Do init Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>
+    
+    
+    <!--Modal Box Header Start-->
+    <header class="slds-modal__header" style="background:#245F90">
+        <h1 class="slds-text-heading--medium  slds-text-color_inverse"><b>Please Confirm</b></h1>
+    </header>
+    <!--Modal Box Header End-->
+    
+    <!--Modal Box Content Start-->
+    <aura:if isTrue="{!v.contact}">
+        <aura:if isTrue="{!v.contact.formExist != true}">
+            <div class=" slds-p-top_small  slds-modal__content slds-p-around--medium">
+                <br/>
+                <p class="text-center  slds-p-top_small"><strong>Do you want to send Credit Application form link to {!v.contact.contactName},</strong></p>
+                
+                <div class="slds-m-top_xx-small">
+                    <p class="text-center"><strong>email id: {!v.contact.email} </strong></p>
+                </div>
+                
+            </div>
+            <br/>
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin">
+                    <lightning:input aura:id="myinput" class="slds-m-horizontal_small" label="BRANCH" value="{!v.contact.creditApplication.branch}" required="true" />
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin">
+                    <lightning:input aura:id="myinput" class="slds-m-horizontal_small" label="PRICE CODE" value="{!v.contact.creditApplication.priceCode}" required="true" />
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin">
+                    <lightning:input aura:id="myinput" class="slds-m-horizontal_small" label="SALES PERSON #" type="Text" value="{!v.contact.creditApplication.salesman}" required="true" />
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-horizontal_medium   formmargin">
+                    <lightning:input aura:id="myinput" class="slds-m-horizontal_small" label="CUSTOMER TYPE" value="{!v.contact.creditApplication.customerType}" required="true" />
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium formmargin">
+                    <lightning:input aura:id="myinput" class="slds-m-horizontal_small" label="Ship VIA" value="{!v.contact.creditApplication.shipVia}" required="true" />
+                </div>
+                
+                 <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-horizontal_medium formmargin">
+                    <lightning:select aura:id="myinput" class="slds-m-horizontal_small" label="Delivery Charge" required="true" value="{!v.contact.creditApplication.deliveryCharge}">
+                    <option value="">Choose One...</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </lightning:select>
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12 slds-p-horizontal_medium formmargin">
+                    <lightning:input aura:id="myinput" class="slds-m-horizontal_small" label="Warehouse" required="true" value="{!v.contact.creditApplication.wareHouse}" />
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin">
+                    <lightning:input aura:id="myinput" class="slds-m-horizontal_small" label="Truck Route" value="{!v.contact.creditApplication.truckRoute}" />
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12  slds-p-horizontal_medium  formmargin">
+                    <lightning:input aura:id="myinput" class="slds-m-horizontal_small" label="Stop" value="{!v.contact.creditApplication.stop}" />
+                </div>
+                
+            </div>
+            
+            <aura:set attribute="else">
+                <div class="slds-modal__content slds-p-around--medium">
+                    <p class="text-center"><strong>A Credit Application Form is already in progress for {!v.contact.contactName}.</strong></p>
+                    <div class="slds-m-top_xx-small">
+                        <p class="text-center"><strong>Do you want to send him same form link again? </strong></p>
+                        <br/>
+                        <br/>
+                    </div>
+                </div>
+            </aura:set>
+            
+        </aura:if>
+    </aura:if>
+    <!--Modal Box Content End-->
+    
+    <!--Modal Box Button Start-->
+    <footer class="slds-modal__footer slds-m-top_large">
+        <aura:if isTrue="{!v.contact}">
+            <lightning:button  variant="brand" label='No' onclick='{!c.deleteConfirmDialogNo}'/>
+            <aura:if isTrue="{!v.contact.formExist != true}">
+                <lightning:button variant="brand" label='Save &amp; Send Email' onclick='{!c.createNewCreditApplication}'/>
+                <aura:set attribute="else">
+                    <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.deleteConfirmDialogYes}'/>
+                </aura:set>
+            </aura:if>
+        </aura:if>
+    </footer>
+    <!--Modal Box Button End-->
+    
+    
+    <aura:if isTrue="{!v.isShowSpinner}">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </aura:if>
+    
+</aura:component>

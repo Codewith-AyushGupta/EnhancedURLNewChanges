@@ -1,0 +1,69 @@
+<aura:component Controller="sendNewPreferredVendorRPFController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!-- Show spinner on page load -->
+    
+    <!-- Show modal on -->
+    <aura:attribute name="showConfirmDialog" type="Boolean" default="false"/>
+    <aura:attribute name="recordId" type="String" />
+    
+    <!-- contact  -->
+    <aura:attribute name="contact" type="Object" />
+    <aura:attribute name="reloadContact" type="Object" />
+    <aura:attribute name="isMailSendAgain" type="boolean" default="false"/>
+    <aura:attribute name="contactName" type="String" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:html tag="style">
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }       
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.showConfirmDialog}">
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                    <span class="slds-assistive-text">Cancel and close</span>
+                </button>
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Ancillary Vendor RFP</h1>
+                </div>
+                <aura:if isTrue="{!!v.isMailSendAgain}">
+                    <div class="slds-modal__content slds-p-around_medium slds-text-heading_small" id="modal-content-id-1">
+                        Do you want to send Ancillary Vendor RFP form link to <b>{!v.reloadContact[0].LastName}</b> &nbsp;on email <b>{!v.reloadContact[0].Email} </b> ?
+                    </div>
+                    <div class="slds-modal__footer">
+                        <lightning:button variant="brand" label="Cancel" title="Brand action" onclick="{! c.handleClickHideModal}" />
+                        <lightning:button variant="brand" label="Ok" title="Brand action" onclick="{! c.handleSendPreferredVendorLink }" />
+                        
+                    </div>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-modal__content slds-p-around_medium slds-text-heading_small" id="modal-content-id-1">
+                            <p class="text-center">An Ancillary Vendor RFP form is already <b>in progress</b> for <b>{!v.reloadContact[0].LastName}</b></p>
+                            <div class="slds-m-top_xx-small">
+                                <p class="text-center">Do you want to send him same form link again? </p>
+                                <br/>
+                                <br/>
+                            </div>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <lightning:button variant="brand" label="No" title="Brand action" onclick="{! c.handleClickHideModal}" />
+                            <lightning:button variant="brand" label="Yes" title="Brand action" onclick="{! c.handleSendPreferredVendorLink }" />
+                            
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </section>
+        
+    </aura:if>
+    
+</aura:component>
