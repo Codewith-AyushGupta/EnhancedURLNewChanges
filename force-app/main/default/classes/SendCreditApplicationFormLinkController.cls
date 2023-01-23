@@ -1,5 +1,5 @@
 public class SendCreditApplicationFormLinkController {
-    
+   
     @auraEnabled
     public static ContactWrapper getContactNameAndEmail(Id contactID){
         List<Contact> contacts = ContactSelector.getContacts(new Set<Id>{contactID});

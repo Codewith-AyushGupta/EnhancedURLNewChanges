@@ -45,15 +45,15 @@ public class sendPreferredVendorRPFController {
         mail.setSubject('Preferred Vendor RPF');
         String body = 'Hello ' + (String.isBlank( con.FirstName) ? '' :  (con.FirstName + ' ')) + con.LastName + ', ';
         body += '<br/>'; 
-        body += '<br/>';
         body += 'Thank you for your interest in becoming one of Louisville Tile’s Preferred Partners. Please click the link below to complete the requested form.';
        	body += '<br/>';
         body += '<br/>';
         body += '<a href='+''+System.Label.Preferred_Vendor_RPF_link+''+'?contactid='+ con.Id +'>Click Here</a>'+' '+' to open the Preferred Vendor RPF ';
         body += '<br/>'; 
         body += '<br/>'; 
-        body += 'Thanks';
-        body += '<br/>';
+        body += 'Thanks,';
+        body += '<br/>'; 
+       // body +=UserInfo.getName(); 
         
         mail.setHtmlBody(body);
         
