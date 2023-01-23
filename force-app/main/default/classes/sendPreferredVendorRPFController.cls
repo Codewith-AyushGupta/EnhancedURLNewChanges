@@ -1,10 +1,5 @@
 public class sendPreferredVendorRPFController {
     @auraEnabled
-    public static String preferredVendorRPFLink(){
-        return System.Label.Preferred_Vendor_RPF_link;
-        
-    }
-    @auraEnabled
     public static String sendEmailWithPreferredVendorRPFLink(Id contactID){
         
         List<Contact> contacts = ContactSelector.getContacts(new Set<Id>{contactID});

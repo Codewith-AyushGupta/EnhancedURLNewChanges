@@ -1,6 +1,5 @@
 ({
    openModel: function(component, event, helper) {
-      // Set isModalOpen attribute to true
       component.set("v.isModalOpen", true);
    },
   
@@ -10,7 +9,9 @@
    },
     
     doInit : function(component, event, helper){
-        helper.getPreferredVendorLink(component, event, helper);
+        var lable = $A.get("$Label.c.Preferred_Vendor_RPF_link");
+        component.set("v.preferredVendorLink", lable);
+        
     }
   
 })
